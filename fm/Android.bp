@@ -1,0 +1,13 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+soong_namespace {
+}
+
+cc_library_shared {
+    name: "libfmjni",
+    srcs: ["Si47xx.cpp", "libfm_jni.cpp"],
+    header_libs: ["jni_headers"],
+    shared_libs: ["liblog"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

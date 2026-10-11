@@ -185,3 +185,5 @@
 
 # deamons in vendor
 /(vendor|system/vendor)/bin/modemloader       u:object_r:modemloader_exec:s0
+
+/dev/radio0                 u:object_r:fm_device:s0

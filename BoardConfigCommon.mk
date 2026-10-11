@@ -106,6 +106,9 @@ QCOM_BT_USE_SMD_TTY := true
 
 # Samsung HALs
 TARGET_AUDIOHAL_VARIANT := samsung
+
+# FM radio
+TARGET_FM_JNI_NAMESPACE := $(COMMON_PATH)/fm
 TARGET_POWERHAL_VARIANT := samsung
 
 # Graphics

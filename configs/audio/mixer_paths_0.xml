@@ -3351,6 +3351,15 @@
 		<ctl name="AudioMixer RMIX2_LVL" value="0" />
 	</path>
 
+	<!-- Capture FM through the AP; FMRadio renders it as ordinary media. -->
+	<path name="fm-capture">
+		<ctl name="AudioMixer SRC3 En" value="On" />
+		<ctl name="AudioMixer RMIX2 En" value="On" />
+		<ctl name="AudioMixer RMIX2_LVL" value="0" />
+		<ctl name="AudioMixer CH3 Rec En" value="On" />
+		<ctl name="AudioMixer CH1 DOUT Select" value="RMIX_OUT" />
+	</path>
+
 	<!-- Samsung OSS audio HAL custom paths -->
 	
 	<path name="none">

@@ -158,3 +158,6 @@
 /sys/devices/system/cpu/cpu*   cpufreq/interactive/input_boost                 0660    system  system
 /sys/devices/system/cpu/cpu*   cpufreq/interactive/boostpulse_duration         0660    system  system
 /sys/devices/system/cpu/cpu*   cpufreq/interactive/io_is_busy                  0660    system  system
+
+# FM tuner
+/dev/radio0               0660   system     audio
