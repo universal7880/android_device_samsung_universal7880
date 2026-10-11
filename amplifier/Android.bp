@@ -1,0 +1,24 @@
+cc_library_shared {
+    name: "audio_amplifier.universal7880",
+    relative_install_path: "hw",
+    compile_multilib: "both",
+    srcs: [
+        "amplifier.c",
+        "tfa.c",
+    ],
+    shared_libs: [
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libtinyalsa",
+    ],
+    include_dirs: [
+        "external/tinyalsa/include",
+        "external/tinycompress/include",
+        "hardware/libhardware/include",
+        "hardware/samsung/audio",
+        "system/media/audio_utils/include",
+        "system/media/audio_route/include",
+        "system/media/audio_effects/include",
+    ],
+}
