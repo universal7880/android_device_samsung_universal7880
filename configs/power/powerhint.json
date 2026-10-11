@@ -1,0 +1,80 @@
+{
+    "Nodes": [
+        {
+            "Name": "Cpu0IoIsBusy",
+            "Path": "/sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy",
+            "Values": [
+                "1",
+                "0"
+            ],
+            "DefaultIndex": 1,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "Cpu4IoIsBusy",
+            "Path": "/sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy",
+            "Values": [
+                "1",
+                "0"
+            ],
+            "DefaultIndex": 1,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "CpuBoost",
+            "Path": "/sys/devices/system/cpu/cpu0/cpufreq/interactive/boost",
+            "Values": [
+                "1",
+                "0"
+            ],
+            "DefaultIndex": 1,
+            "ResetOnInit": true
+        }
+    ],
+    "Actions": [
+        {
+            "PowerHint": "INTERACTIVE",
+            "Node": "Cpu0IoIsBusy",
+            "Value": "1",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "INTERACTIVE",
+            "Node": "Cpu4IoIsBusy",
+            "Value": "1",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "CpuBoost",
+            "Value": "1",
+            "Duration": 80
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "CpuBoost",
+            "Value": "1",
+            "Duration": 80
+        },
+        {
+            "PowerHint": "LOW_POWER",
+            "Type": "EndHint",
+            "Value": "INTERACTION"
+        },
+        {
+            "PowerHint": "LOW_POWER",
+            "Type": "MaskHint",
+            "Value": "INTERACTION"
+        },
+        {
+            "PowerHint": "LOW_POWER",
+            "Type": "EndHint",
+            "Value": "LAUNCH"
+        },
+        {
+            "PowerHint": "LOW_POWER",
+            "Type": "MaskHint",
+            "Value": "LAUNCH"
+        }
+    ]
+}

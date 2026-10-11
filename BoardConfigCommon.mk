@@ -239,7 +239,11 @@ endif
 # Seccomp filters
 BOARD_SECCOMP_POLICY += $(COMMON_PATH)/seccomp
 
+# Power
+TARGET_POWER_LIBPERFMGR_MODE_EXTENSION_LIB := //$(COMMON_PATH):libperfmgr-ext-universal7880
+
 # SELinux
+include device/lineage/sepolicy/libperfmgr/sepolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
 SELINUX_IGNORE_NEVERALLOWS := true
 
