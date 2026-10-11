@@ -23,33 +23,30 @@ jshortArray autoScan(JNIEnv* env, jobject) {
 }
 jboolean stopScan(JNIEnv*, jobject) { return radio.stopScan(); }
 jint setMute(JNIEnv*, jobject, jboolean enabled) { return radio.mute(enabled); }
-// RDS decoding and alternative-frequency switching are not implemented yet.
-jint isRdsSupport(JNIEnv*, jobject) { return 0; }
-jint setRds(JNIEnv*, jobject, jboolean) { return -1; }
-jshort readRds(JNIEnv*, jobject) { return 0; }
-jbyteArray getText(JNIEnv*, jobject) { return nullptr; }
-jshort activeAf(JNIEnv*, jobject) { return 0; }
+jint isRdsSupport(JNIEnv*, jobject) { return 1; }
+jint setRds(JNIEnv*, jobject, jboolean enabled) { return radio.setRds(enabled) ? 1 : 0; }
+jshort readRds(JNIEnv*, jobject) { return radio.readRds(); }
+jbyteArray textBytes(JNIEnv* env, const std::string& text) {
+    auto result = env->NewByteArray(text.size());
+    if (result && !text.empty())
+        env->SetByteArrayRegion(result, 0, text.size(),
+                                reinterpret_cast<const jbyte*>(text.data()));
+    return result;
+}
+jbyteArray getPs(JNIEnv* env, jobject) { return textBytes(env, radio.programName()); }
+jbyteArray getLrText(JNIEnv* env, jobject) { return textBytes(env, radio.radioText()); }
+jshort activeAf(JNIEnv*, jobject) { return radio.activeAf(); }
 // The wired headset is the only antenna; there is no internal-antenna switch.
 jint switchAntenna(JNIEnv*, jobject, jint antenna) { return antenna == 0 ? 0 : -1; }
 
 #define METHOD(name, signature) \
     { const_cast<char*>(#name), const_cast<char*>(signature), reinterpret_cast<void*>(name) }
 const JNINativeMethod methods[] = {
-    METHOD(openDev, "()Z"),
-    METHOD(closeDev, "()Z"),
-    METHOD(powerUp, "(F)Z"),
-    METHOD(powerDown, "(I)Z"),
-    METHOD(tune, "(F)Z"),
-    METHOD(seek, "(FZ)F"),
-    METHOD(autoScan, "()[S"),
-    METHOD(stopScan, "()Z"),
-    METHOD(setMute, "(Z)I"),
-    METHOD(isRdsSupport, "()I"),
-    METHOD(setRds, "(Z)I"),
-    METHOD(readRds, "()S"),
-    {const_cast<char*>("getPs"), const_cast<char*>("()[B"), reinterpret_cast<void*>(getText)},
-    {const_cast<char*>("getLrText"), const_cast<char*>("()[B"), reinterpret_cast<void*>(getText)},
-    METHOD(activeAf, "()S"),
+    METHOD(openDev, "()Z"),        METHOD(closeDev, "()Z"),   METHOD(powerUp, "(F)Z"),
+    METHOD(powerDown, "(I)Z"),     METHOD(tune, "(F)Z"),      METHOD(seek, "(FZ)F"),
+    METHOD(autoScan, "()[S"),      METHOD(stopScan, "()Z"),   METHOD(setMute, "(Z)I"),
+    METHOD(isRdsSupport, "()I"),   METHOD(setRds, "(Z)I"),    METHOD(readRds, "()S"),
+    METHOD(getPs, "()[B"),         METHOD(getLrText, "()[B"), METHOD(activeAf, "()S"),
     METHOD(switchAntenna, "(I)I"),
 };
 }  // namespace
