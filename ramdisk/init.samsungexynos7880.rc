@@ -611,6 +611,24 @@ on property:init.svc.bootanim=stopped
     chown system system /efs/FactoryApp/tkey_light14
     chown system system /efs/FactoryApp/tkey_light15
 
-# Start the hint manager after the governor and input permissions are ready.
+# Configure the governor before starting the hint manager.
 on boot
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 20000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_slack 20000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 962000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 89
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "75 1242000:85"
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay "39000 1242000:19000"
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 40000
+
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 20000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_slack 20000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq 962000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 89
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "75 1242000:85"
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay "39000 1242000:19000"
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration 40000
+
     setprop vendor.powerhal.init 1
