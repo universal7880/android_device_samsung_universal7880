@@ -59,7 +59,6 @@ TARGET_CUSTOM_DTBTOOL := dtbhtoolExynos
 
 # Kernel
 TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_LINUX_KERNEL_VERSION := 3.18
 
 # Kernel config
@@ -80,8 +79,6 @@ BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE  := ext4
 # blockdev --getbsz /dev/block/mmcblk0p9
 BOARD_FLASH_BLOCK_SIZE := 4096
 
-# Use these flags if the board has a ext4 partition larger than 2gb
-BOARD_HAS_LARGE_FILESYSTEM := true
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # Root extra folders
@@ -106,10 +103,6 @@ TARGET_AUDIOHAL_VARIANT := samsung
 
 # FM radio
 TARGET_FM_JNI_NAMESPACE := $(COMMON_PATH)/fm
-TARGET_POWERHAL_VARIANT := samsung
-
-# Graphics
-USE_OPENGL_RENDERER := true
 
 # VR Front buffer
 #BOARD_USES_VR_FRONT_BUFFER := true
@@ -166,9 +159,6 @@ BOARD_USES_FIMGAPI_V5X := true
 BOARD_USES_DEFAULT_CSC_HW_SCALER := true
 BOARD_USES_SCALER_M2M1SHOT := true
 
-# Video scaling issue workaround
-TARGET_OMX_LEGACY_RESCALING := true
-
 # Wifi
 BOARD_HAS_QCOM_WLAN := true
 BOARD_WLAN_DEVICE := qcwcn
@@ -180,7 +170,6 @@ WIFI_DRIVER_FW_PATH_AP := "ap"
 WIFI_DRIVER_FW_PATH_STA := "sta"
 WIFI_DRIVER_FW_PATH_P2P := "p2p"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
-WPA_SUPPLICANT_USE_HIDL := true
 WIFI_AVOID_IFACE_RESET_MAC_CHANGE := true
 WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
 
@@ -190,14 +179,6 @@ BOARD_HAVE_SAMSUNG_WIFI := true
 # Build fingerprint
 BUILD_FINGERPRINT := "samsung/a7y17lteskt/a7y17lteskt:9/PPR1.180610.011/A720SKSU5CUJ2:user/release-keys"
 PRIVATE_BUILD_DESC := "a7y17lteskt-user 9 PPR1.180610.011 A720SKSU5CUJ2 release-keys"
-
-# Charger
-BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
-BOARD_CHARGER_SHOW_PERCENTAGE := true
-CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
-
-# DT2W
-TARGET_TAP_TO_WAKE_NODE := /sys/class/sec/tsp/dt2w_enable
 
 # RIL
 BOARD_MODEM_TYPE := ss333
