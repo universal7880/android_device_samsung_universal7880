@@ -1,0 +1,2 @@
+# /efs/factory.prop
+allow secril_config_svc factoryprop_efs_file:file r_file_perms;

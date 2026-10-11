@@ -2,7 +2,7 @@
 binder_call(system_app, hal_fingerprint_default)
 
 # kernel fp device
-allow hal_fingerprint_default fingerprint_device:chr_file { open read write ioctl getattr };
+allow hal_fingerprint_default fp_sensor_device:chr_file { open read write ioctl getattr };
 
 # secure memory device
 allow hal_fingerprint_default secmem_device:chr_file { open read write ioctl };
@@ -16,8 +16,8 @@ allow hal_fingerprint_default fingerprintd_data_file:dir { rmdir read write remo
 allow hal_fingerprint_default fingerprintd_data_file:file { write create read rename open getattr unlink };
 
 # /data/vendor/biometrics/*
-allow hal_fingerprint_default fingerprintd_vendor_data_file:dir { rmdir read write remove_name create open add_name search };
-allow hal_fingerprint_default fingerprintd_vendor_data_file:file { write create read rename open getattr unlink };
+allow hal_fingerprint_default biometrics_vendor_data_file:dir { rmdir read write remove_name create open add_name search };
+allow hal_fingerprint_default biometrics_vendor_data_file:file { write create read rename open getattr unlink };
 
 # sysfs_virtual
 allow hal_fingerprint_default sysfs_virtual:dir search;

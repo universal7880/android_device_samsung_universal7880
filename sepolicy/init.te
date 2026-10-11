@@ -37,7 +37,7 @@ allow init sysfs_devices_system_cpu:file write;
 allow init sysfs_gps:file setattr;
 allow init sysfs_sec:file setattr ;
 allow init sysfs_brightness:file setattr;
-allow init sysfs_input:file setattr;
+allow init sysfs_input_writable:file setattr;
 allow init sysfs_lcd:file { setattr open };
 allow init sysfs_svc:file setattr;
 allow init sysfs_modem:file { setattr open write };
