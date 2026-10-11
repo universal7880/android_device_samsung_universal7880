@@ -55,10 +55,6 @@ ro.hardware.egl=mali
 # Media
 debug.stagefright.ccodec=0
 
-# Nfc
-ro.nfc.port="I2C"
-ro.nfc.sec_hal=true
-
 # Radio
 persist.radio.sib16_support=1
 rild.libargs=-d /dev/umts_ipc0
