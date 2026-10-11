@@ -39,17 +39,17 @@ allow system_server debugfs_mali:file r_file_perms;
 allow system_server debugfs_ion:file rw_file_perms;
 
 # sensor HAL
-allow system_server sensor_device:chr_file rw_file_perms;
+allow system_server { io_device ssp_device }:chr_file rw_file_perms;
 allow system_server baro_delta_factoryapp_efs_file:file r_file_perms;
 allow system_server sensor_factoryapp_efs_file:file r_file_perms;
 
 # sysfs
 allow system_server sysfs_brightness:file write;
-allow system_server sysfs_input:file write;
+allow system_server sysfs_input_writable:file write;
 allow system_server sysfs_sec:file write;
 allow system_server sysfs_devices_system_cpu:file write;
 allow system_server sysfs_virtual:file write;
-allow system_server sysfs_iio:file write;
+allow system_server sysfs_iio_writable:file write;
 
 # /data/system/gps/xtraee.bin
 allow system_server gps_vendor_data_file:file create_file_perms;
