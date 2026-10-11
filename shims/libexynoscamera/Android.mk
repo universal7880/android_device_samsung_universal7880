@@ -20,10 +20,11 @@ LOCAL_SRC_FILES := GraphicBuffer.cpp
 
 LOCAL_C_INCLUDES := frameworks/native/include
 
-LOCAL_SHARED_LIBRARIES := libgui libui
+LOCAL_SHARED_LIBRARIES := libui
 
 LOCAL_MODULE := libexynoscamera_shim
 LOCAL_MODULE_TAGS := optional
+LOCAL_VENDOR_MODULE := true
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 
 include $(BUILD_SHARED_LIBRARY)
