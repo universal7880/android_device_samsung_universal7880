@@ -358,9 +358,32 @@ PRODUCT_PACKAGES += \
 # System.prop
 TARGET_SYSTEM_PROP += device/samsung/universal7880-common/system.prop
 
-# call Samsung LSI board support package
-$(call inherit-product, hardware/samsung_slsi/exynos5/exynos5.mk)
-$(call inherit-product, hardware/samsung_slsi/exynos7880/exynos7880.mk)
+# Graphics support libraries
+PRODUCT_PACKAGES += \
+    gralloc.exynos5 \
+    hwcomposer.universal7880 \
+    memtrack.universal7880 \
+    libion_exynos \
+    libexynosscaler \
+    libexynosgscaler \
+    libcsc
+
+# OMX
+PRODUCT_PACKAGES += \
+    android.hardware.media.omx@1.0-service \
+    libstagefrighthw \
+    libExynosOMX_Core \
+    libExynosOMX_Resourcemanager \
+    libOMX.Exynos.AVC.Decoder \
+    libOMX.Exynos.AVC.Encoder \
+    libOMX.Exynos.HEVC.Decoder \
+    libOMX.Exynos.HEVC.Encoder \
+    libOMX.Exynos.MPEG4.Decoder \
+    libOMX.Exynos.MPEG4.Encoder \
+    libOMX.Exynos.VP8.Decoder \
+    libOMX.Exynos.VP8.Encoder \
+    libOMX.Exynos.VP9.Decoder \
+    libOMX.Exynos.WMV.Decoder
 
 # Shipping API level
 $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_m.mk)
