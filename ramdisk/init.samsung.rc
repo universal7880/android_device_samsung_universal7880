@@ -1065,21 +1065,9 @@ on property:sys.sysctl.mmap_readaround_limit=*
 on property:sys.sysctl.fault_around_bytes=*
     write /sys/kernel/debug/fault_around_bytes ${sys.sysctl.fault_around_bytes}
 
-# Pageboostd
-on property:sys.boot_completed=1
-    mkdir /data/misc/pageboost 0771 system system
-
 # HWC data
+on property:sys.boot_completed=1
     mkdir /data/vendor/log/hwc 0771 system graphics
-
-# package_fw
-on property:sys.do_restorecon_user=*
-    restorecon --recursive /data/media/${sys.do_restorecon_user}
-
-# Booting performance
-on property:persist.sys.zygote.early=true
-    start zygote
-    start zygote_secondary
 
 # Network packet dropdump
 on property:sys.dropdump.on=On
