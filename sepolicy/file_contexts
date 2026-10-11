@@ -166,6 +166,7 @@
 
 # virtual
 /sys/devices/virtual(/.*)?    u:object_r:sysfs_virtual:s0
+/sys/devices/virtual/block/loop[0-9]+(/.*)?    u:object_r:sysfs_loop:s0
 
 # iio
 /sys/devices/13930000\.spi/spi_master/spi2/spi2\.0/iio:device[0-9](/.*)?    u:object_r:sysfs_iio_writable:s0
