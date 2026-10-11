@@ -12,3 +12,6 @@ type amplifier_device, dev_type;
 
 # GPS
 type gps_device, dev_type;
+
+# Silicon Labs FM tuner
+type fm_device, dev_type;

@@ -31,6 +31,9 @@
 #define SOUND_CAPTURE_DEVICE 0
 #define SOUND_CAPTURE_SCO_DEVICE 3
 
+/* FM digital interface (the captured audio is read through device 0). */
+#define SOUND_FM_DEVICE 4
+
 /* Voice calls */
 #define SOUND_PLAYBACK_VOICE_DEVICE 2
 #define SOUND_CAPTURE_VOICE_DEVICE 2
