@@ -459,9 +459,6 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/device/extldo
 
-# Support DM logging
-    chmod 0770 /system/bin/dmd
-
 # MTP device permission
     chmod 0660 /dev/usb_mtp_gadget
     chown system mtp /dev/usb_mtp_gadget
@@ -476,12 +473,6 @@ on boot
     chown system system /dev/ttyGS1
     chown system system /dev/ttyGS2
     chown system system /dev/ttyGS3
-
-# Support Virtual Com
-    chmod 0770 /system/bin/vcd
-
-# Support AP/CP log dump
-    chmod 0770 /system/bin/sced
 
 # Permission for UART SWITCH
     chmod 0660 /sys/class/sec/switch/uart_sel
@@ -592,20 +583,6 @@ service umount_service /system/bin/umount -D /preload
 service watchdogd /system/bin/watchdogd 10 20
     class core
     seclabel u:r:watchdogd:s0
-
-# sem_daemon
-service sem_daemon /system/bin/sem_daemon
-    class core
-    user system
-    group system nfc
-    disabled
-
-on property:sys.boot_completed=1
-    setprop security.semdaemonfinish 0
-    start sem_daemon
-
-on property:security.semdaemonfinish=1
-    stop sem_daemon
 
 on property:ro.multisim.simslotcount=1
     setprop persist.radio.multisim.config ss
