@@ -86,7 +86,8 @@ PRODUCT_COPY_FILES += \
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(COMMON_PATH) \
-    hardware/samsung
+    hardware/samsung \
+    hardware/lineage/interfaces/power-libperfmgr
 
 # Graphics
 PRODUCT_AAPT_CONFIG := normal
@@ -286,7 +287,16 @@ PRODUCT_COPY_FILES += \
 
 # Power
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-service.exynos7880
+    android.hardware.power-service.lineage-libperfmgr
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/power/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json
+
+PRODUCT_VENDOR_PROPERTIES += \
+    vendor.powerhal.disp.idle_support=false \
+    vendor.powerhal.interaction.min=80 \
+    vendor.powerhal.interaction.max=5650 \
+    vendor.powerhal.interaction.offset=0
 
 # Lights
 PRODUCT_PACKAGES += \
