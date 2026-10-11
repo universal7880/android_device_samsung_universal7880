@@ -2,8 +2,6 @@ on post-fs-data
 # Directory for GPS
     chmod 0660 /dev/gnss_ipc
     chown system system /dev/gnss_ipc
-    mkdir /data/vendor 0771 system system
-    chown system system /data/vendor
     mkdir /data/vendor/gps 0771 system system
     chown system system /data/vendor/gps
     mkdir /data/vendor/gps/sgee 0771 system system
