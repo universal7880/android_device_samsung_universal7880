@@ -46,6 +46,15 @@ PRODUCT_PACKAGES += \
     ueventd.samsungexynos7880.rc \
     secril_config_svc
 
+# Persistent logs for boot debugging. Keep at most nine 2 MiB files.
+ifneq ($(filter userdebug eng,$(TARGET_BUILD_VARIANT)),)
+PRODUCT_SYSTEM_PROPERTIES += \
+    logd.logpersistd=logcatd \
+    logd.logpersistd.buffer=all \
+    logd.logpersistd.rotate_kbytes=2048 \
+    logd.logpersistd.size=8
+endif
+
 # Permissions
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml \
