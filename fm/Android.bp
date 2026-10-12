@@ -3,11 +3,3 @@
 
 soong_namespace {
 }
-
-cc_library_shared {
-    name: "libfmjni",
-    srcs: ["Si47xx.cpp", "RdsDecoder.cpp", "libfm_jni.cpp"],
-    header_libs: ["jni_headers"],
-    shared_libs: ["liblog"],
-    cflags: ["-Wall", "-Wextra", "-Werror"],
-}

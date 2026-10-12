@@ -1,0 +1,17 @@
+hal_attribute(fmradio)
+
+type hal_fmradio_service, hal_service_type, service_manager_type;
+hal_attribute_service(hal_fmradio, hal_fmradio_service)
+binder_call(hal_fmradio_client, hal_fmradio_server)
+
+type hal_fmradio_default, domain;
+type hal_fmradio_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_fmradio_default)
+hal_server_domain(hal_fmradio_default, hal_fmradio)
+binder_use(hal_fmradio_default)
+
+allow hal_fmradio_default fm_device:chr_file { open read write getattr ioctl };
+allowxperm hal_fmradio_default fm_device:chr_file ioctl {
+    0xfa00-0xfa07 0xfa0c 0xfa0f 0xfa11-0xfa12 0xfa14 0xfa16-0xfa18
+    0xfa1a 0xfa20 0xfa27-0xfa28
+};

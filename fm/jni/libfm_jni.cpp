@@ -4,10 +4,10 @@
  */
 #include <jni.h>
 
-#include "Si47xx.h"
+#include "FmRadioClient.h"
 
 namespace {
-Si47xx radio;
+FmRadioClient radio;
 jboolean openDev(JNIEnv*, jobject) { return radio.open(); }
 jboolean closeDev(JNIEnv*, jobject) { return radio.close(); }
 jboolean powerUp(JNIEnv*, jobject, jfloat mhz) { return radio.powerUp(mhz); }

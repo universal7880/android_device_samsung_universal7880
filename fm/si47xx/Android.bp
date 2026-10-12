@@ -1,0 +1,12 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_library_static {
+    name: "libfm-si47xx",
+    vendor: true,
+    srcs: ["Si47xx.cpp", "RdsDecoder.cpp"],
+    export_include_dirs: ["."],
+    shared_libs: ["liblog"],
+    visibility: ["//device/samsung/universal7880-common/fm/aidl/default"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

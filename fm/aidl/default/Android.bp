@@ -1,0 +1,14 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_binary {
+    name: "vendor.lineage.hardware.fmradio-service.si47xx",
+    vendor: true,
+    relative_install_path: "hw",
+    srcs: ["service.cpp"],
+    static_libs: ["libfm-si47xx"],
+    shared_libs: ["libbinder_ndk", "liblog", "vendor.lineage.hardware.fmradio-V1-ndk"],
+    init_rc: ["fmradio.rc"],
+    vintf_fragments: ["fmradio.xml"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

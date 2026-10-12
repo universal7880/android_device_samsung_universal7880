@@ -1,0 +1,5 @@
+service vendor.fmradio-si47xx /vendor/bin/hw/vendor.lineage.hardware.fmradio-service.si47xx
+    class hal
+    user system
+    group audio
+    interface aidl vendor.lineage.hardware.fmradio.IFmRadio/default
