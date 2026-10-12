@@ -256,7 +256,9 @@ PRODUCT_PACKAGES += \
     libaudioroute
 
 # FM radio
-PRODUCT_PACKAGES += FMRadio
+PRODUCT_PACKAGES += \
+    FMRadio \
+    vendor.lineage.hardware.fmradio-service.si47xx
 
 # Media
 PRODUCT_COPY_FILES += \

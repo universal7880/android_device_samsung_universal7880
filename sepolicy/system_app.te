@@ -5,9 +5,4 @@ allow system_app proc_pagetypeinfo:file { read open getattr };
 allow system_app sysfs_virtual:dir search;
 allow system_app sysfs_virtual:file { read open getattr };
 
-# FMRadio runs as android.uid.system and uses the Si47xx private ABI.
-allow system_app fm_device:chr_file { open read write getattr ioctl };
-allowxperm system_app fm_device:chr_file ioctl {
-    0xfa00-0xfa07 0xfa0c 0xfa0f 0xfa11-0xfa12 0xfa14 0xfa16-0xfa18
-    0xfa1a 0xfa20 0xfa27-0xfa28
-};
+hal_client_domain(system_app, hal_fmradio)

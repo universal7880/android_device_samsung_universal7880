@@ -1,0 +1,18 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+aidl_interface {
+    name: "vendor.lineage.hardware.fmradio",
+    owner: "lineage",
+    srcs: ["vendor/lineage/hardware/fmradio/*.aidl"],
+    local_include_dir: ".",
+    vendor_available: true,
+    stability: "vintf",
+    frozen: true,
+    versions_with_info: [{ version: "1", imports: [] }],
+    backend: {
+        java: { enabled: false },
+        cpp: { enabled: false },
+        ndk: { enabled: true },
+    },
+}

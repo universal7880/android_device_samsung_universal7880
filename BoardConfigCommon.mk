@@ -103,6 +103,7 @@ TARGET_AUDIOHAL_VARIANT := samsung
 
 # FM radio
 TARGET_FM_JNI_NAMESPACE := $(COMMON_PATH)/fm
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += $(COMMON_PATH)/fm/aidl/framework_compatibility_matrix.xml
 
 # VR Front buffer
 #BOARD_USES_VR_FRONT_BUFFER := true
