@@ -22,6 +22,8 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
 # VINTF
+PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
+
 PRODUCT_PACKAGES += \
     universal7880_framework_compatibility_matrix.4.xml
 

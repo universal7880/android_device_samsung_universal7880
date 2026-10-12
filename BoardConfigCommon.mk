@@ -66,7 +66,10 @@ TARGET_KERNEL_SOURCE := kernel/samsung/universal7880
 
 # Manifest
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
-PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
+    vendor/lineage/config/device_framework_matrix.xml \
+    $(COMMON_PATH)/framework_compatibility_matrix.xml \
+    $(COMMON_PATH)/fm/aidl/framework_compatibility_matrix.xml
 
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 33554432
@@ -103,7 +106,6 @@ TARGET_AUDIOHAL_VARIANT := samsung
 
 # FM radio
 TARGET_FM_JNI_NAMESPACE := $(COMMON_PATH)/fm
-DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += $(COMMON_PATH)/fm/aidl/framework_compatibility_matrix.xml
 
 # VR Front buffer
 #BOARD_USES_VR_FRONT_BUFFER := true
