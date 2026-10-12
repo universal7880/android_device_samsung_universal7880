@@ -84,6 +84,8 @@ PRODUCT_COPY_FILES += \
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
+    hardware/google/interfaces \
+    hardware/google/pixel \
     hardware/samsung \
     hardware/lineage/interfaces/power-libperfmgr
 
