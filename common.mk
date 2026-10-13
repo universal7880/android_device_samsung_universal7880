@@ -319,8 +319,12 @@ PRODUCT_PACKAGES += \
 
 # Fingerprint
 PRODUCT_PACKAGES += \
-    android.hardware.biometrics.fingerprint@2.3-service.samsung \
+    android.hardware.biometrics.fingerprint-service.samsung \
     libbauthtzcommon_shim
+
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.vendor.fingerprint.type=home \
+    ro.vendor.fingerprint.max_enrollments=5
 
 # FlipFlap
 PRODUCT_PACKAGES += \
