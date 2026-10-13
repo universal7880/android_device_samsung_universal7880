@@ -218,7 +218,7 @@ tfa_device_t * tfa_device_open() {
 
     ALOGV("Opening amplifier device");
 
-    tfa_dev = (tfa_device_t *) malloc(sizeof(tfa_device_t));
+    tfa_dev = calloc(1, sizeof(*tfa_dev));
     if (tfa_dev == NULL) {
         ALOGE("%s: Not enough memory to load the lib handle", __func__);
         return NULL;
