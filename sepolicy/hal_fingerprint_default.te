@@ -22,3 +22,5 @@ allow hal_fingerprint_default biometrics_vendor_data_file:file { write create re
 # sysfs_virtual
 allow hal_fingerprint_default sysfs_virtual:dir search;
 allow hal_fingerprint_default sysfs_virtual:file { open read };
+
+get_prop(hal_fingerprint_default, vendor_fingerprint_config_prop)
