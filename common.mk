@@ -149,9 +149,8 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
     android.hardware.drm@1.3 \
-    android.hardware.drm@1.4-service.clearkey \
-    libfwdlockengine \
-    libdrmclearkeyplugin
+    android.hardware.drm-service.clearkey \
+    libfwdlockengine
 
 # DRM (Widevine) service
 PRODUCT_COPY_FILES += \
