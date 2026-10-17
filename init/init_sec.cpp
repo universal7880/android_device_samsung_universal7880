@@ -65,4 +65,12 @@ void vendor_load_properties() {
     LOG(INFO) << "Using " << selected->device << " configuration";
     overrideProperty("ro.sf.lcd_density", selected->density);
     overrideProperty("ro.vendor.universal7880.device", selected->device);
+
+    // SystemConfig loads the Korean FMRadio component override for this SKU.
+    if (bootloader.compare(0, 5, "A520K") == 0 ||
+        bootloader.compare(0, 5, "A520L") == 0 ||
+        bootloader.compare(0, 5, "A520S") == 0 ||
+        bootloader.compare(0, 5, "A720S") == 0) {
+        overrideProperty("ro.boot.product.vendor.sku", "kor");
+    }
 }

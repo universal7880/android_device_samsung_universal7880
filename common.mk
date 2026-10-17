@@ -278,6 +278,9 @@ PRODUCT_PACKAGES += \
     FMRadio \
     vendor.lineage.hardware.fmradio-service.si47xx
 
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/sysconfig/fmradio-kor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sysconfig/sku_kor/fmradio.xml
+
 # Media
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
