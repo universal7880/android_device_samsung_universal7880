@@ -89,12 +89,13 @@ bool Si47xx::close() {
 }
 
 bool Si47xx::powerUp(float mhz) {
+    uint32_t channel;
+    if (!frequency(mhz, &channel)) return false;
     std::lock_guard<std::mutex> operation(operationMutex);
     rdsEnabled = false;
     currentChannel = 0;
     resetRds();
-    uint32_t channel;
-    if (!frequency(mhz, &channel) || !command(powerUpCommand)) return false;
+    if (!command(powerUpCommand)) return false;
     int32_t band = 1;
     int32_t spacing = 10;
     uint8_t volume = 15;
@@ -128,12 +129,13 @@ bool Si47xx::tune(float mhz) {
 }
 
 float Si47xx::seek(float mhz, bool up) {
-    std::lock_guard<std::mutex> operation(operationMutex);
     uint32_t channel;
+    if (!frequency(mhz, &channel)) return 0;
+    std::lock_guard<std::mutex> operation(operationMutex);
     cancelled = false;
     currentChannel = 0;
     resetRds();
-    if (!frequency(mhz, &channel) || !command(tuneCommand, &channel) || cancelled ||
+    if (!command(tuneCommand, &channel) || cancelled ||
         !command(up ? seekUpCommand : seekDownCommand, &channel) || cancelled || channel < 8750 ||
         channel > 10800)
         return 0;
