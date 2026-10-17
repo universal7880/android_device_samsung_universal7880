@@ -5,17 +5,20 @@
 #define LOG_TAG "FmRadioClient"
 #include "FmRadioClient.h"
 
+#include <aidl/vendor/lineage/hardware/fmradio/BnFmRadioClient.h>
 #include <aidl/vendor/lineage/hardware/fmradio/IFmRadio.h>
 #include <android/binder_manager.h>
 #include <log/log.h>
 
 #include <mutex>
 
+using aidl::vendor::lineage::hardware::fmradio::BnFmRadioClient;
 using aidl::vendor::lineage::hardware::fmradio::IFmRadio;
 
 namespace {
 std::mutex serviceMutex;
 std::shared_ptr<IFmRadio> service;
+const auto clientToken = ndk::SharedRefBase::make<BnFmRadioClient>();
 
 std::shared_ptr<IFmRadio> getService() {
     std::lock_guard<std::mutex> lock(serviceMutex);
@@ -43,7 +46,7 @@ Result call(Result fallback, Method method, Args... args) {
 }  // namespace
 
 bool FmRadioClient::open() {
-    return call(false, &IFmRadio::open);
+    return call(false, &IFmRadio::open, clientToken);
 }
 
 bool FmRadioClient::close() {

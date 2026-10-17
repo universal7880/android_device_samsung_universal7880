@@ -4,10 +4,13 @@
  */
 package vendor.lineage.hardware.fmradio;
 
+import vendor.lineage.hardware.fmradio.IFmRadioClient;
+
 /** Device tuner access; frequencies are MHz, scan results and AF are in 10 kHz units. */
 @VintfStability
 interface IFmRadio {
-    boolean open();
+    /** Opens the tuner and releases it if the client process dies. */
+    boolean open(IFmRadioClient client);
     boolean close();
     boolean powerUp(float mhz);
     boolean powerDown();
