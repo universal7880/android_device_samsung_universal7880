@@ -21,6 +21,9 @@ BUILD_BROKEN_DUP_RULES := true
 # Include path
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
+# Init
+TARGET_INIT_VENDOR_LIB := //$(COMMON_PATH):libinit_sec
+
 # Firmware
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true

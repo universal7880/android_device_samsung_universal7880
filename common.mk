@@ -21,6 +21,11 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Power profiles
+PRODUCT_PACKAGES += \
+    PowerProfileA5 \
+    PowerProfileA7
+
 # VINTF
 PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
 

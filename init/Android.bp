@@ -18,6 +18,7 @@ cc_library_static {
     name: "libinit_sec",
     recovery_available: true,
     srcs: ["init_sec.cpp"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
     include_dirs: [
         "system/libbase/include",
         "system/core/init"

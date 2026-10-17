@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.samsung.universal7880.powerprofile.a7"
+    android:versionCode="1"
+    android:versionName="1.0">
+    <application android:hasCode="false" />
+    <overlay
+        android:targetPackage="android"
+        android:isStatic="true"
+        android:priority="1"
+        android:requiredSystemPropertyName="ro.vendor.universal7880.device"
+        android:requiredSystemPropertyValue="a7y17lte" />
+</manifest>
