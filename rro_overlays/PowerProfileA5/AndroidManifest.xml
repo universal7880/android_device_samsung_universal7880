@@ -6,7 +6,5 @@
     <overlay
         android:targetPackage="android"
         android:isStatic="true"
-        android:priority="1"
-        android:requiredSystemPropertyName="ro.vendor.universal7880.device"
-        android:requiredSystemPropertyValue="a5y17lte" />
+        android:priority="0" />
 </manifest>

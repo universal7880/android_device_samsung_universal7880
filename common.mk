@@ -21,6 +21,9 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Default density when runtime variant detection is unavailable.
+PRODUCT_VENDOR_PROPERTIES += ro.sf.lcd_density=480
+
 # Power profiles
 PRODUCT_PACKAGES += \
     PowerProfileA5 \
