@@ -57,3 +57,6 @@ allow system_server gps_vendor_data_file:file create_file_perms;
 unix_socket_connect(system_server, property, gpsd)
 
 allow system_server proc:file { read open getattr };
+
+# Select the device-specific power profile overlay.
+get_prop(system_server, vendor_universal7880_variant_prop)
