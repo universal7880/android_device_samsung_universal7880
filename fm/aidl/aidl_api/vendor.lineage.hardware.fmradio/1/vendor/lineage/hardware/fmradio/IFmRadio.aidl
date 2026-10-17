@@ -23,7 +23,7 @@
 package vendor.lineage.hardware.fmradio;
 @VintfStability
 interface IFmRadio {
-  boolean open();
+  boolean open(vendor.lineage.hardware.fmradio.IFmRadioClient client);
   boolean close();
   boolean powerUp(float mhz);
   boolean powerDown();
