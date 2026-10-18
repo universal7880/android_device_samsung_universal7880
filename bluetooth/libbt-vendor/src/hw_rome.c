@@ -1319,7 +1319,12 @@ int rome_set_baudrate_req(int fd)
         goto error;
     }
 
-    /* Change Local UART baudrate to high speed UART */
+    /* Match the controller settling time used by the Pie loader. */
+    struct timespec delay = { .tv_nsec = 20000000 };
+    while (nanosleep(&delay, &delay) < 0) {
+        if (errno != EINTR) return -1;
+    }
+    /* The baud setter drains the old-speed command before applying the new rate. */
     if (userial_vendor_set_baud(USERIAL_BAUD_3M) < 0) return -1;
 
     /* Flow on after changing local uart baudrate */
