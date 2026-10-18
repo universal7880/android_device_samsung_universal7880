@@ -170,17 +170,23 @@ void Ant::receive() {
             if (!result.isOk()) break;
         }
     }
-    if (!stopping_) {
-        failed_ = true;
-        sp<IAntCallbacks> callback;
-        {
-            std::lock_guard<std::mutex> lock(callback_mutex_);
-            callback = callback_;
-        }
-        if (callback) {
-            auto result = callback->onTransportDown("ANT controller transport failed");
-            if (!result.isOk()) ALOGW("Cannot notify the ANT client of transport failure");
-        }
+    if (!stopping_) transportFailed("ANT controller transport failed");
+}
+
+void Ant::transportFailed(const char* cause) {
+    if (failed_.exchange(true)) return;
+    // A write failure must also wake a reader waiting for the next controller packet.
+    const uint8_t stop = 1;
+    while (write(cancel_[1], &stop, 1) < 0 && errno == EINTR) {
+    }
+    sp<IAntCallbacks> callback;
+    {
+        std::lock_guard<std::mutex> lock(callback_mutex_);
+        callback = callback_;
+    }
+    if (callback) {
+        auto result = callback->onTransportDown(cause);
+        if (!result.isOk()) ALOGW("Cannot notify the ANT client of transport failure");
     }
 }
 
@@ -210,7 +216,7 @@ int32_t Ant::send(uint8_t type, const hidl_vec<uint8_t>& message) {
         used += count;
     }
     if (used == size) return 0;
-    failed_ = true;
+    transportFailed("ANT controller write failed");
     return -EIO;
 }
 
