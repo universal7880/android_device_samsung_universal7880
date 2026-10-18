@@ -1,6 +1,5 @@
-service vendor.bluetooth-universal7880 /vendor/bin/hw/android.hardware.bluetooth@1.1-service.universal7880
-    interface android.hardware.bluetooth@1.1::IBluetoothHci default
-    interface android.hardware.bluetooth@1.0::IBluetoothHci default
+service vendor.bluetooth-universal7880 /vendor/bin/hw/android.hardware.bluetooth-service.universal7880
+    interface aidl android.hardware.bluetooth.IBluetoothHci/default
     interface com.dsi.ant@1.0::IAnt default
     class hal
     capabilities BLOCK_SUSPEND NET_ADMIN SYS_NICE

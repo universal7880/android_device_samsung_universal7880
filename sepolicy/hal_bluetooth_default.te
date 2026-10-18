@@ -8,3 +8,6 @@ allow hal_bluetooth_default bluetooth_data_file:file create_file_perms;
 
 allow hal_bluetooth_default vendor_bluetooth_data_file:dir rw_dir_perms;
 allow hal_bluetooth_default vendor_bluetooth_data_file:file create_file_perms;
+
+# Stable AIDL Bluetooth service on /dev/binder.
+binder_use(hal_bluetooth_default)
