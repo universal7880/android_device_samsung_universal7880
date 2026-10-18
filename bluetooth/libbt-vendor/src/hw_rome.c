@@ -49,12 +49,13 @@ extern "C" {
 #include <termios.h>
 #include <string.h>
 #include <stdbool.h>
-#include "bt_hci_bdroid.h"
+#include <stdio.h>
+#include <unistd.h>
 #include "bt_vendor_qcom.h"
 #include "hci_uart.h"
 #include "hw_rome.h"
 
-#define BT_VERSION_FILEPATH "/data/misc/bluedroid/bt_fw_version.txt"
+#define BT_VERSION_FILEPATH "/data/vendor/bluetooth/bt_fw_version.txt"
 
 #ifdef __cplusplus
 }
@@ -63,6 +64,7 @@ extern "C" {
 #define RESERVED(p)  if(p) ALOGI( "%s: reserved param", __FUNCTION__);
 
 int read_vs_hci_event(int fd, unsigned char* buf, int size);
+int read_hci_event(int fd, unsigned char* buf, int size);
 
 /******************************************************************************
 **  Variables
@@ -101,19 +103,20 @@ int do_write(int fd, unsigned char *buf,int len)
     int write_len = len;
     do {
         ret = write(fd,buf+write_offset,write_len);
+        if (ret < 0 && errno == EINTR) continue;
         if (ret < 0)
         {
             ALOGE("%s, write failed ret = %d err = %s",__func__,ret,strerror(errno));
             return -1;
         } else if (ret == 0) {
             ALOGE("%s, write failed with ret 0 err = %s",__func__,strerror(errno));
-            return 0;
+            return -1;
         } else {
             if (ret < write_len) {
                 ALOGD("%s, Write pending,do write ret = %d err = %s",__func__,ret,
                        strerror(errno));
                 write_len = write_len - ret;
-                write_offset = ret;
+                write_offset += ret;
             } else {
                 ALOGV("Write successful");
                 break;
@@ -144,6 +147,8 @@ int get_vs_hci_event(unsigned char *rsp)
         goto failed;
     }
 
+    if (rsp[EVT_PLEN] < 2) return -1;
+
     ALOGI("%s: Event Opcode: 0x%x", __FUNCTION__, rsp[EVENTCODE_OFFSET]);
     ALOGI("%s: Parameter Length: 0x%x", __FUNCTION__, paramlen = rsp[EVT_PLEN]);
     ALOGI("%s: Command response: 0x%x", __FUNCTION__, rsp[CMD_RSP_OFFSET]);
@@ -153,11 +158,13 @@ int get_vs_hci_event(unsigned char *rsp)
     switch ( rsp[CMD_RSP_OFFSET] )
     {
         case EDL_CMD_REQ_RES_EVT:
+        if (paramlen < 2) return -1;
         ALOGI("%s: Command Request Response", __FUNCTION__);
         switch(rsp[RSP_TYPE_OFFSET])
         {
             case EDL_PATCH_VER_RES_EVT:
             case EDL_APP_VER_RES_EVT:
+                if (paramlen < 10 || (paramlen > 10 && paramlen < 14)) return -1;
                 productid = (unsigned int)(rsp[PATCH_PROD_ID_OFFSET +3] << 24 |
                                     rsp[PATCH_PROD_ID_OFFSET+2] << 16 |
                                     rsp[PATCH_PROD_ID_OFFSET+1] << 8 |
@@ -201,6 +208,7 @@ int get_vs_hci_event(unsigned char *rsp)
                 break;
             case EDL_TVL_DNLD_RES_EVT:
             case EDL_CMD_EXE_STATUS_EVT:
+                if (paramlen < 3) return -1;
                 switch (err = rsp[CMD_STATUS_OFFSET])
                     {
                     case HCI_CMD_SUCCESS:
@@ -229,6 +237,7 @@ int get_vs_hci_event(unsigned char *rsp)
                     }
             break;
             case HCI_VS_GET_BUILD_VER_EVT:
+                if (paramlen < 3 || rsp[5] > paramlen - 3 || rsp[5] >= sizeof(build_label)) return -1;
                 build_lbl_len = rsp[5];
                 memcpy (build_label, &rsp[6], build_lbl_len);
                 *(build_label+build_lbl_len) = '\0';
@@ -318,55 +327,9 @@ failed:
  */
 int read_vs_hci_event(int fd, unsigned char* buf, int size)
 {
-    int remain, r;
-    int count = 0, i;
-
-    if (size <= 0) {
-        ALOGE("Invalid size arguement!");
+    int count = read_hci_event(fd, buf, size);
+    if (count < 5 || buf[1] != VSEVENT_CODE || get_vs_hci_event(buf) != HCI_CMD_SUCCESS)
         return -1;
-    }
-
-    ALOGI("%s: Wait for HCI-Vendor Specfic Event from SOC", __FUNCTION__);
-
-    /* The first byte identifies the packet type. For HCI event packets, it
-     * should be 0x04, so we read until we get to the 0x04. */
-    /* It will keep reading until find 0x04 byte */
-    while (1) {
-            r = read(fd, buf, 1);
-            if (r <= 0)
-                    return -1;
-            if (buf[0] == 0x04)
-                    break;
-    }
-    count++;
-
-    /* The next two bytes are the event code and parameter total length. */
-    while (count < 3) {
-            r = read(fd, buf + count, 3 - count);
-            if ((r <= 0) || (buf[1] != 0xFF )) {
-                ALOGE("It is not VS event !! ret: %d, EVT: %d", r, buf[1]);
-                return -1;
-            }
-            count += r;
-    }
-
-    /* Now we read the parameters. */
-    if (buf[2] < (size - 3))
-            remain = buf[2];
-    else
-            remain = size - 3;
-
-    while ((count - 3) < remain) {
-            r = read(fd, buf + count, remain - (count - 3));
-            if (r <= 0)
-                    return -1;
-            count += r;
-    }
-
-     /* Check if the set patch command is successful or not */
-    if(get_vs_hci_event(buf) != HCI_CMD_SUCCESS)
-        return -1;
-
     return count;
 }
 
@@ -681,7 +644,7 @@ error:
 
 static int rome_download_rampatch(int fd)
 {
-    int c, tmp, size, index, ret = -1;
+    int c, size, index, ret = -1;
 
     ALOGI("%s: ", __FUNCTION__);
 
@@ -756,7 +719,6 @@ pdata_alloc_failed:
     free(phdr_buffer);
 phdr_alloc_failed:
     fclose(file);
-error:
     return ret;
 }
 
@@ -792,7 +754,7 @@ error:
 
 int rome_rampatch_reset(int fd)
 {
-    int size, err = 0, flags;
+    int size, err = 0;
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     struct timespec tm = { 0, 100*1000*1000 }; /* 100 ms */
 
@@ -823,120 +785,47 @@ error:
 /* This function is called with q_lock held and q is non-NULL */
 int rome_get_tlv_file(char *file_path)
 {
-    FILE * pFile;
-    long fileSize;
-    int readSize, err = 0, total_segment, remain_size, nvm_length, nvm_index, i;
-    unsigned short nvm_tag_len;
-    tlv_patch_info *ptlv_header;
-    tlv_nvm_hdr *nvm_ptr;
-    unsigned char data_buf[PRINT_BUF_SIZE]={0,};
-    unsigned char *nvm_byte_ptr;
+    FILE *input = fopen(file_path, "rb");
+    if (!input) return -1;
+    if (fseek(input, 0, SEEK_END)) { fclose(input); return -1; }
+    long size = ftell(input);
+    rewind(input);
+    if (size < 4 || size > 0x1000003) { fclose(input); return -1; }
+    unsigned char *data = malloc(size);
+    if (!data) { fclose(input); return -1; }
+    size_t count = fread(data, 1, size, input);
+    fclose(input);
+    if (count != (size_t)size) goto invalid;
 
-    ALOGI("File Open (%s)", file_path);
-    pFile = fopen ( file_path , "r" );
-    if (pFile==NULL) {;
-        ALOGE("%s File Open Fail", file_path);
-        return -1;
-    }
-
-    /* Get File Size */
-    fseek (pFile , 0 , SEEK_END);
-    fileSize = ftell (pFile);
-    rewind (pFile);
-
-    pdata_buffer = (unsigned char*) malloc (sizeof(char)*fileSize);
-    if (pdata_buffer == NULL) {
-        ALOGE("Allocated Memory failed");
-        fclose (pFile);
-        return -1;
-    }
-
-    /* Copy file into allocated buffer */
-    readSize = fread (pdata_buffer,1,fileSize,pFile);
-
-    /* File Close */
-    fclose (pFile);
-
-    if (readSize != fileSize) {
-        ALOGE("Read file size(%d) not matched with actual file size (%ld bytes)",readSize,fileSize);
-        return -1;
-    }
-
-    ptlv_header = (tlv_patch_info *) pdata_buffer;
-
-    /* To handle different event between rampatch and NVM */
-    gTlv_type = ptlv_header->tlv_type;
-    gTlv_dwndCfg = ptlv_header->tlv.patch.dwnd_cfg;
-
-    if(ptlv_header->tlv_type == TLV_TYPE_PATCH){
-        ALOGI("====================================================\n");
-        ALOGI("TLV Type\t\t\t : 0x%x\n", ptlv_header->tlv_type);
-        ALOGI("Length\t\t\t : %d bytes\n", (ptlv_header->tlv_length1) |
-                                                    (ptlv_header->tlv_length2 << 8) |
-                                                    (ptlv_header->tlv_length3 << 16));
-        ALOGI("Total Length\t\t\t : %d bytes\n", ptlv_header->tlv.patch.tlv_data_len);
-        ALOGI("Patch Data Length\t\t\t : %d bytes\n",ptlv_header->tlv.patch.tlv_patch_data_len);
-        ALOGI("Signing Format Version\t : 0x%x\n", ptlv_header->tlv.patch.sign_ver);
-        ALOGI("Signature Algorithm\t\t : 0x%x\n", ptlv_header->tlv.patch.sign_algorithm);
-        ALOGI("Event Handling\t\t\t : 0x%x\n", ptlv_header->tlv.patch.dwnd_cfg);
-        ALOGI("Reserved\t\t\t : 0x%x\n", ptlv_header->tlv.patch.reserved1);
-        ALOGI("Product ID\t\t\t : 0x%04x\n", ptlv_header->tlv.patch.prod_id);
-        ALOGI("Rom Build Version\t\t : 0x%04x\n", ptlv_header->tlv.patch.build_ver);
-        ALOGI("Patch Version\t\t : 0x%04x\n", ptlv_header->tlv.patch.patch_ver);
-        ALOGI("Reserved\t\t\t : 0x%x\n", ptlv_header->tlv.patch.reserved2);
-        ALOGI("Patch Entry Address\t\t : 0x%x\n", (ptlv_header->tlv.patch.patch_entry_addr));
-        ALOGI("====================================================");
-
-    } else if(ptlv_header->tlv_type == TLV_TYPE_NVM) {
-        ALOGI("====================================================");
-        ALOGI("TLV Type\t\t\t : 0x%x", ptlv_header->tlv_type);
-        ALOGI("Length\t\t\t : %d bytes",  nvm_length = (ptlv_header->tlv_length1) |
-                                                    (ptlv_header->tlv_length2 << 8) |
-                                                    (ptlv_header->tlv_length3 << 16));
-
-        if(nvm_length <= 0)
-            return readSize;
-
-       for(nvm_byte_ptr=(unsigned char *)(nvm_ptr = &(ptlv_header->tlv.nvm)), nvm_index=0;
-             nvm_index < nvm_length ; nvm_ptr = (tlv_nvm_hdr *) nvm_byte_ptr)
-       {
-            ALOGI("TAG ID\t\t\t : %d", nvm_ptr->tag_id);
-            ALOGI("TAG Length\t\t\t : %d", nvm_tag_len = nvm_ptr->tag_len);
-            ALOGI("TAG Pointer\t\t\t : %d", nvm_ptr->tag_ptr);
-            ALOGI("TAG Extended Flag\t\t : %d", nvm_ptr->tag_ex_flag);
-
-            /* Increase nvm_index to NVM data */
-            nvm_index+=sizeof(tlv_nvm_hdr);
-            nvm_byte_ptr+=sizeof(tlv_nvm_hdr);
-
-            /* Write BD Address */
-            if(nvm_ptr->tag_id == TAG_NUM_2){
-                memcpy(nvm_byte_ptr, q->bdaddr, 6);
-                ALOGI("BD Address: %.02x:%.02x:%.02x:%.02x:%.02x:%.02x",
-                    *nvm_byte_ptr, *(nvm_byte_ptr+1), *(nvm_byte_ptr+2),
-                    *(nvm_byte_ptr+3), *(nvm_byte_ptr+4), *(nvm_byte_ptr+5));
+    size_t length = data[1] | (data[2] << 8) | (data[3] << 16);
+    if (length != count - 4) goto invalid;
+    gTlv_type = data[0];
+    if (gTlv_type == TLV_TYPE_PATCH) {
+        if (length < sizeof(tlv_patch_hdr)) goto invalid;
+        tlv_patch_hdr *patch = (tlv_patch_hdr *)(data + 4);
+        gTlv_dwndCfg = patch->dwnd_cfg;
+    } else if (gTlv_type == TLV_TYPE_NVM) {
+        for (size_t offset = 4; offset < count;) {
+            if (count - offset < sizeof(tlv_nvm_hdr)) goto invalid;
+            tlv_nvm_hdr *tag = (tlv_nvm_hdr *)(data + offset);
+            offset += sizeof(*tag);
+            if (tag->tag_len > count - offset) goto invalid;
+            if (tag->tag_id == TAG_NUM_2) {
+                if (tag->tag_len != sizeof(q->bdaddr)) goto invalid;
+                memcpy(data + offset, q->bdaddr, sizeof(q->bdaddr));
             }
-
-            for(i =0;(i<nvm_ptr->tag_len && (i*3 + 2) <PRINT_BUF_SIZE);i++)
-                snprintf((char *) data_buf, PRINT_BUF_SIZE, "%s%.02x ", (char *)data_buf, *(nvm_byte_ptr + i));
-
-            ALOGI("TAG Data\t\t\t : %s", data_buf);
-
-            /* Clear buffer */
-            memset(data_buf, 0x0, PRINT_BUF_SIZE);
-
-            /* increased by tag_len */
-            nvm_index+=nvm_ptr->tag_len;
-            nvm_byte_ptr +=nvm_ptr->tag_len;
+            offset += tag->tag_len;
         }
-
-        ALOGI("====================================================");
-
     } else {
-        ALOGI("TLV Header type is unknown (%d) ", ptlv_header->tlv_type);
+        goto invalid;
     }
+    pdata_buffer = data;
+    return (int)size;
 
-    return readSize;
+invalid:
+    ALOGE("Invalid firmware TLV: %s", file_path);
+    free(data);
+    return -1;
 }
 
 int rome_tlv_dnld_segment(int fd, int index, int seg_size, unsigned char wait_cc_evt)
@@ -1061,7 +950,6 @@ int rome_download_tlv_file(int fd)
         free (pdata_buffer);
         pdata_buffer = NULL;
     }
-nvm_download:
     if(!nvm_file_path) {
         ALOGI("%s: nvm file is not available", __FUNCTION__);
         err = 0; // in case of nvm/rampatch is not available
@@ -1069,15 +957,17 @@ nvm_download:
     }
 
    /* NVM TLV file Downloading */
-    if((tlv_size = rome_get_tlv_file(nvm_file_path)) <= 0)
+    if((tlv_size = rome_get_tlv_file(nvm_file_path)) <= 0) {
+        err = -1;
         goto error;
+    }
 
     if((err =rome_tlv_dnld_req(fd, tlv_size)) <0 )
         goto error;
 
 error:
-    if (pdata_buffer != NULL)
-        free (pdata_buffer);
+    free(pdata_buffer);
+    pdata_buffer = NULL;
 
     return err;
 }
@@ -1085,7 +975,6 @@ error:
 int rome_1_0_nvm_tag_dnld(int fd)
 {
     int i, size, err = 0;
-    unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
 
 #if (NVM_VERSION >= ROME_1_0_100019)
@@ -1416,11 +1305,11 @@ error:
 
 int rome_set_baudrate_req(int fd)
 {
+    int flags = 0;
     int size, err = 0;
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     memset(cmd, 0x0, HCI_MAX_CMD_SIZE);
 
@@ -1487,11 +1376,11 @@ error:
 
 int rome_hci_reset_req(int fd)
 {
+    int flags = 0;
     int size, err = 0;
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     ALOGI("%s: HCI RESET ", __FUNCTION__);
 
@@ -1556,7 +1445,6 @@ int rome_hci_reset(int fd)
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     ALOGI("%s: HCI RESET ", __FUNCTION__);
 
@@ -1594,7 +1482,6 @@ int rome_wipower_current_charging_status_req(int fd)
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     memset(cmd, 0x0, HCI_MAX_CMD_SIZE);
 
@@ -1642,7 +1529,6 @@ int addon_feature_req(int fd)
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     memset(cmd, 0x0, HCI_MAX_CMD_SIZE);
 
@@ -1705,7 +1591,6 @@ int rome_wipower_forward_handoff_req(int fd)
     unsigned char cmd[HCI_MAX_CMD_SIZE];
     unsigned char rsp[HCI_MAX_EVENT_SIZE];
     hci_command_hdr *cmd_hdr;
-    int flags;
 
     memset(cmd, 0x0, HCI_MAX_CMD_SIZE);
 
@@ -1797,7 +1682,7 @@ static int disable_internal_ldo(int fd)
 
 int rome_soc_init(int fd, char *bdaddr)
 {
-    int err = -1, size = 0;
+    int err = -1;
     dnld_fd = fd;
     ALOGI(" %s ", __FUNCTION__);
     RESERVED(bdaddr);
@@ -1843,7 +1728,6 @@ int rome_soc_init(int fd, char *bdaddr)
                 ALOGI("%s: ATTACH RAMPTACH complete", __FUNCTION__);
 
                 /* Send Reset */
-                size = (HCI_CMD_IND + HCI_COMMAND_HDR_SIZE + EDL_PATCH_CMD_LEN);
                 err = rome_rampatch_reset(fd);
                 if ( err < 0 ) {
                     ALOGE("Failed to RESET after RAMPATCH upgrade!");

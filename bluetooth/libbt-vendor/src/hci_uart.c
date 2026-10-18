@@ -31,6 +31,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
+#include <poll.h>
+#include <time.h>
+#include <unistd.h>
 #include "bt_vendor_qcom.h"
 #include "hci_uart.h"
 #include <string.h>
@@ -277,7 +280,7 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
 
     ALOGI("userial vendor open: opening %s", vnd_userial.port_name);
 
-    if ((vnd_userial.fd = open(vnd_userial.port_name, O_RDWR|O_NOCTTY)) == -1)
+    if ((vnd_userial.fd = open(vnd_userial.port_name, O_RDWR|O_NOCTTY|O_CLOEXEC)) == -1)
     {
         ALOGE("userial vendor open: unable to open %s: %s(%d)", vnd_userial.port_name,
             strerror(errno), errno);
@@ -286,19 +289,20 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
 
     tcflush(vnd_userial.fd, TCIOFLUSH);
 
-    tcgetattr(vnd_userial.fd, &vnd_userial.termios);
+    if (tcgetattr(vnd_userial.fd, &vnd_userial.termios) < 0) goto fail;
     cfmakeraw(&vnd_userial.termios);
 
     /* Set UART Control Modes */
     vnd_userial.termios.c_cflag |= CLOCAL;
-    vnd_userial.termios.c_cflag |= (CRTSCTS | stop_bits);
+    vnd_userial.termios.c_cflag &= ~(CSIZE | PARENB | PARODD | CSTOPB);
+    vnd_userial.termios.c_cflag |= CRTSCTS | data_bits | parity | stop_bits;
 
-    tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+    if (tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios) < 0) goto fail;
 
     /* set input/output baudrate */
     cfsetospeed(&vnd_userial.termios, baud);
     cfsetispeed(&vnd_userial.termios, baud);
-    tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+    if (tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios) < 0) goto fail;
 
     tcflush(vnd_userial.fd, TCIOFLUSH);
 
@@ -309,6 +313,10 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
     ALOGI("device fd = %d open", vnd_userial.fd);
 
     return vnd_userial.fd;
+
+fail:
+    userial_vendor_close();
+    return -1;
 }
 
 /*******************************************************************************
@@ -464,14 +472,12 @@ int userial_set_port(char *p_conf_name, char *p_conf_value, int param)
 *******************************************************************************/
 int userial_vendor_set_hw_flow_control(userial_vendor_ioctl_op_t op)
 {
-    int ret = 0;
-
-    tcgetattr(vnd_userial.fd, &vnd_userial.termios);
+    if (tcgetattr(vnd_userial.fd, &vnd_userial.termios) < 0) return -1;
     switch(op)
     {
         case USERIAL_OP_FLOW_ON:
             ALOGI("## %s: UART HW Flow Control On ", __FUNCTION__);
-            vnd_userial.termios.c_cflag |= 0x80000000;
+            vnd_userial.termios.c_cflag |= CRTSCTS;
             break;
 
         case USERIAL_OP_FLOW_OFF:
@@ -497,47 +503,41 @@ int userial_vendor_set_hw_flow_control(userial_vendor_ioctl_op_t op)
 ** Returns         int: size to read
 **
 *******************************************************************************/
-int read_hci_event(int fd, unsigned char* buf, int size)
+/* Bound the whole event, including stray UART bytes, to one startup deadline. */
+static long long monotonic_ms(void)
 {
-    int remain, r;
-    int count = 0;
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (long long)now.tv_sec * 1000 + now.tv_nsec / 1000000;
+}
 
-    if (size <= 0) {
-        ALOGE("Invalid size arguement!");
+static int read_before(int fd, unsigned char *buf, int size, long long deadline)
+{
+    int used = 0;
+    while (used < size) {
+        long long remaining = deadline - monotonic_ms();
+        if (remaining <= 0) return -1;
+        struct pollfd pfd = { .fd = fd, .events = POLLIN };
+        int ready = poll(&pfd, 1, (int)remaining);
+        if (ready < 0 && errno == EINTR) continue;
+        if (ready <= 0 || !(pfd.revents & POLLIN)) return -1;
+        ssize_t n = read(fd, buf + used, size - used);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0) return -1;
+        used += n;
+    }
+    return used;
+}
+
+int read_hci_event(int fd, unsigned char *buf, int size)
+{
+    if (size < 3) return -1;
+    long long deadline = monotonic_ms() + 3000;
+    do {
+        if (read_before(fd, buf, 1, deadline) < 0) return -1;
+    } while (buf[0] != 4);
+    if (read_before(fd, buf + 1, 2, deadline) < 0 || buf[2] > size - 3)
         return -1;
-    }
-
-    ALOGI("%s: Wait for Command Compete Event from SOC", __FUNCTION__);
-
-    /* The first byte identifies the packet type. For HCI event packets, it
-     * should be 0x04, so we read until we get to the 0x04. */
-    while (1) {
-            r = read(fd, buf, 1);
-            if (r <= 0)
-                    return -1;
-            if (buf[0] == 0x04)
-                    break;
-    }
-    count++;
-
-    /* The next two bytes are the event code and parameter total length. */
-    while (count < 3) {
-            r = read(fd, buf + count, 3 - count);
-            if (r <= 0)
-                return -1;
-            count += r;
-    }
-    /* Now we read the parameters. */
-    if (buf[2] < (size - 3))
-            remain = buf[2];
-    else
-            remain = size - 3;
-
-    while ((count - 3) < remain) {
-            r = read(fd, buf + count, remain - (count - 3));
-            if (r <= 0)
-                    return -1;
-            count += r;
-    }
-    return count;
+    if (read_before(fd, buf + 3, buf[2], deadline) < 0) return -1;
+    return buf[2] + 3;
 }
