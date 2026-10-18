@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "ant_controller.h"
+#include "bluetooth_controller.h"
 #include "bt_vendor_qcom.h"
 #include "h4_transport.h"
 #include "hci_uart.h"
@@ -83,7 +84,7 @@ static int init(const bt_vendor_callbacks_t *cb, unsigned char *address) {
     if (!cb || cb->size < sizeof(*cb) || !address) return -1;
     pthread_mutex_lock(&controller_lock);
     int result = -1;
-    if (!callbacks) {
+    if (!callbacks && !bt_powered) {
         if (!powered) {
             set_address(address);
             userial_vendor_init();
@@ -151,6 +152,34 @@ __attribute__((visibility("default"))) int ant_controller_acquire(const uint8_t 
 done:
     pthread_mutex_unlock(&controller_lock);
     return fd;
+}
+
+__attribute__((visibility("default"))) int bluetooth_controller_acquire(const uint8_t address[6]) {
+    if (!address) return -1;
+    pthread_mutex_lock(&controller_lock);
+    int fd = -1;
+    if (bt_powered || configured || callbacks) goto done;
+    if (!powered) {
+        set_address(address);
+        userial_vendor_init();
+        if (power_control(false) || power_control(true)) goto done;
+    }
+    fd = start_transport(false);
+    if (fd >= 0)
+        bt_powered = configured = true;
+    else
+        stop_if_unused();
+done:
+    pthread_mutex_unlock(&controller_lock);
+    return fd;
+}
+
+__attribute__((visibility("default"))) void bluetooth_controller_release(void) {
+    pthread_mutex_lock(&controller_lock);
+    close_bluetooth();
+    bt_powered = false;
+    stop_if_unused();
+    pthread_mutex_unlock(&controller_lock);
 }
 
 __attribute__((visibility("default"))) void ant_controller_release(void) {
