@@ -900,9 +900,10 @@ int rome_tlv_dnld_req(int fd, int tlv_size)
         int size = tlv_size - offset;
         if (size > MAX_SIZE_PER_TLV_SEGMENT) size = MAX_SIZE_PER_TLV_SEGMENT;
         bool last = offset + size == tlv_size;
-        /* The last segment gets a vendor status, without Command Complete. */
+        /* Only the final patch segment omits Command Complete; NVM never does. */
         wait_vsc_evt = last || !skip_segment_events;
-        unsigned char wait_cc_evt = !last && !skip_segment_events;
+        unsigned char wait_cc_evt = gTlv_type == TLV_TYPE_NVM ||
+                                    (!last && !skip_segment_events);
         err = rome_tlv_dnld_segment(fd, index, size, wait_cc_evt);
         if (err < 0) break;
         offset += size;
