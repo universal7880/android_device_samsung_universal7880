@@ -191,3 +191,5 @@
 /(vendor|system/vendor)/bin/hw/vendor\.lineage\.hardware\.fmradio-service\.si47xx    u:object_r:hal_fmradio_default_exec:s0
 
 /data/vendor/bluetooth(/.*)?    u:object_r:vendor_bluetooth_data_file:s0
+
+/vendor/bin/hw/android\.hardware\.bluetooth@1\.1-service\.universal7880 u:object_r:hal_bluetooth_default_exec:s0

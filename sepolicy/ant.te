@@ -1,0 +1,8 @@
+# ANT shares the Bluetooth controller process, but has a separate service label.
+type hal_dsi_ant_hwservice, hwservice_manager_type, protected_hwservice;
+add_hwservice(hal_bluetooth_default, hal_dsi_ant_hwservice)
+
+# The source-built AntHalService runs under the platform system UID.
+allow system_app hal_dsi_ant_hwservice:hwservice_manager find;
+binder_call(system_app, hal_bluetooth_default)
+binder_call(hal_bluetooth_default, system_app)
