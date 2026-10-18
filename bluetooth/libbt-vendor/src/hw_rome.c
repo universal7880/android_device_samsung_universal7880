@@ -42,6 +42,7 @@ extern "C" {
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <dirent.h>
 #include <ctype.h>
 #include <cutils/properties.h>
@@ -96,34 +97,40 @@ int dnld_fd = -1;
 *****************************************************************************/
 int userial_vendor_set_hw_flow_control(userial_vendor_ioctl_op_t op);
 
-int do_write(int fd, unsigned char *buf,int len)
+static long long command_time_ms(void)
 {
-    int ret = 0;
-    int write_offset = 0;
-    int write_len = len;
-    do {
-        ret = write(fd,buf+write_offset,write_len);
-        if (ret < 0 && errno == EINTR) continue;
-        if (ret < 0)
-        {
-            ALOGE("%s, write failed ret = %d err = %s",__func__,ret,strerror(errno));
-            return -1;
-        } else if (ret == 0) {
-            ALOGE("%s, write failed with ret 0 err = %s",__func__,strerror(errno));
-            return -1;
-        } else {
-            if (ret < write_len) {
-                ALOGD("%s, Write pending,do write ret = %d err = %s",__func__,ret,
-                       strerror(errno));
-                write_len = write_len - ret;
-                write_offset += ret;
-            } else {
-                ALOGV("Write successful");
-                break;
-            }
-        }
-    } while(1);
-    return len;
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (long long)now.tv_sec * 1000 + now.tv_nsec / 1000000;
+}
+
+int do_write(int fd, unsigned char *buf, int len)
+{
+    if (len <= 0) return -1;
+    int flags = fcntl(fd, F_GETFL);
+    if (flags < 0 || fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) return -1;
+
+    int used = 0;
+    int result = -1;
+    long long deadline = command_time_ms() + 3000;
+    while (used < len) {
+        long long remaining = deadline - command_time_ms();
+        if (remaining <= 0) break;
+        struct pollfd pfd = { .fd = fd, .events = POLLOUT };
+        int ready = poll(&pfd, 1, (int)remaining);
+        if (ready < 0 && errno == EINTR) continue;
+        if (ready <= 0 || (pfd.revents & (POLLERR | POLLHUP | POLLNVAL))) break;
+        if (!(pfd.revents & POLLOUT)) continue;
+        ssize_t written = write(fd, buf + used, len - used);
+        if (written < 0 && (errno == EINTR || errno == EAGAIN)) continue;
+        if (written <= 0) break;
+        used += written;
+    }
+    if (used == len) result = len;
+    else ALOGE("%s: UART command write failed after %d/%d bytes", __func__, used, len);
+    /* The H4 transport configures its own nonblocking I/O after startup. */
+    if (fcntl(fd, F_SETFL, flags) < 0) return -1;
+    return result;
 }
 
 int get_vs_hci_event(unsigned char *rsp)
