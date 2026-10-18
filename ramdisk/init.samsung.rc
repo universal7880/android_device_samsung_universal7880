@@ -112,6 +112,7 @@ on post-fs-data
     # create basic filesystem structure
     mkdir /data/log 0775 system log
     mkdir /data/log/bt 0770 bluetooth bluetooth
+    mkdir /data/vendor/bluetooth 0770 bluetooth bluetooth
 
     #lpnetConfig AppSync
     mkdir /data/misc/lpnet 0700 system system

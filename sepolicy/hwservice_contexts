@@ -1,2 +1,1 @@
-com.qualcomm.qti.ant::IAntHci                               u:object_r:hal_bluetooth_hwservice:s0
 vendor.samsung.hardware.camera.provider::ISecCameraProvider u:object_r:hal_camera_hwservice:s0
