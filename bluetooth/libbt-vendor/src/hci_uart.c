@@ -354,21 +354,21 @@ void userial_vendor_close(void)
 **
 ** Description     Set new baud rate
 **
-** Returns         None
+** Returns         0 on success, -1 on failure
 **
 *******************************************************************************/
-void userial_vendor_set_baud(uint8_t userial_baud)
+int userial_vendor_set_baud(uint8_t userial_baud)
 {
     uint32_t tcio_baud;
 
     VNDUSERIALDBG("## userial_vendor_set_baud: %d", userial_baud);
 
-    userial_to_tcio_baud(userial_baud, &tcio_baud);
-
-    cfsetospeed(&vnd_userial.termios, tcio_baud);
-    cfsetispeed(&vnd_userial.termios, tcio_baud);
-    tcsetattr(vnd_userial.fd, TCSADRAIN, &vnd_userial.termios); /* don't change speed until last write done */
-//    tcflush(vnd_userial.fd, TCIOFLUSH);
+    if (!userial_to_tcio_baud(userial_baud, &tcio_baud)) return -1;
+    if (cfsetospeed(&vnd_userial.termios, tcio_baud) < 0 ||
+        cfsetispeed(&vnd_userial.termios, tcio_baud) < 0)
+        return -1;
+    /* Drain the old-speed command before switching the host UART. */
+    return tcsetattr(vnd_userial.fd, TCSADRAIN, &vnd_userial.termios);
 }
 
 /*******************************************************************************
@@ -482,15 +482,13 @@ int userial_vendor_set_hw_flow_control(userial_vendor_ioctl_op_t op)
 
         case USERIAL_OP_FLOW_OFF:
             ALOGI("## %s: UART HW Flow Control Off ", __FUNCTION__);
-            vnd_userial.termios.c_cflag &= 0x7FFFFFFF;
+            vnd_userial.termios.c_cflag &= ~CRTSCTS;
             break;
 
         default:
             break;
     }
-    tcsetattr(vnd_userial.fd, 0, &vnd_userial.termios);
-
-    return 0;
+    return tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
 }
 
 
