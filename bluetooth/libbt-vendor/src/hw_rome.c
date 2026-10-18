@@ -147,10 +147,11 @@ int get_vs_hci_event(unsigned char *rsp)
         goto failed;
     }
 
-    if (rsp[EVT_PLEN] < 2) return -1;
+    paramlen = rsp[EVT_PLEN];
+    if (paramlen < 2) return -1;
 
     ALOGI("%s: Event Opcode: 0x%x", __FUNCTION__, rsp[EVENTCODE_OFFSET]);
-    ALOGI("%s: Parameter Length: 0x%x", __FUNCTION__, paramlen = rsp[EVT_PLEN]);
+    ALOGI("%s: Parameter Length: 0x%x", __FUNCTION__, paramlen);
     ALOGI("%s: Command response: 0x%x", __FUNCTION__, rsp[CMD_RSP_OFFSET]);
     ALOGI("%s: Response type   : 0x%x", __FUNCTION__, rsp[RSP_TYPE_OFFSET]);
 
@@ -900,7 +901,7 @@ int rome_tlv_dnld_req(int fd, int tlv_size)
            case ROME_SKIP_EVT_CC:
            default:
               ALOGE("Unsupported Event handling: %d", gTlv_dwndCfg);
-              break;
+              return -EINVAL;
        }
     } else {
         /* This is for the NV items.
@@ -930,7 +931,9 @@ int rome_tlv_dnld_req(int fd, int tlv_size)
     }
 
 error:
-    if(patch_dnld_pending) patch_dnld_pending = FALSE;
+    patch_dnld_pending = FALSE;
+    /* Event suppression applies only to download segments, not later commands. */
+    wait_vsc_evt = TRUE;
     return err;
 }
 
@@ -1323,7 +1326,7 @@ int rome_set_baudrate_req(int fd)
     size = (HCI_CMD_IND + HCI_COMMAND_HDR_SIZE + VSC_SET_BAUDRATE_REQ_LEN);
 
     /* HW flow off */
-    userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_OFF);
+    if (userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_OFF) < 0) return -1;
     tcflush(fd, TCIOFLUSH);
 
     /* Flow off during baudrate change */
@@ -1341,7 +1344,7 @@ int rome_set_baudrate_req(int fd)
     }
 
     /* Change Local UART baudrate to high speed UART */
-    userial_vendor_set_baud(USERIAL_BAUD_3M);
+    if (userial_vendor_set_baud(USERIAL_BAUD_3M) < 0) return -1;
 
     /* Flow on after changing local uart baudrate */
     if ((err = userial_vendor_ioctl(USERIAL_OP_FLOW_ON , &flags)) < 0)
@@ -1351,7 +1354,7 @@ int rome_set_baudrate_req(int fd)
     }
 
     /* HW flow on */
-    userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_ON);
+    if (userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_ON) < 0) return -1;
 
     /* Check for response from the Controller */
     if ((err =read_vs_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE)) < 0) {
@@ -1395,7 +1398,7 @@ int rome_hci_reset_req(int fd)
     size = (HCI_CMD_IND + HCI_COMMAND_HDR_SIZE);
 
     /* HW flow off */
-    userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_OFF);
+    if (userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_OFF) < 0) return -1;
 
 
     /* Flow off during baudrate change */
@@ -1414,7 +1417,7 @@ int rome_hci_reset_req(int fd)
     }
 
     /* Change Local UART baudrate to high speed UART */
-    userial_vendor_set_baud(USERIAL_BAUD_3M);
+    if (userial_vendor_set_baud(USERIAL_BAUD_3M) < 0) return -1;
 
     /* Flow on after changing local uart baudrate */
     if ((err = userial_vendor_ioctl(USERIAL_OP_FLOW_ON , &flags)) < 0)
@@ -1424,7 +1427,7 @@ int rome_hci_reset_req(int fd)
     }
 
     /* HW flow on */
-    userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_ON);
+    if (userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_ON) < 0) return -1;
 
     /* Wait for command complete event */
     err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
@@ -1466,8 +1469,11 @@ int rome_hci_reset(int fd)
 
     /* Wait for command complete event */
     err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
-    if ( err < 0) {
-        ALOGE("%s: Failed to set patch info on Controller", __FUNCTION__);
+    if (err != 7 || rsp[0] != HCI_EVENT_PKT || rsp[1] != EVT_CMD_COMPLETE ||
+        rsp[2] != 4 || rsp[4] != (HCI_RESET & 0xff) || rsp[5] != (HCI_RESET >> 8) ||
+        rsp[6] != HCI_CMD_SUCCESS) {
+        err = -EIO;
+        ALOGE("%s: HCI Reset did not complete successfully", __FUNCTION__);
         goto error;
     }
 
@@ -1684,6 +1690,8 @@ int rome_soc_init(int fd, char *bdaddr)
 {
     int err = -1;
     dnld_fd = fd;
+    wait_vsc_evt = TRUE;
+    chipset_ver = 0;
     ALOGI(" %s ", __FUNCTION__);
     RESERVED(bdaddr);
 

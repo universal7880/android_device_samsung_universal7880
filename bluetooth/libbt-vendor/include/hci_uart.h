@@ -204,10 +204,10 @@ void userial_vendor_close(void);
 **
 ** Description     Set new baud rate
 **
-** Returns         None
+** Returns         0 on success, -1 on failure
 **
 *******************************************************************************/
-void userial_vendor_set_baud(uint8_t userial_baud);
+int userial_vendor_set_baud(uint8_t userial_baud);
 
 /*******************************************************************************
 **
