@@ -48,3 +48,22 @@ cc_test {
     ],
     test_suites: ["device-tests"],
 }
+
+cc_test {
+    name: "universal7880_bluetooth_multiplex_test",
+    vendor: true,
+    gtest: false,
+    srcs: [
+        "src/h4_transport.cpp",
+        "tests/h4_multiplex_test.cpp",
+    ],
+    local_include_dirs: ["include"],
+    shared_libs: ["liblog"],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+    ],
+    test_suites: ["device-tests"],
+}
