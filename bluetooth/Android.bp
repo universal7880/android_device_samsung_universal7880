@@ -44,3 +44,31 @@ cc_binary {
         "-Werror",
     ],
 }
+
+cc_test {
+    name: "universal7880_ant_transport_test",
+    defaults: ["hidl_defaults"],
+    vendor: true,
+    gtest: false,
+    srcs: [
+        "ant/Ant.cpp",
+        "tests/ant_test.cpp",
+    ],
+    include_dirs: [
+        "device/samsung/universal7880-common/bluetooth/libbt-vendor/include",
+        "hardware/interfaces/bluetooth/1.0/default",
+    ],
+    shared_libs: [
+        "com.dsi.ant@1.0",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+    ],
+    test_suites: ["device-tests"],
+}
