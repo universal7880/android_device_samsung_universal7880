@@ -133,6 +133,18 @@ int do_write(int fd, unsigned char *buf, int len)
     return result;
 }
 
+static int read_command_complete(int fd, unsigned char *rsp, const unsigned char *cmd)
+{
+    int size = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    if (size != 7 || rsp[0] != HCI_EVENT_PKT || rsp[1] != EVT_CMD_COMPLETE ||
+        rsp[2] != 4 || rsp[4] != cmd[1] || rsp[5] != cmd[2] ||
+        rsp[6] != HCI_CMD_SUCCESS) {
+        ALOGE("Unexpected or failed completion for HCI opcode 0x%02x%02x", cmd[2], cmd[1]);
+        return -EIO;
+    }
+    return size;
+}
+
 int get_vs_hci_event(unsigned char *rsp)
 {
     int err = 0;
@@ -173,7 +185,7 @@ int get_vs_hci_event(unsigned char *rsp)
             case EDL_PATCH_VER_RES_EVT:
             case EDL_APP_VER_RES_EVT:
                 if (paramlen < 10 || (paramlen > 10 && paramlen < 14)) return -1;
-                productid = (unsigned int)(rsp[PATCH_PROD_ID_OFFSET +3] << 24 |
+                productid = (unsigned int)((unsigned int)rsp[PATCH_PROD_ID_OFFSET +3] << 24 |
                                     rsp[PATCH_PROD_ID_OFFSET+2] << 16 |
                                     rsp[PATCH_PROD_ID_OFFSET+1] << 8 |
                                     rsp[PATCH_PROD_ID_OFFSET]  );
@@ -192,7 +204,7 @@ int get_vs_hci_event(unsigned char *rsp)
                 /* In case rome 1.0/1.1, there is no SOC ID version available */
                 if (paramlen - 10)
                 {
-                    soc_id = (unsigned int)(rsp[PATCH_SOC_VER_OFFSET +3] << 24 |
+                    soc_id = (unsigned int)((unsigned int)rsp[PATCH_SOC_VER_OFFSET +3] << 24 |
                                      rsp[PATCH_SOC_VER_OFFSET+2] << 16 |
                                      rsp[PATCH_SOC_VER_OFFSET+1] << 8 |
                                      rsp[PATCH_SOC_VER_OFFSET]  );
@@ -211,7 +223,7 @@ int get_vs_hci_event(unsigned char *rsp)
                 /* Rome Chipset Version can be decided by Patch version and SOC version,
                 Upper 2 bytes will be used for Patch version and Lower 2 bytes will be
                 used for SOC as combination for BT host driver */
-                chipset_ver = (buildversion << 16) |(soc_id & 0x0000ffff);
+                chipset_ver = ((unsigned int)buildversion << 16) |(soc_id & 0x0000ffff);
 
                 break;
             case EDL_TVL_DNLD_RES_EVT:
@@ -258,6 +270,9 @@ int get_vs_hci_event(unsigned char *rsp)
                     ALOGI("Failed to dump  FW SU build info. Errno:%d", errno);
                 }
             break;
+            default:
+                err = -1;
+                break;
         }
         break;
 
@@ -270,7 +285,7 @@ int get_vs_hci_event(unsigned char *rsp)
             if (rsp[BAUDRATE_RSP_STATUS_OFFSET] != BAUDRATE_CHANGE_SUCCESS)
             {
                 ALOGE("%s: Set Baudrate request failed - 0x%x", __FUNCTION__,
-                    rsp[CMD_STATUS_OFFSET]);
+                    rsp[BAUDRATE_RSP_STATUS_OFFSET]);
                 err = -1;
             }
             break;
@@ -304,21 +319,6 @@ int get_vs_hci_event(unsigned char *rsp)
                property_set("persist.bluetooth.a4wp", "true");
             }
             break;
-        case HCI_VS_STRAY_EVT:
-            /* WAR to handle stray Power Apply EVT during patch download */
-            ALOGD("%s: Stray HCI VS EVENT", __FUNCTION__);
-            if (patch_dnld_pending && dnld_fd != -1)
-            {
-                unsigned char rsp[HCI_MAX_EVENT_SIZE];
-                memset(rsp, 0x00, HCI_MAX_EVENT_SIZE);
-                read_vs_hci_event(dnld_fd, rsp, HCI_MAX_EVENT_SIZE);
-            }
-            else
-            {
-                ALOGE("%s: Not a valid status!!!", __FUNCTION__);
-                err = -1;
-            }
-            break;
         default:
             ALOGE("%s: Not a valid status!!!", __FUNCTION__);
             err = -1;
@@ -335,10 +335,15 @@ failed:
  */
 int read_vs_hci_event(int fd, unsigned char* buf, int size)
 {
-    int count = read_hci_event(fd, buf, size);
-    if (count < 5 || buf[1] != VSEVENT_CODE || get_vs_hci_event(buf) != HCI_CMD_SUCCESS)
-        return -1;
-    return count;
+    /* Ignore a bounded number of Power Apply events during patch download. */
+    for (int skipped = 0; skipped < 8; ++skipped) {
+        int count = read_hci_event(fd, buf, size);
+        if (count < 5 || buf[1] != VSEVENT_CODE) return -1;
+        if (buf[3] == HCI_VS_STRAY_EVT && patch_dnld_pending && dnld_fd == fd)
+            continue;
+        return get_vs_hci_event(buf) == HCI_CMD_SUCCESS ? count : -1;
+    }
+    return -1;
 }
 
 /*
@@ -863,7 +868,7 @@ int rome_tlv_dnld_segment(int fd, int index, int seg_size, unsigned char wait_cc
     if(wait_cc_evt) {
         /* Initialize the RSP packet everytime to 0 */
         memset(rsp, 0x0, HCI_MAX_EVENT_SIZE);
-        err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+        err = read_command_complete(fd, rsp, cmd);
         if ( err < 0) {
             ALOGE("%s: Failed to downlaod patch segment: %d!",  __FUNCTION__, index);
             return err;
@@ -876,70 +881,33 @@ int rome_tlv_dnld_segment(int fd, int index, int seg_size, unsigned char wait_cc
 
 int rome_tlv_dnld_req(int fd, int tlv_size)
 {
-    int  total_segment, remain_size, i, err = -1;
-    unsigned char wait_cc_evt = TRUE;
-
-    total_segment = tlv_size/MAX_SIZE_PER_TLV_SEGMENT;
-    remain_size = (tlv_size < MAX_SIZE_PER_TLV_SEGMENT)?\
-                  tlv_size: (tlv_size%MAX_SIZE_PER_TLV_SEGMENT);
-
-    ALOGI("%s: TLV size: %d, Total Seg num: %d, remain size: %d",
-            __FUNCTION__,tlv_size, total_segment, remain_size);
-
+    if (tlv_size <= 0) return -EINVAL;
+    bool skip_segment_events = false;
     if (gTlv_type == TLV_TYPE_PATCH) {
-       /* Prior to Rome version 3.2(including inital few rampatch release of Rome 3.2), the event
-        * handling mechanism is ROME_SKIP_EVT_NONE. After few release of rampatch for Rome 3.2, the
-        * mechamism is changed to ROME_SKIP_EVT_VSE_CC. Rest of the mechanism is not used for now
-        */
-       switch(gTlv_dwndCfg)
-       {
-           case ROME_SKIP_EVT_NONE:
-              wait_vsc_evt = TRUE;
-              wait_cc_evt = TRUE;
-              ALOGI("Event handling type: ROME_SKIP_EVT_NONE");
-              break;
-           case ROME_SKIP_EVT_VSE_CC:
-              wait_vsc_evt = FALSE;
-              wait_cc_evt = FALSE;
-              ALOGI("Event handling type: ROME_SKIP_EVT_VSE_CC");
-              break;
-           /* Not handled for now */
-           case ROME_SKIP_EVT_VSE:
-           case ROME_SKIP_EVT_CC:
-           default:
-              ALOGE("Unsupported Event handling: %d", gTlv_dwndCfg);
-              return -EINVAL;
-       }
-    } else {
-        /* This is for the NV items.
-         * Expectation is to have the CCE and VSE for each segment except last segment
-         * For the last segment, we should get only the VSE
-         */
-        wait_vsc_evt = TRUE;
-        wait_cc_evt = TRUE;
-    }
-
-    patch_dnld_pending = TRUE;
-    /* Download all items except the last one */
-    for(i=0;i<total_segment ;i++) {
-        if((err = rome_tlv_dnld_segment(fd, i, MAX_SIZE_PER_TLV_SEGMENT, wait_cc_evt )) < 0)
-            goto error;
-    }
-
-    if (i == total_segment && remain_size > 0) //this is the last Segment Handling
-    {
-        wait_vsc_evt = FALSE;
-        wait_cc_evt = TRUE;
-        err = rome_tlv_dnld_segment(fd, i, remain_size, wait_cc_evt);
-        if ( err < 0) {
-            ALOGE("%s: Failed to read vs event: %d!",  __FUNCTION__, i);
-            goto error;
+        if (gTlv_dwndCfg == ROME_SKIP_EVT_VSE_CC) {
+            skip_segment_events = true;
+        } else if (gTlv_dwndCfg != ROME_SKIP_EVT_NONE) {
+            ALOGE("Unsupported event handling: %d", gTlv_dwndCfg);
+            return -EINVAL;
         }
+    } else if (gTlv_type != TLV_TYPE_NVM) {
+        return -EINVAL;
     }
 
-error:
+    int err = -1;
+    patch_dnld_pending = TRUE;
+    for (int offset = 0, index = 0; offset < tlv_size; ++index) {
+        int size = tlv_size - offset;
+        if (size > MAX_SIZE_PER_TLV_SEGMENT) size = MAX_SIZE_PER_TLV_SEGMENT;
+        bool last = offset + size == tlv_size;
+        /* The last segment gets a vendor status, without Command Complete. */
+        wait_vsc_evt = last || !skip_segment_events;
+        unsigned char wait_cc_evt = !last && !skip_segment_events;
+        err = rome_tlv_dnld_segment(fd, index, size, wait_cc_evt);
+        if (err < 0) break;
+        offset += size;
+    }
     patch_dnld_pending = FALSE;
-    /* Event suppression applies only to download segments, not later commands. */
     wait_vsc_evt = TRUE;
     return err;
 }
@@ -1272,7 +1240,7 @@ int rome_patch_ver_req(int fd)
     }
 
     /* Read Command Complete Event - This is extra routine for ROME 1.0. From ROM 2.0, it should be removed. */
-    err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    err = read_command_complete(fd, rsp, cmd);
     if ( err < 0) {
         ALOGE("%s: Failed to get patch version(s)", __FUNCTION__);
         goto error;
@@ -1302,7 +1270,7 @@ int rome_get_build_info_req(int fd)
         goto error;
     }
 
-    err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    err = read_command_complete(fd, rsp, cmd);
     if ( err < 0) {
         ALOGE("%s: Failed to get build info", __FUNCTION__);
         goto error;
@@ -1372,7 +1340,7 @@ int rome_set_baudrate_req(int fd)
     ALOGI("%s: Received HCI-Vendor Specific Event from SOC", __FUNCTION__);
 
     /* Wait for command complete event */
-    err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    err = read_command_complete(fd, rsp, cmd);
     if ( err < 0) {
         ALOGE("%s: Failed to set patch info on Controller", __FUNCTION__);
         goto error;
@@ -1437,7 +1405,7 @@ int rome_hci_reset_req(int fd)
     if (userial_vendor_set_hw_flow_control(USERIAL_OP_FLOW_ON) < 0) return -1;
 
     /* Wait for command complete event */
-    err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    err = read_command_complete(fd, rsp, cmd);
     if ( err < 0) {
         ALOGE("%s: Failed to set patch info on Controller", __FUNCTION__);
         goto error;
@@ -1475,14 +1443,7 @@ int rome_hci_reset(int fd)
     }
 
     /* Wait for command complete event */
-    err = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
-    if (err != 7 || rsp[0] != HCI_EVENT_PKT || rsp[1] != EVT_CMD_COMPLETE ||
-        rsp[2] != 4 || rsp[4] != (HCI_RESET & 0xff) || rsp[5] != (HCI_RESET >> 8) ||
-        rsp[6] != HCI_CMD_SUCCESS) {
-        err = -EIO;
-        ALOGE("%s: HCI Reset did not complete successfully", __FUNCTION__);
-        goto error;
-    }
+    err = read_command_complete(fd, rsp, cmd);
 
 error:
     return err;
