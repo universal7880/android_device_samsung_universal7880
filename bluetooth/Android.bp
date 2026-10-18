@@ -9,7 +9,7 @@ license {
 }
 
 cc_binary {
-    name: "android.hardware.bluetooth@1.1-service.universal7880",
+    name: "android.hardware.bluetooth-service.universal7880",
     defaults: ["hidl_defaults"],
     relative_install_path: "hw",
     vendor: true,
@@ -17,16 +17,15 @@ cc_binary {
     srcs: [
         "service.cpp",
         "ant/Ant.cpp",
-        "hidl/bluetooth_hci.cc",
+        "aidl/BluetoothHci.cpp",
     ],
-    include_dirs: [
-        "device/samsung/universal7880-common/bluetooth/libbt-vendor/include",
-        "hardware/interfaces/bluetooth/1.0/default",
+    local_include_dirs: [
+        "address",
+        "libbt-vendor/include",
     ],
     shared_libs: [
-        "android.hardware.bluetooth@1.0",
-        "android.hardware.bluetooth@1.0-impl",
-        "android.hardware.bluetooth@1.1",
+        "android.hardware.bluetooth-V1-ndk",
+        "libbinder_ndk",
         "com.dsi.ant@1.0",
         "libbase",
         "libbt-vendor",
@@ -37,7 +36,7 @@ cc_binary {
         "liblog",
         "libutils",
     ],
-    static_libs: ["android.hardware.bluetooth-hci"],
+    static_libs: ["libuniversal7880_bluetooth_address"],
     cflags: [
         "-Wall",
         "-Wextra",
@@ -54,15 +53,53 @@ cc_test {
         "ant/Ant.cpp",
         "tests/ant_test.cpp",
     ],
-    include_dirs: [
-        "device/samsung/universal7880-common/bluetooth/libbt-vendor/include",
-        "hardware/interfaces/bluetooth/1.0/default",
+    local_include_dirs: [
+        "address",
+        "libbt-vendor/include",
     ],
     shared_libs: [
         "com.dsi.ant@1.0",
         "libhidlbase",
         "liblog",
         "libutils",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+    ],
+    test_suites: ["device-tests"],
+}
+
+cc_library_static {
+    name: "libuniversal7880_bluetooth_address",
+    vendor: true,
+    srcs: ["address/bluetooth_address.cc"],
+    export_include_dirs: ["address"],
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "liblog",
+    ],
+}
+
+cc_test {
+    name: "universal7880_bluetooth_aidl_test",
+    vendor: true,
+    gtest: false,
+    srcs: [
+        "aidl/BluetoothHci.cpp",
+        "tests/bluetooth_test.cpp",
+    ],
+    local_include_dirs: [
+        "address",
+        "libbt-vendor/include",
+    ],
+    shared_libs: [
+        "android.hardware.bluetooth-V1-ndk",
+        "libbinder_ndk",
+        "liblog",
     ],
     cflags: [
         "-Wall",

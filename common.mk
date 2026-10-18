@@ -226,7 +226,7 @@ PRODUCT_PACKAGES += \
 
 # Bluetooth
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth@1.1-service.universal7880 \
+    android.hardware.bluetooth-service.universal7880 \
     AntHalService-Soong \
     libbt-vendor
 
