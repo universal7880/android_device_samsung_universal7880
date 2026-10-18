@@ -1,1 +1,2 @@
 vendor.samsung.hardware.camera.provider::ISecCameraProvider u:object_r:hal_camera_hwservice:s0
+com.dsi.ant::IAnt u:object_r:hal_dsi_ant_hwservice:s0
