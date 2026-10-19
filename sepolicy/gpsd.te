@@ -1,6 +1,3 @@
-# Automatically label files created in /data/system/gps as gps_vendor_data_file
-file_type_auto_trans(gpsd, system_data_file, gps_vendor_data_file)
-
 # Allow rild and netd to connect to gpsd
 unix_socket_connect(gpsd, property, rild)
 unix_socket_connect(gpsd, property, netd)
