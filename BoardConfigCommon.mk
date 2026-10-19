@@ -174,6 +174,10 @@ TARGET_POWER_LIBPERFMGR_MODE_EXTENSION_LIB := //$(COMMON_PATH):libperfmgr-ext-un
 # SELinux
 BOARD_SEPOLICY_TEE_FLAVOR := mobicore
 include device/samsung_slsi/sepolicy/sepolicy.mk
+# Use the common MobiCore policy without pre-Treble init device/data access.
+BOARD_VENDOR_SEPOLICY_DIRS := $(filter-out \
+    device/samsung_slsi/sepolicy/tee/mobicore/legacy, \
+    $(BOARD_VENDOR_SEPOLICY_DIRS))
 include device/lineage/sepolicy/libperfmgr/sepolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
 
