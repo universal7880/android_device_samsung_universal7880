@@ -66,11 +66,15 @@ void vendor_load_properties() {
     overrideProperty("ro.sf.lcd_density", selected->density);
     overrideProperty("ro.vendor.universal7880.device", selected->device);
 
-    // SystemConfig loads the Korean FMRadio component override for this SKU.
     if (bootloader.compare(0, 5, "A520K") == 0 ||
         bootloader.compare(0, 5, "A520L") == 0 ||
         bootloader.compare(0, 5, "A520S") == 0 ||
         bootloader.compare(0, 5, "A720S") == 0) {
+        // SystemConfig loads the Korean FMRadio component override for this SKU.
         overrideProperty("ro.boot.product.vendor.sku", "kor");
+
+        // Korean variants have a single SIM slot.
+        overrideProperty("ro.multisim.simslotcount", "1");
+        overrideProperty("ro.vendor.multisim.simslotcount", "1");
     }
 }
