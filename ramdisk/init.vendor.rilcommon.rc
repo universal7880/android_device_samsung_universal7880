@@ -12,6 +12,10 @@ on post-fs-data
     symlink /efs /mnt/vendor/efs
     mkdir /data/vendor/secradio 0770 radio radio
 
+# Apply after loading persistent properties so an old DSDS setting cannot survive.
+on property:ro.persistent_properties.ready=true && property:ro.boot.product.vendor.sku=kor
+    setprop persist.radio.multisim.config ss
+
 on property:ro.vendor.multisim.simslotcount=1
     stop ril-daemon1
 
