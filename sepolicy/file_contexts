@@ -181,11 +181,6 @@
 # Gatekeeper
 /(vendor|system/vendor)/bin/hw/android\.hardware\.gatekeeper@1\.0-service\.software             u:object_r:hal_gatekeeper_default_exec:s0
 
-# hidl services
-
-# deamons in vendor
-/(vendor|system/vendor)/bin/modemloader       u:object_r:modemloader_exec:s0
-
 /dev/radio0                 u:object_r:fm_device:s0
 
 /(vendor|system/vendor)/bin/hw/vendor\.lineage\.hardware\.fmradio-service\.si47xx    u:object_r:hal_fmradio_default_exec:s0
