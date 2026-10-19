@@ -1,6 +1,3 @@
-# modemloader
-vendor_internal_prop(modemloader_prop)
-
 # NFC
 vendor_internal_prop(vendor_nfc_prop)
 
