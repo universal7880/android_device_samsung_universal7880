@@ -20,7 +20,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <utils/Log.h>
+#include <log/log.h>
+#include <stdio.h>
+#include <string.h>
 
 namespace android {
 namespace hardware {
