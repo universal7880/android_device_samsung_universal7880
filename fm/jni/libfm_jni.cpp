@@ -16,6 +16,8 @@ jboolean tune(JNIEnv*, jobject, jfloat mhz) { return radio.tune(mhz); }
 jfloat seek(JNIEnv*, jobject, jfloat mhz, jboolean up) { return radio.seek(mhz, up); }
 jshortArray autoScan(JNIEnv* env, jobject) {
     auto channels = radio.scan();
+    // The HAL uses 10 kHz units; FMRadio expects 100 kHz units.
+    for (auto& channel : channels) channel /= 10;
     auto result = env->NewShortArray(channels.size());
     if (result && !channels.empty())
         env->SetShortArrayRegion(result, 0, channels.size(), channels.data());
@@ -35,7 +37,10 @@ jbyteArray textBytes(JNIEnv* env, const std::string& text) {
 }
 jbyteArray getPs(JNIEnv* env, jobject) { return textBytes(env, radio.programName()); }
 jbyteArray getLrText(JNIEnv* env, jobject) { return textBytes(env, radio.radioText()); }
-jshort activeAf(JNIEnv*, jobject) { return radio.activeAf(); }
+jshort activeAf(JNIEnv*, jobject) {
+    int32_t channel = radio.activeAf();
+    return channel > 0 ? channel / 10 : channel;
+}
 // The wired headset is the only antenna; there is no internal-antenna switch.
 jint switchAntenna(JNIEnv*, jobject, jint antenna) { return antenna == 0 ? 0 : -1; }
 
