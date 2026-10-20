@@ -136,9 +136,17 @@ int do_write(int fd, unsigned char *buf, int len)
 static int read_command_complete(int fd, unsigned char *rsp, const unsigned char *cmd)
 {
     int size = read_hci_event(fd, rsp, HCI_MAX_EVENT_SIZE);
+    bool opcode_matches = false;
+
+    if (size == 7) {
+        opcode_matches = rsp[4] == cmd[1] && rsp[5] == cmd[2];
+        /* Rome EDL (0xfc00) reports a zero opcode after its vendor response. */
+        if (cmd[1] == 0x00 && cmd[2] == 0xfc && rsp[4] == 0x00 && rsp[5] == 0x00)
+            opcode_matches = true;
+    }
+
     if (size != 7 || rsp[0] != HCI_EVENT_PKT || rsp[1] != EVT_CMD_COMPLETE ||
-        rsp[2] != 4 || rsp[4] != cmd[1] || rsp[5] != cmd[2] ||
-        rsp[6] != HCI_CMD_SUCCESS) {
+        rsp[2] != 4 || !opcode_matches || rsp[6] != HCI_CMD_SUCCESS) {
         char event[3 * HCI_MAX_EVENT_SIZE + 1] = {0};
         for (int i = 0; i < size && i < HCI_MAX_EVENT_SIZE; ++i)
             snprintf(event + 3 * i, 4, "%02x ", rsp[i]);
