@@ -140,8 +140,10 @@ static int read_command_complete(int fd, unsigned char *rsp, const unsigned char
 
     if (size == 7) {
         opcode_matches = rsp[4] == cmd[1] && rsp[5] == cmd[2];
-        /* Rome EDL (0xfc00) reports a zero opcode after its vendor response. */
-        if (cmd[1] == 0x00 && cmd[2] == 0xfc && rsp[4] == 0x00 && rsp[5] == 0x00)
+        /* Rome EDL and baud-rate commands return zero after their vendor response. */
+        if (cmd[2] == 0xfc &&
+            (cmd[1] == HCI_PATCH_CMD_OCF || cmd[1] == EDL_SET_BAUDRATE_CMD_OCF) &&
+            rsp[4] == 0x00 && rsp[5] == 0x00)
             opcode_matches = true;
     }
 
