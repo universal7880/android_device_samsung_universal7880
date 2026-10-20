@@ -139,7 +139,11 @@ static int read_command_complete(int fd, unsigned char *rsp, const unsigned char
     if (size != 7 || rsp[0] != HCI_EVENT_PKT || rsp[1] != EVT_CMD_COMPLETE ||
         rsp[2] != 4 || rsp[4] != cmd[1] || rsp[5] != cmd[2] ||
         rsp[6] != HCI_CMD_SUCCESS) {
-        ALOGE("Unexpected or failed completion for HCI opcode 0x%02x%02x", cmd[2], cmd[1]);
+        char event[3 * HCI_MAX_EVENT_SIZE + 1] = {0};
+        for (int i = 0; i < size && i < HCI_MAX_EVENT_SIZE; ++i)
+            snprintf(event + 3 * i, 4, "%02x ", rsp[i]);
+        ALOGE("Unexpected or failed completion for HCI opcode 0x%02x%02x: size=%d, event=[%s]",
+              cmd[2], cmd[1], size, event);
         return -EIO;
     }
     return size;
