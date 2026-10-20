@@ -17,12 +17,11 @@ namespace {
 struct Variant {
     const char* bootloaderPrefix;
     const char* device;
-    const char* density;
 };
 
 constexpr Variant variants[] = {
-    {"A520", "a5y17lte", "480"},
-    {"A720", "a7y17lte", "420"},
+    {"A520", "a5y17lte"},
+    {"A720", "a7y17lte"},
 };
 
 void overrideProperty(const char* name, const char* value) {
@@ -63,7 +62,6 @@ void vendor_load_properties() {
     }
 
     LOG(INFO) << "Using " << selected->device << " configuration";
-    overrideProperty("ro.sf.lcd_density", selected->density);
     overrideProperty("ro.vendor.universal7880.device", selected->device);
 
     if (bootloader.compare(0, 5, "A520K") == 0 ||
