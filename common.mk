@@ -290,7 +290,7 @@ PRODUCT_COPY_FILES += \
 # GPS
 PRODUCT_PACKAGES += \
     android.hardware.gnss@1.0-impl \
-    android.hardware.gnss@1.0-service
+    android.hardware.gnss@1.0-service.universal7880
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/gps/gps.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.cfg \
@@ -350,7 +350,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl.samsung \
     android.hardware.sensors@1.0-service \
-    android.frameworks.sensorservice@1.0
+    android.frameworks.sensorservice@1.0 \
+    libsensorndkbridge
 
 # Vibrator
 PRODUCT_PACKAGES += \

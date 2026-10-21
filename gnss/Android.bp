@@ -1,0 +1,20 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_binary {
+    name: "android.hardware.gnss@1.0-service.universal7880",
+    stem: "android.hardware.gnss@1.0-service",
+    overrides: ["android.hardware.gnss@1.0-service"],
+    vendor: true,
+    relative_install_path: "hw",
+    defaults: ["hidl_defaults"],
+    init_rc: ["android.hardware.gnss@1.0-service.universal7880.rc"],
+    srcs: ["service.cpp"],
+    shared_libs: [
+        "android.hardware.gnss@1.0",
+        "libbinder",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+    ],
+}
