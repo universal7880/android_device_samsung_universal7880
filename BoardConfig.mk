@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-COMMON_PATH := device/samsung/universal7880-common
+DEVICE_PATH := device/samsung/universal7880
 
 BUILD_BROKEN_DUP_RULES := true
 
 # Include path
-TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
+TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
 
 # Init
-TARGET_INIT_VENDOR_LIB := //$(COMMON_PATH):libinit_sec
+TARGET_INIT_VENDOR_LIB := //$(DEVICE_PATH):libinit_sec
 
 # Firmware
 TARGET_NO_BOOTLOADER := true
@@ -69,11 +69,11 @@ TARGET_KERNEL_SOURCE := kernel/samsung/universal7880
 TARGET_KERNEL_ADDITIONAL_FLAGS += PLATFORM_VERSION=$(PLATFORM_VERSION)
 
 # Manifest
-DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
+DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
     vendor/lineage/config/device_framework_matrix.xml \
-    $(COMMON_PATH)/framework_compatibility_matrix.xml \
-    $(COMMON_PATH)/fm/aidl/framework_compatibility_matrix.xml
+    $(DEVICE_PATH)/framework_compatibility_matrix.xml \
+    $(DEVICE_PATH)/fm/aidl/framework_compatibility_matrix.xml
 
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 33554432
@@ -90,7 +90,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 
 # Root extra folders
 BOARD_ROOT_EXTRA_FOLDERS += efs
-TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
+TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/config.fs
 
 # Vendor separation
 TARGET_COPY_OUT_VENDOR := system/vendor
@@ -105,7 +105,7 @@ BOARD_HAVE_BLUETOOTH := true
 TARGET_AUDIOHAL_VARIANT := samsung
 
 # FM radio
-TARGET_FM_JNI_NAMESPACE := $(COMMON_PATH)/fm
+TARGET_FM_JNI_NAMESPACE := $(DEVICE_PATH)/fm
 
 # Wifi
 BOARD_HAS_QCOM_WLAN := true
@@ -138,16 +138,16 @@ TARGET_USES_VND_SECRIL := true
 VENDOR_SECURITY_PATCH := 2021-10-01
 
 # Release tools
-#TARGET_RELEASETOOLS_EXTENSIONS := $(COMMON_PATH)
+#TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)
 
 # Recovery
 #RECOVERY_VARIANT := twrp
 BOARD_HAS_DOWNLOAD_MODE := true
-TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/ramdisk/fstab.samsungexynos7880
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/ramdisk/fstab.samsungexynos7880
 
 # TWRP
 ifeq ($(RECOVERY_VARIANT),twrp)
-PRODUCT_COPY_FILES += $(COMMON_PATH)/twrp/twrp.fstab:recovery/root/etc/twrp.fstab
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/twrp/twrp.fstab:recovery/root/etc/twrp.fstab
 TW_THEME := portrait_hdpi
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel/brightness
 TW_MAX_BRIGHTNESS := 255
@@ -166,10 +166,10 @@ TW_EXCLUDE_TWRPAPP := true
 endif
 
 # Seccomp filters
-BOARD_SECCOMP_POLICY += $(COMMON_PATH)/seccomp
+BOARD_SECCOMP_POLICY += $(DEVICE_PATH)/seccomp
 
 # Power
-TARGET_POWER_LIBPERFMGR_MODE_EXTENSION_LIB := //$(COMMON_PATH):libperfmgr-ext-universal7880
+TARGET_POWER_LIBPERFMGR_MODE_EXTENSION_LIB := //$(DEVICE_PATH):libperfmgr-ext-universal7880
 
 # SELinux
 BOARD_SEPOLICY_TEE_FLAVOR := mobicore
@@ -179,7 +179,7 @@ BOARD_VENDOR_SEPOLICY_DIRS := $(filter-out \
     device/samsung_slsi/sepolicy/tee/mobicore/legacy, \
     $(BOARD_VENDOR_SEPOLICY_DIRS))
 include device/lineage/sepolicy/libperfmgr/sepolicy.mk
-BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
+BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
 # Shims
 TARGET_LD_SHIM_LIBS := \
@@ -191,4 +191,10 @@ TARGET_LD_SHIM_LIBS := \
     /system/lib64/libexynoscamera.so|libexynoscamera_shim.so
 
 # Soong namespaces
-PRODUCT_SOONG_NAMESPACES += $(COMMON_PATH)
+PRODUCT_SOONG_NAMESPACES += $(DEVICE_PATH)
+
+# Kernel config
+TARGET_KERNEL_CONFIG := lineage-universal7880_defconfig
+
+# OTA
+TARGET_OTA_ASSERT_DEVICE := universal7880,a5y17lte,a5y17ltexx,a5y17ltecan,a5y17ltektt,a5y17ltelgt,a5y17lteskt,a7y17lte,a7y17ltexx,a7y17lteskt

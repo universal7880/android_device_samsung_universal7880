@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := device/samsung/universal7880-common
+LOCAL_PATH := device/samsung/universal7880
 
 # APEX
 OVERRIDE_PRODUCT_COMPRESSED_APEX := false
@@ -386,7 +386,7 @@ PRODUCT_PACKAGES += \
     vndservicemanager
 
 # System.prop
-TARGET_SYSTEM_PROP += device/samsung/universal7880-common/system.prop
+TARGET_SYSTEM_PROP += device/samsung/universal7880/system.prop
 
 $(call inherit-product, hardware/samsung_slsi-linaro/config/config.mk)
 
