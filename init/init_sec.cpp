@@ -64,6 +64,16 @@ void vendor_load_properties() {
     LOG(INFO) << "Using " << selected->device << " configuration";
     overrideProperty("ro.vendor.universal7880.device", selected->device);
 
+    if (bootloader.size() >= 5 &&
+        bootloader.compare(0, 4, selected->bootloaderPrefix) == 0) {
+        const auto model = "SM-" + bootloader.substr(0, 5);
+        for (const auto* partition : {"", "vendor.", "odm.", "system.", "system_ext.", "product."}) {
+            const auto property = std::string("ro.product.") + partition + "model";
+            overrideProperty(property.c_str(), model.c_str());
+        }
+    }
+
+
     if (bootloader.compare(0, 5, "A520K") == 0 ||
         bootloader.compare(0, 5, "A520L") == 0 ||
         bootloader.compare(0, 5, "A520S") == 0 ||

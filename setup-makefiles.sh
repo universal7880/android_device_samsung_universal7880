@@ -27,7 +27,7 @@ source "${HELPER}"
 setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ANDROID_ROOT}" true
 
 # Warning headers and guards
-write_headers "a5y17lte a7y17lte"
+write_headers "universal7880"
 
 write_makefiles "${MY_DIR}/proprietary-files.txt" true
 

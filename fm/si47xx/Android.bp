@@ -7,6 +7,6 @@ cc_library_static {
     srcs: ["Si47xx.cpp", "RdsDecoder.cpp"],
     export_include_dirs: ["."],
     shared_libs: ["liblog"],
-    visibility: ["//device/samsung/universal7880-common/fm/aidl/default"],
+    visibility: ["//device/samsung/universal7880/fm/aidl/default"],
     cflags: ["-Wall", "-Wextra", "-Werror"],
 }
