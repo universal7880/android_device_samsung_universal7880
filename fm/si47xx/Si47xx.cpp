@@ -125,7 +125,12 @@ bool Si47xx::powerDown() {
 bool Si47xx::tune(float mhz) {
     std::lock_guard<std::mutex> operation(operationMutex);
     uint32_t channel;
-    return frequency(mhz, &channel) && tuneLocked(channel);
+    if (!frequency(mhz, &channel)) return false;
+    if (!muted && !command(muteOnCommand)) return false;
+    bool result = tuneLocked(channel);
+    // Restore the caller's mute state even when tuning fails.
+    if (!muted && !command(muteOffCommand)) return false;
+    return result;
 }
 
 float Si47xx::seek(float mhz, bool up) {
