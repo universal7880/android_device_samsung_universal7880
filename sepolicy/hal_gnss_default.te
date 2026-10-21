@@ -8,3 +8,7 @@ allow hal_gnss_default gpsd:unix_stream_socket connectto;
 
 # sensor framework
 allow hal_gnss_default fwk_sensor_hwservice:hwservice_manager find;
+
+# The source-built NDK bridge uses the AIDL SensorManager service.
+binder_use(hal_gnss_default)
+allow hal_gnss_default fwk_sensor_service:service_manager find;
