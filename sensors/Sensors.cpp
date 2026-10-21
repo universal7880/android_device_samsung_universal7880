@@ -249,7 +249,14 @@ int Sensors::activate(int handle, bool enabled) {
     if (handle <= 0 || size_t(handle) >= sensors.size() || sensors[handle].fd < 0) return -EINVAL;
     if (stopping) return -ENODEV;
     auto& sensor = sensors[handle];
-    if (sensor.enabled == enabled) return 0;
+    const bool kernelEnabled = enabledMask & (1ULL << handle);
+    if (sensor.enabled == enabled && kernelEnabled == enabled) return 0;
+    // A fired one-shot is logically disabled even if its kernel disarm failed.
+    // Clear the old enable bit before rearming it, otherwise SSP sees no change.
+    if (enabled && !sensor.enabled && kernelEnabled) {
+        int result = setEnabled(sensor, false);
+        if (result) return result;
+    }
     int result = setEnabled(sensor, enabled);
     if (result) return result;
     // Drop already queued measurements from the previous activation, but retain
