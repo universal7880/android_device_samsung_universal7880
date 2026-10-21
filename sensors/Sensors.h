@@ -11,6 +11,7 @@
 #include <condition_variable>
 #include <deque>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -18,6 +19,7 @@ namespace ssp {
 struct Sensor {
     sensor_t info{};
     android::base::unique_fd fd;
+    std::string bufferPath;
     float scale = 1;
     int64_t activatedAt = 0;
     unsigned pendingFlush = 0;
