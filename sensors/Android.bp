@@ -1,0 +1,39 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_library_shared {
+    name: "sensors.universal7880",
+    vendor: true,
+    relative_install_path: "hw",
+    compile_multilib: "both",
+    srcs: [
+        "Sensors.cpp",
+        "SensorsModule.cpp",
+        "SspProtocol.cpp",
+    ],
+    shared_libs: [
+        "libbase",
+        "libhardware",
+        "libhardware_legacy",
+        "liblog",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+}
+
+cc_test_host {
+    name: "universal7880_ssp_protocol_test",
+    srcs: [
+        "SspProtocol.cpp",
+        "tests/SspProtocolTest.cpp",
+    ],
+    gtest: false,
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+}
