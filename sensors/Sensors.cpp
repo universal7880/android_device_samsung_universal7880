@@ -326,10 +326,14 @@ void Sensors::queueEvent(const sensors_event_t& event, bool wakeup) {
 int Sensors::poll(sensors_event_t* output, int count) {
     if (!output || count <= 0) return -EINVAL;
     std::unique_lock lock(mutex);
-    // Keep wake-up events protected through the caller's previous delivery.
-    if (!queuedWakeups) releaseWakeLock();
-    available.wait(lock, [&] { return stopping || !events.empty(); });
-    if (stopping) return -ENODEV;
+    // Entering poll() acknowledges the caller's previous delivery. Recheck
+    // after every notification: deactivate() can empty the queue while we wait.
+    while (true) {
+        if (!queuedWakeups) releaseWakeLock();
+        if (stopping) return -ENODEV;
+        if (!events.empty()) break;
+        available.wait(lock);
+    }
     int copied = 0;
     while (copied < count && !events.empty()) {
         const auto& event = events.front();
