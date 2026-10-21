@@ -145,14 +145,8 @@ void Sensors::discover() {
                 ALOGE("Cannot open %s: %s", entry->d_name, strerror(errno));
                 continue;
             }
-            // Match the stock buffer depth. Configure it before enabling the buffer.
-            if (writeValue(path + "/buffer/enable", 0) ||
-                writeValue(path + "/buffer/length", 600) ||
-                writeValue(path + "/buffer/enable", 1)) {
-                ALOGE("Cannot configure SSP buffer %s", entry->d_name);
-                continue;
-            }
             sensor.fd = std::move(fd);
+            sensor.bufferPath = path + "/buffer/";
             sensor.scale = descriptor.scale;
             auto& info = sensor.info;
             info.name = descriptor.name;
@@ -183,6 +177,18 @@ int Sensors::start() {
     if (sensorList.empty()) return -ENODEV;
     int result = disableAll();
     if (result) return result;
+    for (const auto& sensor : sensors) {
+        if (sensor.fd < 0) continue;
+        // Re-enabling resets the kernel IIO FIFO, including old flush markers.
+        // Do this on every open, before new requests and the reader can run.
+        result = writeValue(sensor.bufferPath + "enable", 0);
+        if (!result) result = writeValue(sensor.bufferPath + "length", 600);
+        if (!result) result = writeValue(sensor.bufferPath + "enable", 1);
+        if (result) {
+            ALOGE("Cannot configure SSP buffer %s: %d", sensor.bufferPath.c_str(), result);
+            return result;
+        }
+    }
     controlFd.reset(eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC));
     if (controlFd < 0) return -errno;
     enabledMask = 0;
