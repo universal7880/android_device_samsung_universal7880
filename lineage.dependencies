@@ -3,7 +3,7 @@
     "repository": "universal7880/android_hardware_samsung",
     "target_path": "hardware/samsung",
     "remote": "github",
-    "branch": "lineage-21.0"
+    "branch": "lineage-21"
   },
   {
     "repository": "universal7880/android_hardware_samsung_nfc",
