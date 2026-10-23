@@ -394,7 +394,7 @@ $(call inherit-product, hardware/samsung_slsi-linaro/config/config.mk)
 PRODUCT_PACKAGES += \
     gralloc.exynos5 \
     hwcomposer.universal7880 \
-    memtrack.universal7880 \
+    memtrack.exynos5 \
     libion_exynos \
     libexynosscaler \
     libexynosgscaler \
