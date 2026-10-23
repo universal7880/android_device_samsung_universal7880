@@ -14,7 +14,12 @@ VENDOR=samsung
 MY_DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$MY_DIR" ]]; then MY_DIR="$PWD"; fi
 
-ANDROID_ROOT="${MY_DIR}/../../.."
+ANDROID_ROOT="$(cd "${MY_DIR}/../../.." && pwd)"
+
+# Use the build's portable tools for ELF dependency parsing on macOS.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    export PATH="${ANDROID_ROOT}/prebuilts/build-tools/path/darwin-x86:${PATH}"
+fi
 
 HELPER="${ANDROID_ROOT}/tools/extract-utils/extract_utils.sh"
 if [ ! -f "${HELPER}" ]; then
@@ -66,3 +71,11 @@ EOF
 
 # Done
 write_footers
+
+# The vendor directory keeps its existing name; the generator lives in the unified tree.
+for generated in "$ANDROIDMK" "$BOARDMK" "$PRODUCTMK" "$ANDROIDBP"; do
+    sed "s@device/$VENDOR/$DEVICE_COMMON/setup-makefiles.sh@device/$VENDOR/universal7880/setup-makefiles.sh@" \
+        "$generated" > "$generated.tmp"
+    mv "$generated.tmp" "$generated"
+done
+"$ANDROID_ROOT/prebuilts/build-tools/$HOST-x86/bin/bpfmt" -w "$ANDROIDBP"
