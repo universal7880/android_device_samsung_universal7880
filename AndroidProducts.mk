@@ -17,4 +17,4 @@ PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/lineage_universal7880.mk
 
 COMMON_LUNCH_CHOICES := \
-    lineage_universal7880-ap2a-userdebug
+    lineage_universal7880-bp1a-userdebug
