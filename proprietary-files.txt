@@ -101,10 +101,6 @@ vendor/firmware/nfc/sec_s3nrn81_firmware.bin
 -lib/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
 -lib64/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
 
-# Protobuf vendor variant - N975FXXU6ZTK6 (R)
--vendor/lib/libprotobuf-cpp-full-3.9.1.so;DISABLE_DEPS|4290c27525874cb687d072dcfe20244e65685f2a
--vendor/lib64/libprotobuf-cpp-full-3.9.1.so;DISABLE_DEPS|b9613d7b25ffd6ab31f7aa32a904aa6f5f4f9cdf
-
 # RIL - N975FXXU6ETLL (R)
 -vendor/bin/cbd;DISABLE_DEPS|aae9a11fefb25f0293aa7da714a093d5f017d826
 -vendor/bin/hw/rild;DISABLE_DEPS|c77d17bde3312077a77a3a8238a62e649a996f44
