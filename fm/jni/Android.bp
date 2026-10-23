@@ -1,10 +1,10 @@
 // Copyright (C) 2026 The LineageOS Project
 // SPDX-License-Identifier: Apache-2.0
 
-cc_library_shared {
-    name: "libfmjni",
-    srcs: ["libfm_jni.cpp", "FmRadioClient.cpp"],
-    header_libs: ["jni_headers"],
-    shared_libs: ["libbinder_ndk", "liblog", "vendor.lineage.hardware.fmradio-V1-ndk"],
-    cflags: ["-Wall", "-Wextra", "-Werror"],
+filegroup {
+    name: "libfmjni-universal7880-srcs",
+    srcs: [
+        "libfm_jni.cpp",
+        "FmRadioClient.cpp",
+    ],
 }
