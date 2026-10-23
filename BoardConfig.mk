@@ -201,4 +201,6 @@ TARGET_KERNEL_CONFIG := lineage-universal7880_defconfig
 TARGET_OTA_ASSERT_DEVICE := universal7880,a5y17lte,a5y17ltexx,a5y17ltecan,a5y17ltektt,a5y17ltelgt,a5y17lteskt,a7y17lte,a7y17ltexx,a7y17lteskt
 
 # Legacy audio Soong configuration
+TARGET_SAMSUNG_AUDIO_RIL_CLIENT_LIBRARY := //vendor/samsung/universal7880-common:libsecril-client
+TARGET_SAMSUNG_AUDIO_HEADER_LIBRARY := //$(DEVICE_PATH):libaudio_headers_universal7880
 include hardware/samsung/audio/config.mk
