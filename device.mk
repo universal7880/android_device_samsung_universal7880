@@ -187,6 +187,8 @@ PRODUCT_PACKAGES += \
     android.hardware.radio@1.4 \
     android.hardware.radio.config@1.2 \
     android.hardware.radio.deprecated@1.0 \
+    vendor.samsung.hardware.radio@2.0 \
+    vendor.samsung.hardware.radio@2.1 \
     libxml2 \
     libprotobuf-cpp-full
 

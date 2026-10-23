@@ -1,64 +1,65 @@
 # Proprietary files are from Samsung package version A720SKSU5CUJ2, unless pinned
+# DISABLE_DEPS preserves the unchecked installation of ELF blobs previously copied as files.
 
 # AptX - from crosshatch - QP1A.190711.020
-product/lib64/libaptX_encoder.so|df1c89d7af1bb35808d5fe3496b04ba066c10cbc
+-product/lib64/libaptX_encoder.so;DISABLE_DEPS|df1c89d7af1bb35808d5fe3496b04ba066c10cbc
 
 # Audio amplifier
-lib/libtfa98xx.so
+-lib/libtfa98xx.so;DISABLE_DEPS
 vendor/etc/Tfa9896.cnt
 
 # Camera
-lib/hw/camera.exynos5.so:lib/hw/camera.vendor.exynos5.so
-lib64/hw/camera.exynos5.so:lib64/hw/camera.vendor.exynos5.so
-lib/libexynoscamera.so
-lib64/libexynoscamera.so
-lib/libexynoscamera3.so
-lib64/libexynoscamera3.so
-lib/libhwjpeg.so
-lib64/libhwjpeg.so
-lib/libuniapi.so
-lib64/libuniapi.so
-lib/libuniplugin.so
-lib64/libuniplugin.so
+-lib/hw/camera.exynos5.so:lib/hw/camera.vendor.exynos5.so;DISABLE_DEPS
+-lib64/hw/camera.exynos5.so:lib64/hw/camera.vendor.exynos5.so;DISABLE_DEPS
+-lib/libexynoscamera.so;DISABLE_DEPS
+-lib64/libexynoscamera.so;DISABLE_DEPS
+-lib/libexynoscamera3.so;DISABLE_DEPS
+-lib64/libexynoscamera3.so;DISABLE_DEPS
+-lib/libhwjpeg.so;DISABLE_DEPS;MODULE_SUFFIX=_blob
+-lib64/libhwjpeg.so;DISABLE_DEPS;MODULE_SUFFIX=_blob
+-lib/libuniapi.so;DISABLE_DEPS
+-lib64/libuniapi.so;DISABLE_DEPS
+-lib/libuniplugin.so;DISABLE_DEPS
+-lib64/libuniplugin.so;DISABLE_DEPS
 vendor/firmware/setfile_3p8_front.bin
 vendor/firmware/setfile_3p8.bin
 
 # DRM
-vendor/lib/liboemcrypto.so
-vendor/lib/mediadrm/libwvdrmengine.so
+-vendor/lib/liboemcrypto.so;DISABLE_DEPS
+-vendor/lib/mediadrm/libwvdrmengine.so;DISABLE_DEPS
 
 # DRM (Widevine HIDL)
-vendor/bin/hw/android.hardware.drm@1.1-service.widevine
-vendor/lib/libwvhidl.so
+-vendor/bin/hw/android.hardware.drm@1.1-service.widevine;DISABLE_DEPS
+-vendor/lib/libwvhidl.so;DISABLE_DEPS
 
 # Fingerprint
-vendor/lib/libbauthserver.so
-vendor/lib/libbauthtzcommon.so
-vendor/lib/libegis_fp_normal_sensor_test.so
-vendor/lib/libgf_in_system_lib.so
-vendor/lib/libqfp_sensortest.so
-vendor/lib/libsynaFpSensorTestNwd.so
-vendor/lib64/libbauthserver.so
-vendor/lib64/libbauthtzcommon.so
-vendor/lib64/libegis_fp_normal_sensor_test.so
-vendor/lib64/libgf_in_system_lib.so
-vendor/lib64/libqfp_sensortest.so
-vendor/lib64/libsynaFpSensorTestNwd.so
+-vendor/lib/libbauthserver.so;DISABLE_DEPS
+-vendor/lib/libbauthtzcommon.so;DISABLE_DEPS
+-vendor/lib/libegis_fp_normal_sensor_test.so;DISABLE_DEPS
+-vendor/lib/libgf_in_system_lib.so;DISABLE_DEPS
+-vendor/lib/libqfp_sensortest.so;DISABLE_DEPS
+-vendor/lib/libsynaFpSensorTestNwd.so;DISABLE_DEPS
+-vendor/lib64/libbauthserver.so;DISABLE_DEPS
+-vendor/lib64/libbauthtzcommon.so;DISABLE_DEPS
+-vendor/lib64/libegis_fp_normal_sensor_test.so;DISABLE_DEPS
+-vendor/lib64/libgf_in_system_lib.so;DISABLE_DEPS
+-vendor/lib64/libqfp_sensortest.so;DISABLE_DEPS
+-vendor/lib64/libsynaFpSensorTestNwd.so;DISABLE_DEPS
 
 # GPS
-lib/libfloatingfeature.so
-lib64/libfloatingfeature.so
-vendor/bin/hw/gpsd
+-lib/libfloatingfeature.so;DISABLE_DEPS
+-lib64/libfloatingfeature.so;DISABLE_DEPS
+-vendor/bin/hw/gpsd;DISABLE_DEPS
 vendor/etc/gnss/ca.pem
-vendor/lib64/hw/gps.default.so
-vendor/lib/libwrappergps.so
-vendor/lib64/libwrappergps.so
+-vendor/lib64/hw/gps.default.so;DISABLE_DEPS
+-vendor/lib/libwrappergps.so;DISABLE_DEPS
+-vendor/lib64/libwrappergps.so;DISABLE_DEPS
 
 # Graphics
 # Vulcan and OpenCL are implemented in this file,
 # so we create symlinks in setup-makefiles.sh.
-vendor/lib/egl/libGLES_mali.so
-vendor/lib64/egl/libGLES_mali.so
+-vendor/lib/egl/libGLES_mali.so;DISABLE_DEPS
+-vendor/lib64/egl/libGLES_mali.so;DISABLE_DEPS
 
 # Media
 vendor/firmware/fimc_is_lib.bin
@@ -86,57 +87,53 @@ vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin
 vendor/app/mcRegistry/ffffffffd0000000000000000000000e.tlbin
 vendor/app/mcRegistry/ffffffffd00000000000000000000014.tlbin
 vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
-vendor/lib/libMcClient.so
-vendor/lib64/libMcClient.so
-vendor/lib/libMcRegistry.so
-vendor/lib64/libMcRegistry.so
-vendor/bin/mcDriverDaemon
+-vendor/lib/libMcClient.so;DISABLE_DEPS
+-vendor/lib64/libMcClient.so;DISABLE_DEPS
+-vendor/lib/libMcRegistry.so;DISABLE_DEPS
+-vendor/lib64/libMcRegistry.so;DISABLE_DEPS
+-vendor/bin/mcDriverDaemon;DISABLE_DEPS
 
 # NFC
 vendor/etc/nfc/sec_s3nrn81_rfreg.bin
 vendor/firmware/nfc/sec_s3nrn81_firmware.bin
 
 # libsecnativefeature
-lib/libsecnativefeature.so
-lib64/libsecnativefeature.so
+-lib/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
+-lib64/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
 
 # Protobuf vendor variant - N975FXXU6ZTK6 (R)
-vendor/lib/libprotobuf-cpp-full-3.9.1.so|4290c27525874cb687d072dcfe20244e65685f2a
-vendor/lib64/libprotobuf-cpp-full-3.9.1.so|b9613d7b25ffd6ab31f7aa32a904aa6f5f4f9cdf
+-vendor/lib/libprotobuf-cpp-full-3.9.1.so;DISABLE_DEPS|4290c27525874cb687d072dcfe20244e65685f2a
+-vendor/lib64/libprotobuf-cpp-full-3.9.1.so;DISABLE_DEPS|b9613d7b25ffd6ab31f7aa32a904aa6f5f4f9cdf
 
 # RIL - N975FXXU6ETLL (R)
-vendor/bin/cbd|aae9a11fefb25f0293aa7da714a093d5f017d826
-vendor/bin/hw/rild|c77d17bde3312077a77a3a8238a62e649a996f44
-vendor/lib/libengmode_client.so|38b95cf93d0c1f497e1d8a6370e53b903bb03510
-vendor/lib/libril.so|3e64e6fa4078d892d2c83b21edd1632bcf7fd827
-vendor/lib/libsec-ril-dsds.so|1bf5ba8954f7d0b8fc13b71aa4df7aa0bb0fa5ae
-vendor/lib/libsec-ril.so|5888ae1363fdb0ba5ec9e02df0cd1a12d64e6184
-vendor/lib/libsec_semRil.so|0e098bc1099a8cb466e29b2918c8968d214fb56c
-vendor/lib/libsecnativefeature.so|268dfdbb80196ac0d16abcce9109f87518753361
+-vendor/bin/cbd;DISABLE_DEPS|aae9a11fefb25f0293aa7da714a093d5f017d826
+-vendor/bin/hw/rild;DISABLE_DEPS|c77d17bde3312077a77a3a8238a62e649a996f44
+-vendor/lib/libengmode_client.so;DISABLE_DEPS|38b95cf93d0c1f497e1d8a6370e53b903bb03510
+-vendor/lib/libril.so;DISABLE_DEPS|3e64e6fa4078d892d2c83b21edd1632bcf7fd827
+-vendor/lib/libsec-ril-dsds.so;DISABLE_DEPS|1bf5ba8954f7d0b8fc13b71aa4df7aa0bb0fa5ae
+-vendor/lib/libsec-ril.so;DISABLE_DEPS|5888ae1363fdb0ba5ec9e02df0cd1a12d64e6184
+-vendor/lib/libsec_semRil.so;DISABLE_DEPS|0e098bc1099a8cb466e29b2918c8968d214fb56c
+-vendor/lib/libsecnativefeature.so;DISABLE_DEPS|268dfdbb80196ac0d16abcce9109f87518753361
 -vendor/lib/libsecril-client.so|af77c32b35ab1a2b7ee5f38e529e7eb8dee0a195
-vendor/lib/libsemnativecarrierfeature.so|7aeaf1049ffa3718eb4beed0739624c0cb4c9847
-vendor/lib/libvkmanager_vendor.so|9227ca82047d99fbe3a6ffdf203e41b862e48691
-vendor/lib/vendor.samsung.hardware.radio.bridge@2.0.so|c130cf05828ee1e415cf5823f2a67e023508f710
-vendor/lib/vendor.samsung.hardware.radio.channel@2.0.so|8f1ef76608e97b5864e30ea2f2aff2f685eb4d8e
-vendor/lib/vendor.samsung.hardware.radio@2.0.so|1c976df4082e7829578a9cb48c040706e1753a6d
-vendor/lib/vendor.samsung.hardware.radio@2.1.so|6ce633e09b82f54aabd789ca23a5f1833a232f68
-vendor/lib64/libengmode_client.so|ac3615bb78e4e569841abd804c0278c6de181b2c
-vendor/lib64/libril.so|d81e76523a5a28fdf488fa42c0e1d4a2b15fff19
-vendor/lib64/libsec-ril-dsds.so|7f3ca549dd6ee972c19c18441ccfbe58171e6daf
-vendor/lib64/libsec-ril.so|55bd2ceb611360e13d5907120203dd51daf60e89
-vendor/lib64/libsec_semRil.so|7987ec9be7bf937438c43fc0b9859f6c9b4b5787
-vendor/lib64/libsecnativefeature.so|db918252c537272b99651bee58e6ab017549b623
+-vendor/lib/libsemnativecarrierfeature.so;DISABLE_DEPS|7aeaf1049ffa3718eb4beed0739624c0cb4c9847
+-vendor/lib/libvkmanager_vendor.so;DISABLE_DEPS|9227ca82047d99fbe3a6ffdf203e41b862e48691
+-vendor/lib/vendor.samsung.hardware.radio.bridge@2.0.so;DISABLE_DEPS|c130cf05828ee1e415cf5823f2a67e023508f710
+-vendor/lib/vendor.samsung.hardware.radio.channel@2.0.so;DISABLE_DEPS|8f1ef76608e97b5864e30ea2f2aff2f685eb4d8e
+-vendor/lib64/libengmode_client.so;DISABLE_DEPS|ac3615bb78e4e569841abd804c0278c6de181b2c
+-vendor/lib64/libril.so;DISABLE_DEPS|d81e76523a5a28fdf488fa42c0e1d4a2b15fff19
+-vendor/lib64/libsec-ril-dsds.so;DISABLE_DEPS|7f3ca549dd6ee972c19c18441ccfbe58171e6daf
+-vendor/lib64/libsec-ril.so;DISABLE_DEPS|55bd2ceb611360e13d5907120203dd51daf60e89
+-vendor/lib64/libsec_semRil.so;DISABLE_DEPS|7987ec9be7bf937438c43fc0b9859f6c9b4b5787
+-vendor/lib64/libsecnativefeature.so;DISABLE_DEPS|db918252c537272b99651bee58e6ab017549b623
 -vendor/lib64/libsecril-client.so|86b71fb3fb1daa5bc5293d38779c528126e0cfa3
-vendor/lib64/libsemnativecarrierfeature.so|3a1058f01dd6a7663272fdba6a0ea53b9253f934
-vendor/lib64/libvkmanager_vendor.so|c251a0386644c03760148177047ddb0c437029e5
-vendor/lib64/vendor.samsung.hardware.radio.bridge@2.0.so|ac01bab3a779374005bb6b94e8b354107671d5dc
-vendor/lib64/vendor.samsung.hardware.radio.channel@2.0.so|44d2173ab0187ec3460dd54135e2b406bc93b098
-vendor/lib64/vendor.samsung.hardware.radio@2.0.so|e9985c207ffec829a1746af29d45d9da1994805f
-vendor/lib64/vendor.samsung.hardware.radio@2.1.so|12953d8fe923094410dfa0ea983515b0b16e8eba
+-vendor/lib64/libsemnativecarrierfeature.so;DISABLE_DEPS|3a1058f01dd6a7663272fdba6a0ea53b9253f934
+-vendor/lib64/libvkmanager_vendor.so;DISABLE_DEPS|c251a0386644c03760148177047ddb0c437029e5
+-vendor/lib64/vendor.samsung.hardware.radio.bridge@2.0.so;DISABLE_DEPS|ac01bab3a779374005bb6b94e8b354107671d5dc
+-vendor/lib64/vendor.samsung.hardware.radio.channel@2.0.so;DISABLE_DEPS|44d2173ab0187ec3460dd54135e2b406bc93b098
 
 # Sensors
-lib/libsensorlistener.so
-lib64/libsensorlistener.so
+-lib/libsensorlistener.so;DISABLE_DEPS
+-lib64/libsensorlistener.so;DISABLE_DEPS
 
 # Wifi and bluetooth firmware
 etc/firmware/bdwlan30.bin
