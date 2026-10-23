@@ -188,3 +188,6 @@
 /data/vendor/bluetooth(/.*)?    u:object_r:vendor_bluetooth_data_file:s0
 
 /(vendor|system/vendor)/bin/hw/android\.hardware\.bluetooth-service\.universal7880 u:object_r:hal_bluetooth_default_exec:s0
+
+# GNSS service
+/(vendor|system/vendor)/bin/hw/android\.hardware\.gnss@1\.0-service\.universal7880  u:object_r:hal_gnss_default_exec:s0
