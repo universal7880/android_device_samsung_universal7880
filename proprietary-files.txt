@@ -113,7 +113,7 @@ vendor/lib/libsec-ril-dsds.so|1bf5ba8954f7d0b8fc13b71aa4df7aa0bb0fa5ae
 vendor/lib/libsec-ril.so|5888ae1363fdb0ba5ec9e02df0cd1a12d64e6184
 vendor/lib/libsec_semRil.so|0e098bc1099a8cb466e29b2918c8968d214fb56c
 vendor/lib/libsecnativefeature.so|268dfdbb80196ac0d16abcce9109f87518753361
-vendor/lib/libsecril-client.so|af77c32b35ab1a2b7ee5f38e529e7eb8dee0a195
+-vendor/lib/libsecril-client.so|af77c32b35ab1a2b7ee5f38e529e7eb8dee0a195
 vendor/lib/libsemnativecarrierfeature.so|7aeaf1049ffa3718eb4beed0739624c0cb4c9847
 vendor/lib/libvkmanager_vendor.so|9227ca82047d99fbe3a6ffdf203e41b862e48691
 vendor/lib/vendor.samsung.hardware.radio.bridge@2.0.so|c130cf05828ee1e415cf5823f2a67e023508f710
@@ -126,7 +126,7 @@ vendor/lib64/libsec-ril-dsds.so|7f3ca549dd6ee972c19c18441ccfbe58171e6daf
 vendor/lib64/libsec-ril.so|55bd2ceb611360e13d5907120203dd51daf60e89
 vendor/lib64/libsec_semRil.so|7987ec9be7bf937438c43fc0b9859f6c9b4b5787
 vendor/lib64/libsecnativefeature.so|db918252c537272b99651bee58e6ab017549b623
-vendor/lib64/libsecril-client.so|86b71fb3fb1daa5bc5293d38779c528126e0cfa3
+-vendor/lib64/libsecril-client.so|86b71fb3fb1daa5bc5293d38779c528126e0cfa3
 vendor/lib64/libsemnativecarrierfeature.so|3a1058f01dd6a7663272fdba6a0ea53b9253f934
 vendor/lib64/libvkmanager_vendor.so|c251a0386644c03760148177047ddb0c437029e5
 vendor/lib64/vendor.samsung.hardware.radio.bridge@2.0.so|ac01bab3a779374005bb6b94e8b354107671d5dc
