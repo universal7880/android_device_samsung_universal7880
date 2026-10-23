@@ -31,7 +31,6 @@ TARGET_NO_RADIOIMAGE := true
 # Platform
 TARGET_BOARD_PLATFORM := exynos5
 TARGET_SOC := exynos7880
-include hardware/samsung_slsi-linaro/config/BoardConfig7880.mk
 TARGET_BOOTLOADER_BOARD_NAME := universal7880
 BOARD_VENDOR := samsung
 
@@ -47,6 +46,8 @@ TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
+
+include hardware/samsung_slsi-linaro/config/BoardConfig7880.mk
 
 # Extracted with libbootimg
 BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
@@ -198,3 +199,6 @@ TARGET_KERNEL_CONFIG := lineage-universal7880_defconfig
 
 # OTA
 TARGET_OTA_ASSERT_DEVICE := universal7880,a5y17lte,a5y17ltexx,a5y17ltecan,a5y17ltektt,a5y17ltelgt,a5y17lteskt,a7y17lte,a7y17ltexx,a7y17lteskt
+
+# Legacy audio Soong configuration
+include hardware/samsung/audio/config.mk
