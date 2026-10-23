@@ -7,3 +7,9 @@ vintf_compatibility_matrix {
     stem: "compatibility_matrix.4.xml",
     srcs: ["compatibility_matrix.4.xml"],
 }
+
+cc_library_headers {
+    name: "libaudio_headers_universal7880",
+    vendor_available: true,
+    export_include_dirs: ["include"],
+}
