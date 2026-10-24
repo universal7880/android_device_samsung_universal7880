@@ -1,0 +1,11 @@
+cc_test_host {
+    name: "universal7880_thermal_policy_test",
+    srcs: ["PolicyTest.cpp"],
+    cpp_std: "c++17",
+    gtest: false,
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+}

@@ -199,3 +199,5 @@
 
 /sys/devices/virtual/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
 /sys/class/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
+
+/sys/devices/11400000\.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0

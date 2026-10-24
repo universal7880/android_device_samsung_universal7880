@@ -42,3 +42,6 @@ type vendor_bluetooth_data_file, file_type, data_file_type;
 
 # AP board thermistor used for the calibrated skin estimate.
 type sysfs_ap_thermal, fs_type, sysfs_type;
+
+# Dedicated AP-policy request, separate from the kernel TMU and user GPU locks.
+type sysfs_gpu_thermal, fs_type, sysfs_type;

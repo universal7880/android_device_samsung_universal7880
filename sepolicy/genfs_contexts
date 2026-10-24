@@ -10,3 +10,5 @@ genfscon sysfs /devices/virtual/sec/tsp/dt2w_enable u:object_r:sysfs_touchscreen
 # The AP thermistor is distinct from the CPU/GPU die thermal zones.
 genfscon sysfs /devices/virtual/sec/sec-ap-thermistor u:object_r:sysfs_ap_thermal:s0
 genfscon sysfs /class/sec/sec-ap-thermistor u:object_r:sysfs_ap_thermal:s0
+
+genfscon sysfs /devices/11400000.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0

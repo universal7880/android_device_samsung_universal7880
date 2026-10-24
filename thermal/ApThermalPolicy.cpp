@@ -2,6 +2,7 @@
  * Copyright (C) 2026 The LineageOS Project
  */
 #include "ApThermalPolicy.h"
+#include "Policy.h"
 
 #include <android-base/file.h>
 #include <android-base/logging.h>
@@ -12,6 +13,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cerrno>
 #include <cmath>
 #include <numeric>
 
@@ -22,9 +25,9 @@ namespace {
 // A720SKSU5CUJ2 ssrm_a7y17_xx.xml. Temperatures are AP/PST deci-Celsius.
 constexpr std::array<int32_t, 7> kCpuLimits = {
         -1, 1794000, 1690000, 1586000, 1352000, 1144000, 1014000};
-constexpr int kTripStep = 20;
-// Native policy hysteresis: avoid repeatedly changing limits near a boundary.
-constexpr int kReleaseGap = 20;
+// AP GPU caps from the same profiles; the first cap starts 2 C after the CPU cap.
+constexpr std::array<int32_t, 4> kGpuLimits = {0, 756, 548, 449};
+using policy::kTripStep;
 // Fixed-window AP filtering used by the Pie profile, sampled by the HAL at 2 s.
 constexpr size_t kWindowSize = 15;
 constexpr int64_t kResetAfterMs = 10000;
@@ -52,6 +55,12 @@ ThrottlingSeverity severityForLevel(size_t level) {
 }
 
 }  // namespace
+
+ApThermalPolicy::~ApThermalPolicy() {
+    if (gpuRequest_.get() >= 0 && !setGpuLimit(0)) {
+        LOG(ERROR) << "Cannot release the AP thermal GPU request";
+    }
+}
 
 bool ApThermalPolicy::initialize() {
     const auto model = ::android::base::GetProperty("ro.vendor.universal7880.device", "");
@@ -88,6 +97,17 @@ bool ApThermalPolicy::initialize() {
         }
     }
 
+    gpuRequest_.reset(TEMP_FAILURE_RETRY(open(
+            "/sys/devices/11400000.mali/thermal_max_lock", O_WRONLY | O_CLOEXEC)));
+    if (gpuRequest_.get() < 0) {
+        if (errno != ENOENT) {
+            PLOG(ERROR) << "Cannot open the AP thermal GPU request";
+            return false;
+        }
+        // Allow the CPU policy to run when testing the HAL on an older kernel.
+        LOG(WARNING) << "No independent AP thermal GPU request; keeping kernel GPU protection";
+    }
+
     threshold_.type = TemperatureType::SKIN;
     threshold_.name = "ap-skin-estimate";
     threshold_.hotThrottlingThresholds.assign(kSeverityCount, NAN);
@@ -95,13 +115,16 @@ bool ApThermalPolicy::initialize() {
     for (const auto severity : {ThrottlingSeverity::LIGHT, ThrottlingSeverity::MODERATE,
                                 ThrottlingSeverity::SEVERE}) {
         const auto index = static_cast<size_t>(severity);
-        threshold_.hotThrottlingThresholds[index] =
-                (firstTrip_ + 2 * (static_cast<int>(index) - 1) * kTripStep - skinOffset_) / 10.0f;
+        int trip = firstTrip_ + 2 * (static_cast<int>(index) - 1) * kTripStep;
+        if (hasGpuPolicy()) trip = std::min(trip, firstTrip_ + static_cast<int>(index) * kTripStep);
+        threshold_.hotThrottlingThresholds[index] = (trip - skinOffset_) / 10.0f;
     }
     temperature_.type = TemperatureType::SKIN;
     temperature_.name = threshold_.name;
     coolingDevice_.type = CoolingType::CPU;
     coolingDevice_.name = "ap-cpu-limit";
+    gpuCoolingDevice_.type = CoolingType::GPU;
+    gpuCoolingDevice_.name = "ap-gpu-limit";
     enabled_ = true;
     LOG(INFO) << "Using " << model << " AP thermal profile at " << path_;
     return update();
@@ -121,6 +144,19 @@ bool ApThermalPolicy::setCpuLimit(size_t level) {
     }
     appliedLevel_ = static_cast<int>(level);
     LOG(INFO) << "AP thermal CPU limit: " << limit << " kHz, level " << level;
+    return true;
+}
+
+bool ApThermalPolicy::setGpuLimit(size_t level) {
+    if (!hasGpuPolicy() || appliedGpuLevel_ == static_cast<int>(level)) return true;
+    const auto value = std::to_string(kGpuLimits[level]);
+    if (lseek(gpuRequest_.get(), 0, SEEK_SET) < 0 ||
+        !::android::base::WriteStringToFd(value, gpuRequest_.get())) {
+        PLOG(ERROR) << "Cannot update the AP thermal GPU request";
+        return false;
+    }
+    appliedGpuLevel_ = static_cast<int>(level);
+    LOG(INFO) << "AP thermal GPU limit: " << value << " MHz, level " << level;
     return true;
 }
 
@@ -148,25 +184,22 @@ bool ApThermalPolicy::update() {
     const int filtered = std::accumulate(samples_.begin(), samples_.end(), 0) /
             static_cast<int>(samples_.size());
 
-    size_t level = level_;
-    while (level + 1 < kCpuLimits.size() &&
-           filtered >= firstTrip_ + static_cast<int>(level) * kTripStep) {
-        ++level;
-    }
-    while (level > 0 &&
-           filtered < firstTrip_ + static_cast<int>(level - 1) * kTripStep - kReleaseGap) {
-        --level;
-    }
-    if (!setCpuLimit(level)) {
+    const size_t level = policy::nextLevel(filtered, firstTrip_, level_, kCpuLimits.size());
+    const size_t gpuLevel = hasGpuPolicy()
+            ? policy::nextLevel(filtered, firstTrip_ + kTripStep, gpuLevel_, kGpuLimits.size()) : 0;
+    if (!setCpuLimit(level) || !setGpuLimit(gpuLevel)) {
         setUnavailable();
         return false;
     }
     level_ = level;
+    gpuLevel_ = gpuLevel;
     std::lock_guard lock(mutex_);
     // Samsung estimates skin temperature as filtered AP temperature minus model gap.
     temperature_.value = (filtered - skinOffset_) / 10.0f;
-    temperature_.throttlingStatus = severityForLevel(level_);
+    temperature_.throttlingStatus = std::max(severityForLevel(level_),
+            static_cast<ThrottlingSeverity>(gpuLevel_));
     coolingDevice_.value = level_;
+    gpuCoolingDevice_.value = gpuLevel_;
     available_ = true;
     return true;
 }
@@ -181,6 +214,11 @@ bool ApThermalPolicy::getTemperature(Temperature* out) const {
 CoolingDevice ApThermalPolicy::getCoolingDevice() const {
     std::lock_guard lock(mutex_);
     return coolingDevice_;
+}
+
+CoolingDevice ApThermalPolicy::getGpuCoolingDevice() const {
+    std::lock_guard lock(mutex_);
+    return gpuCoolingDevice_;
 }
 
 }  // namespace aidl::android::hardware::thermal

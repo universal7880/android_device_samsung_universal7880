@@ -19,15 +19,19 @@ namespace aidl::android::hardware::thermal {
 // Board-temperature policy, separate from the die TMU governor.
 class ApThermalPolicy {
   public:
+    ~ApThermalPolicy();
     bool initialize();
     bool enabled() const { return enabled_; }
     bool update();
     bool getTemperature(Temperature* out) const;
     CoolingDevice getCoolingDevice() const;
+    bool hasGpuPolicy() const { return gpuRequest_.get() >= 0; }
+    CoolingDevice getGpuCoolingDevice() const;
     const TemperatureThreshold& getThreshold() const { return threshold_; }
 
   private:
     bool setCpuLimit(size_t level);
+    bool setGpuLimit(size_t level);
     void setUnavailable();
 
     bool enabled_ = false;
@@ -35,16 +39,20 @@ class ApThermalPolicy {
     int firstTrip_ = 0;
     int skinOffset_ = 0;
     std::array<::android::base::unique_fd, 2> cpuRequests_;
+    ::android::base::unique_fd gpuRequest_;
     std::deque<int> samples_;
     int64_t lastSampleMs_ = 0;
     size_t level_ = 0;
+    size_t gpuLevel_ = 0;
     int appliedLevel_ = -1;
+    int appliedGpuLevel_ = -1;
     TemperatureThreshold threshold_;
 
     mutable std::mutex mutex_;
     bool available_ = false;
     Temperature temperature_;
     CoolingDevice coolingDevice_;
+    CoolingDevice gpuCoolingDevice_;
 };
 
 }  // namespace aidl::android::hardware::thermal
