@@ -21,8 +21,6 @@ vendor/etc/Tfa9896.cnt
 -lib64/libuniapi.so;DISABLE_DEPS
 -lib/libuniplugin.so;DISABLE_DEPS
 -lib64/libuniplugin.so;DISABLE_DEPS
-vendor/firmware/setfile_3p8_front.bin
-vendor/firmware/setfile_3p8.bin
 
 # DRM
 -vendor/lib/liboemcrypto.so;DISABLE_DEPS
@@ -61,10 +59,6 @@ vendor/etc/gnss/ca.pem
 -vendor/lib/egl/libGLES_mali.so;DISABLE_DEPS
 -vendor/lib64/egl/libGLES_mali.so;DISABLE_DEPS
 
-# Media
-vendor/firmware/fimc_is_lib.bin
-vendor/firmware/mfc_fw.bin
-
 # Mobicore
 vendor/app/mcRegistry/07010000000000000000000000000000.tlbin
 vendor/app/mcRegistry/07060000000000000000000000000000.tlbin
@@ -92,10 +86,6 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -vendor/lib/libMcRegistry.so;DISABLE_DEPS
 -vendor/lib64/libMcRegistry.so;DISABLE_DEPS
 -vendor/bin/mcDriverDaemon;DISABLE_DEPS
-
-# NFC
-vendor/etc/nfc/sec_s3nrn81_rfreg.bin
-vendor/firmware/nfc/sec_s3nrn81_firmware.bin
 
 # libsecnativefeature
 -lib/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
@@ -131,15 +121,29 @@ vendor/firmware/nfc/sec_s3nrn81_firmware.bin
 -lib/libsensorlistener.so;DISABLE_DEPS
 -lib64/libsensorlistener.so;DISABLE_DEPS
 
-# Wifi and bluetooth firmware
+# Bluetooth firmware
+etc/firmware/nvm_tlv_tf_1.1.bin:vendor/firmware/nvm_tlv_tf_1.1.bin
+etc/firmware/rampatch_tlv_tf_1.1.tlv:vendor/firmware/rampatch_tlv_tf_1.1.tlv
+
+# Camera firmware
+vendor/firmware/fimc_is_lib.bin
+vendor/firmware/setfile_3p8.bin
+vendor/firmware/setfile_3p8_front.bin
+
+# NFC firmware and RF configuration
+vendor/etc/nfc/sec_s3nrn81_rfreg.bin
+vendor/firmware/nfc/sec_s3nrn81_firmware.bin
+
+# Video firmware
+vendor/firmware/mfc_fw.bin
+
+# Wi-Fi firmware
 etc/firmware/bdwlan30.bin
 etc/firmware/bdwlan32.bin
 etc/firmware/Data.msc
-etc/firmware/nvm_tlv_tf_1.1.bin:vendor/firmware/nvm_tlv_tf_1.1.bin
 etc/firmware/otp30.bin
 etc/firmware/qwlan30.bin
 etc/firmware/qwlan30_ibss.bin
-etc/firmware/rampatch_tlv_tf_1.1.tlv:vendor/firmware/rampatch_tlv_tf_1.1.tlv
 etc/firmware/utf30.bin
 etc/firmware/utfbd30.bin
 etc/firmware/utfbd32.bin
