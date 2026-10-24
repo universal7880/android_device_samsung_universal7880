@@ -7,7 +7,7 @@
 
 set -e
 
-DEVICE_COMMON=universal7880-common
+DEVICE=universal7880
 VENDOR=samsung
 
 # Load extractutils and do some sanity checks
@@ -29,10 +29,10 @@ fi
 source "${HELPER}"
 
 # Initialize the helper
-setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ANDROID_ROOT}" true
+setup_vendor "${DEVICE}" "${VENDOR}" "${ANDROID_ROOT}" false
 
 # Warning headers and guards
-write_headers "universal7880"
+write_headers
 
 write_makefiles "${MY_DIR}/proprietary-files.txt" true
 
@@ -40,7 +40,7 @@ write_makefiles "${MY_DIR}/proprietary-files.txt" true
 # CUSTOM PART START                                                                               #
 ###################################################################################################
 
-OUTDIR=vendor/$VENDOR/$DEVICE_COMMON
+OUTDIR=vendor/$VENDOR/$DEVICE
 
 (cat << EOF) >> $ANDROID_ROOT/$OUTDIR/Android.mk
 include \$(CLEAR_VARS)
@@ -72,10 +72,4 @@ EOF
 # Done
 write_footers
 
-# The vendor directory keeps its existing name; the generator lives in the unified tree.
-for generated in "$ANDROIDMK" "$BOARDMK" "$PRODUCTMK" "$ANDROIDBP"; do
-    sed "s@device/$VENDOR/$DEVICE_COMMON/setup-makefiles.sh@device/$VENDOR/universal7880/setup-makefiles.sh@" \
-        "$generated" > "$generated.tmp"
-    mv "$generated.tmp" "$generated"
-done
 "$ANDROID_ROOT/prebuilts/build-tools/$HOST-x86/bin/bpfmt" -w "$ANDROIDBP"

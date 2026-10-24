@@ -7,7 +7,7 @@
 
 set -e
 
-DEVICE_COMMON=universal7880-common
+DEVICE=universal7880
 VENDOR=samsung
 
 # Load extractutils and do some sanity checks
@@ -53,12 +53,12 @@ if [ -z "${SRC}" ]; then
 fi
 
 # Initialize the helper
-setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ANDROID_ROOT}" true "${CLEAN_VENDOR}"
+setup_vendor "${DEVICE}" "${VENDOR}" "${ANDROID_ROOT}" false "${CLEAN_VENDOR}"
 
 extract "${MY_DIR}/proprietary-files.txt" "${SRC}" "${KANG}" --section "${SECTION}"
 
 # Fix proprietary blobs
-BLOB_ROOT="$ANDROID_ROOT"/vendor/"$VENDOR"/"$DEVICE_COMMON"/proprietary
+BLOB_ROOT="$ANDROID_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
 
 # Replace protobuf with vndk29 compat libs for specified libs
 "${PATCHELF}" --replace-needed libprotobuf-cpp-lite.so libprotobuf-cpp-lite-v29.so $BLOB_ROOT/vendor/lib/libwvhidl.so
