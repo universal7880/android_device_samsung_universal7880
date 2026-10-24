@@ -186,15 +186,6 @@ BOARD_VENDOR_SEPOLICY_DIRS := $(filter-out \
 include device/lineage/sepolicy/libperfmgr/sepolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
-# Shims
-TARGET_LD_SHIM_LIBS := \
-    /vendor/lib/libbauthserver.so|libbauthtzcommon_shim.so \
-    /vendor/lib64/libbauthserver.so|libbauthtzcommon_shim.so \
-    /system/lib/libcamera_client.so|libcamera_client_shim.so \
-    /system/lib64/libcamera_client.so|libcamera_client_shim.so \
-    /system/lib/libexynoscamera.so|libexynoscamera_shim.so \
-    /system/lib64/libexynoscamera.so|libexynoscamera_shim.so
-
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(DEVICE_PATH)
 

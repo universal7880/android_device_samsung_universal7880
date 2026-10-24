@@ -68,4 +68,11 @@ BLOB_ROOT="$ANDROID_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
 patchelf --replace-needed libvndsecril-client.so libsecril-client.so $BLOB_ROOT/vendor/lib/libwrappergps.so
 patchelf --replace-needed libvndsecril-client.so libsecril-client.so $BLOB_ROOT/vendor/lib64/libwrappergps.so
 
+# Link each legacy blob to its compatibility shim without linker injection.
+for LIBDIR in lib lib64; do
+    "${PATCHELF}" --add-needed libcamera_client_shim.so "$BLOB_ROOT/$LIBDIR/libexynoscamera.so"
+    "${PATCHELF}" --add-needed libexynoscamera_shim.so "$BLOB_ROOT/$LIBDIR/libexynoscamera.so"
+    "${PATCHELF}" --add-needed libbauthtzcommon_shim.so "$BLOB_ROOT/vendor/$LIBDIR/libbauthserver.so"
+done
+
 "${MY_DIR}/setup-makefiles.sh"
