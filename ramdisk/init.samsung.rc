@@ -750,7 +750,7 @@ on boot
     chown system system /sys/class/sec/tsp/ta_mode
 
     # Permissions for Touchkey
-    chmod 0660 /sys/class/sec_touchkey/input/enabled
+    chmod 0660 /sys/class/sec/sec_touchkey/input/enabled
     chown system system /sys/class/sec/sec_touchkey/input/enabled
     chown system radio /sys/class/sec/sec_touchkey/brightness
     chown system radio /sys/class/sec/sec_touchkey/touchkey_firm_update
