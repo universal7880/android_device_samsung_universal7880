@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "ApThermalPolicy.h"
+
 #include <aidl/android/hardware/thermal/BnThermal.h>
 #include <condition_variable>
 #include <map>
@@ -64,6 +66,7 @@ class Thermal : public BnThermal {
                                       const std::shared_ptr<Callback>& callback);
     void monitor();
 
+    ApThermalPolicy apPolicy_;
     std::vector<Sensor> sensors_;
     std::vector<Cooler> coolers_;
     std::vector<Registration<IThermalChangedCallback, TemperatureType>> thermalCallbacks_;

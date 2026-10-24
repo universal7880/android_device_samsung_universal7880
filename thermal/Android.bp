@@ -5,7 +5,7 @@ cc_binary {
     relative_install_path: "hw",
     init_rc: ["thermal.rc"],
     vintf_fragments: ["thermal.xml"],
-    srcs: ["Thermal.cpp", "service.cpp"],
+    srcs: ["ApThermalPolicy.cpp", "Thermal.cpp", "service.cpp"],
     shared_libs: [
         "android.hardware.thermal-V2-ndk",
         "libbase",

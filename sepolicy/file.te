@@ -39,3 +39,6 @@ type debugfs_mali, fs_type, debugfs_type;
 type debugfs_ion, fs_type, debugfs_type;
 
 type vendor_bluetooth_data_file, file_type, data_file_type;
+
+# AP board thermistor used for the calibrated skin estimate.
+type sysfs_ap_thermal, fs_type, sysfs_type;

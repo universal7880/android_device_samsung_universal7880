@@ -161,3 +161,7 @@
 
 # FM tuner
 /dev/radio0               0660   system     audio
+
+# Per-client CPU maximum requests used by the AP thermal policy.
+/dev/cluster0_freq_max     0660   system     system
+/dev/cluster1_freq_max     0660   system     system

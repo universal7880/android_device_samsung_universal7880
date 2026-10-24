@@ -196,3 +196,6 @@
 
 # Keep restorecon consistent with the common thermal genfs label.
 /sys/devices/virtual/thermal(/.*)? u:object_r:sysfs_thermal:s0
+
+/sys/devices/virtual/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
+/sys/class/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
