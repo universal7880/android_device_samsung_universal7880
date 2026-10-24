@@ -153,10 +153,6 @@ PRODUCT_PACKAGES += \
     camera.exynos5 \
     android.hardware.camera.provider@2.5-service
 
-# Camera service
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/vendor.samsung.hardware.camera.provider@2.4-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.samsung.hardware.camera.provider@2.4-service.rc
-
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
