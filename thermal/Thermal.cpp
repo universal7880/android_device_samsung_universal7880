@@ -119,6 +119,7 @@ bool Thermal::initialize() {
         coolers_.push_back({path, device});
     }
     if (sensors_.size() != 3 || coolers_.empty()) return false;
+    if (!apPolicy_.initialize()) return false;
     std::vector<Temperature> temperatures;
     std::vector<CoolingDevice> cooling;
     if (!getTemperatures(&temperatures).isOk() || !getCoolingDevices(&cooling).isOk()) return false;
@@ -163,6 +164,11 @@ ndk::ScopedAStatus Thermal::getTemperatures(std::vector<Temperature>* out) {
         }
         out->push_back(temperature);
     }
+    if (apPolicy_.enabled()) {
+        Temperature skin;
+        if (!apPolicy_.getTemperature(&skin)) return readError("AP thermal policy");
+        out->push_back(skin);
+    }
     return ndk::ScopedAStatus::ok();
 }
 
@@ -176,6 +182,7 @@ ndk::ScopedAStatus Thermal::getTemperaturesWithType(TemperatureType type,
 ndk::ScopedAStatus Thermal::getTemperatureThresholds(std::vector<TemperatureThreshold>* out) {
     out->clear();
     for (const auto& sensor : sensors_) out->push_back(sensor.threshold);
+    if (apPolicy_.enabled()) out->push_back(apPolicy_.getThreshold());
     return ndk::ScopedAStatus::ok();
 }
 
@@ -196,6 +203,7 @@ ndk::ScopedAStatus Thermal::getCoolingDevices(std::vector<CoolingDevice>* out) {
             device.value < 0 || device.value > maximum) return readError(cooler.path);
         out->push_back(device);
     }
+    if (apPolicy_.enabled()) out->push_back(apPolicy_.getCoolingDevice());
     return ndk::ScopedAStatus::ok();
 }
 
@@ -266,12 +274,22 @@ ndk::ScopedAStatus Thermal::unregisterCoolingDeviceChangedCallback(
 }
 
 void Thermal::monitor() {
+    bool policyAvailable = true;
     while (true) {
         std::unique_lock lock(mutex_);
         if (condition_.wait_for(lock, std::chrono::seconds(2), [this] { return stopping_; })) return;
         const auto thermalCallbacks = thermalCallbacks_;
         const auto coolingCallbacks = coolingCallbacks_;
         lock.unlock();
+        const bool policyUpdated = apPolicy_.update();
+        if (policyUpdated != policyAvailable) {
+            if (policyUpdated) {
+                LOG(INFO) << "AP thermal policy recovered";
+            } else {
+                LOG(ERROR) << "AP thermal update failed; retaining the previous CPU limit";
+            }
+            policyAvailable = policyUpdated;
+        }
         if (thermalCallbacks.empty() && coolingCallbacks.empty()) continue;
 
         std::vector<Temperature> temperatures;
