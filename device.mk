@@ -422,4 +422,4 @@ PRODUCT_PACKAGES += \
 $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_m.mk)
 
 # call the proprietary setup
-$(call inherit-product, vendor/samsung/universal7880-common/universal7880-common-vendor.mk)
+$(call inherit-product, vendor/samsung/universal7880/universal7880-vendor.mk)
