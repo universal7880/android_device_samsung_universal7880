@@ -121,6 +121,8 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -lib/libsensorlistener.so;DISABLE_DEPS
 -lib64/libsensorlistener.so;DISABLE_DEPS
 
+## Firmware and hardware data
+
 # Bluetooth firmware
 etc/firmware/nvm_tlv_tf_1.1.bin:vendor/firmware/nvm_tlv_tf_1.1.bin
 etc/firmware/rampatch_tlv_tf_1.1.tlv:vendor/firmware/rampatch_tlv_tf_1.1.tlv
