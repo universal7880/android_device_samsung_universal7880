@@ -314,7 +314,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_VENDOR_PROPERTIES += \
     vendor.powerhal.disp.idle_support=false \
-    vendor.powerhal.interaction.min=200 \
+    vendor.powerhal.interaction.min=80 \
     vendor.powerhal.interaction.max=5650 \
     vendor.powerhal.interaction.offset=0
 
