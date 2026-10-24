@@ -247,9 +247,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.nfc@1.2-service.samsung \
     com.android.nfc_extras \
-    libnfc-nci \
-    libnfc_nci_jni \
-    NfcNci \
     Tag
 
 # Audio
