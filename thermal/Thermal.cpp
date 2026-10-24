@@ -75,20 +75,8 @@ bool Thermal::initialize() {
         threshold.type = type;
         threshold.hotThrottlingThresholds.assign(kSeverityCount, NAN);
         threshold.coldThrottlingThresholds.assign(kSeverityCount, NAN);
-        // Only the onset of active cooling has a directly observable threshold.
-        // Higher severities below are derived from cooling states, not trip indices.
-        for (const auto& trip : entries(path + "/", "trip_point_")) {
-            if (!::android::base::EndsWith(trip, "_type")) continue;
-            std::string tripType;
-            int64_t value;
-            if (readText(trip, &tripType) && (tripType == "active" || tripType == "passive") &&
-                readNumber(trip.substr(0, trip.size() - 5) + "_temp", &value)) {
-                float& onset = threshold.hotThrottlingThresholds[
-                        static_cast<size_t>(ThrottlingSeverity::LIGHT)];
-                const float temperature = value / 1000.0f;
-                if (std::isnan(onset) || temperature < onset) onset = temperature;
-            }
-        }
+        // Samsung marks the initial, unthrottled state as an active trip too.
+        // Trip types alone cannot identify the onset of frequency limiting.
         std::vector<std::string> coolingPaths;
         for (const auto& link : entries(path + "/", "cdev")) {
             const auto suffix = link.substr(link.find_last_of('/') + 1);
