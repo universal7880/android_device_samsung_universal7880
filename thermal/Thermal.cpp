@@ -192,6 +192,7 @@ ndk::ScopedAStatus Thermal::getCoolingDevices(std::vector<CoolingDevice>* out) {
         out->push_back(device);
     }
     if (apPolicy_.enabled()) out->push_back(apPolicy_.getCoolingDevice());
+    if (apPolicy_.hasGpuPolicy()) out->push_back(apPolicy_.getGpuCoolingDevice());
     return ndk::ScopedAStatus::ok();
 }
 
@@ -274,7 +275,7 @@ void Thermal::monitor() {
             if (policyUpdated) {
                 LOG(INFO) << "AP thermal policy recovered";
             } else {
-                LOG(ERROR) << "AP thermal update failed; retaining the previous CPU limit";
+                LOG(ERROR) << "AP thermal update failed; retaining the previous limits";
             }
             policyAvailable = policyUpdated;
         }

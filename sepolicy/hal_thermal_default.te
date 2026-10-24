@@ -11,3 +11,5 @@ allow hal_thermal_default sysfs_thermal:lnk_file read;
 r_dir_file(hal_thermal_default, sysfs_ap_thermal)
 allow hal_thermal_default pm_qos_device:chr_file { open write getattr };
 get_prop(hal_thermal_default, vendor_universal7880_variant_prop)
+
+allow hal_thermal_default sysfs_gpu_thermal:file rw_file_perms;

@@ -1,3 +1,7 @@
+on post-fs-data
+    chown system system /sys/devices/11400000.mali/thermal_max_lock
+    chmod 0640 /sys/devices/11400000.mali/thermal_max_lock
+
 service vendor.thermal-hal /vendor/bin/hw/android.hardware.thermal-service.universal7880
     class hal
     user system
