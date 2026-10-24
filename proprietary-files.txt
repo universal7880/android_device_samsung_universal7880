@@ -140,17 +140,17 @@ vendor/firmware/nfc/sec_s3nrn81_firmware.bin
 vendor/firmware/mfc_fw.bin
 
 # Wi-Fi firmware
-etc/firmware/bdwlan30.bin
-etc/firmware/bdwlan32.bin
-etc/firmware/Data.msc
-etc/firmware/otp30.bin
-etc/firmware/qwlan30.bin
-etc/firmware/qwlan30_ibss.bin
-etc/firmware/utf30.bin
-etc/firmware/utfbd30.bin
-etc/firmware/utfbd32.bin
+etc/firmware/bdwlan30.bin:vendor/firmware/bdwlan30.bin
+etc/firmware/bdwlan32.bin:vendor/firmware/bdwlan32.bin
+etc/firmware/Data.msc:vendor/firmware/Data.msc
+etc/firmware/otp30.bin:vendor/firmware/otp30.bin
+etc/firmware/qwlan30.bin:vendor/firmware/qwlan30.bin
+etc/firmware/qwlan30_ibss.bin:vendor/firmware/qwlan30_ibss.bin
+etc/firmware/utf30.bin:vendor/firmware/utf30.bin
+etc/firmware/utfbd30.bin:vendor/firmware/utfbd30.bin
+etc/firmware/utfbd32.bin:vendor/firmware/utfbd32.bin
 # a5y17lte config is set to load a different firmware, which is not
 # present in A720S stock rom. We need to pull these from A520F oreo.
 # A520FXXUBCSG1
-etc/firmware/bdwlan30_OLD.bin|5eb5823f9349c64797cffbf5f3386b355777d309
-etc/firmware/utfbd30_OLD.bin|5eb5823f9349c64797cffbf5f3386b355777d309
+etc/firmware/bdwlan30_OLD.bin:vendor/firmware/bdwlan30_OLD.bin|5eb5823f9349c64797cffbf5f3386b355777d309
+etc/firmware/utfbd30_OLD.bin:vendor/firmware/utfbd30_OLD.bin|5eb5823f9349c64797cffbf5f3386b355777d309
