@@ -138,13 +138,16 @@ ndk::ScopedAStatus Thermal::getTemperatures(std::vector<Temperature>* out) {
         // Initial cooling is LIGHT, intermediate states MODERATE and maximum SEVERE.
         // Do not manufacture critical/shutdown policy from Samsung's hardware trips.
         for (const auto& link : sensor.coolingPaths) {
-            int64_t state, maximum;
-            if (!readNumber(link + "/cur_state", &state) ||
-                !readNumber(link + "/max_state", &maximum) || state < 0 || state > maximum) {
+            int64_t state;
+            if (!readNumber(link + "/cur_state", &state) || state < 0) {
                 return readError(link);
             }
             auto severity = ThrottlingSeverity::NONE;
             if (state > 0) {
+                int64_t maximum;
+                if (!readNumber(link + "/max_state", &maximum) || state > maximum) {
+                    return readError(link);
+                }
                 severity = state >= maximum ? ThrottlingSeverity::SEVERE
                          : state == 1 ? ThrottlingSeverity::LIGHT : ThrottlingSeverity::MODERATE;
             }
@@ -185,10 +188,10 @@ ndk::ScopedAStatus Thermal::getCoolingDevices(std::vector<CoolingDevice>* out) {
     out->clear();
     for (const auto& cooler : coolers_) {
         CoolingDevice device = cooler.device;
-        int64_t maximum;
-        if (!readNumber(cooler.path + "/cur_state", &device.value) ||
-            !readNumber(cooler.path + "/max_state", &maximum) ||
-            device.value < 0 || device.value > maximum) return readError(cooler.path);
+        // Report the current state even when an offline CPU has no frequency table.
+        if (!readNumber(cooler.path + "/cur_state", &device.value) || device.value < 0) {
+            return readError(cooler.path);
+        }
         out->push_back(device);
     }
     if (apPolicy_.enabled()) out->push_back(apPolicy_.getCoolingDevice());
