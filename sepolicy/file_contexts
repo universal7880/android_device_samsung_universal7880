@@ -191,3 +191,8 @@
 
 # GNSS service
 /(vendor|system/vendor)/bin/hw/android\.hardware\.gnss@1\.0-service\.universal7880  u:object_r:hal_gnss_default_exec:s0
+
+/vendor/bin/hw/android\.hardware\.thermal-service\.universal7880 u:object_r:hal_thermal_default_exec:s0
+
+# Keep restorecon consistent with the common thermal genfs label.
+/sys/devices/virtual/thermal(/.*)? u:object_r:sysfs_thermal:s0

@@ -1,0 +1,4 @@
+service vendor.thermal-hal /vendor/bin/hw/android.hardware.thermal-service.universal7880
+    class hal
+    user system
+    group system

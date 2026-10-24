@@ -1,0 +1,8 @@
+binder_use(hal_thermal_default)
+
+# The common policy grants read access to thermal files. Add sysfs traversal
+# and symlink access for the thermal class and zone-to-cooling-device links.
+allow hal_thermal_default sysfs:dir search;
+allow hal_thermal_default sysfs:lnk_file read;
+allow hal_thermal_default sysfs_virtual:dir search;
+allow hal_thermal_default sysfs_thermal:lnk_file read;

@@ -137,6 +137,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libminijail_32
 
+# Thermal
+PRODUCT_PACKAGES += \
+    android.hardware.thermal-service.universal7880
+
 # Health
 PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
