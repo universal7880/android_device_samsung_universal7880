@@ -31,14 +31,13 @@
             "ResetOnInit": true
         },
         {
-            "Name": "CpuMinFrequency",
-            "Path": "/sys/power/cpufreq_min_limit",
+            "Name": "CpuBoost",
+            "Path": "/sys/devices/system/cpu/cpu0/cpufreq/interactive/boost",
             "Values": [
-                "1872000",
-                "1242000",
+                "1",
                 "0"
             ],
-            "DefaultIndex": 2,
+            "DefaultIndex": 1,
             "ResetOnInit": true
         }
     ],
@@ -63,15 +62,15 @@
         },
         {
             "PowerHint": "INTERACTION",
-            "Node": "CpuMinFrequency",
-            "Value": "1242000",
-            "Duration": 200
+            "Node": "CpuBoost",
+            "Value": "1",
+            "Duration": 80
         },
         {
             "PowerHint": "LAUNCH",
-            "Node": "CpuMinFrequency",
-            "Value": "1872000",
-            "Duration": 2000
+            "Node": "CpuBoost",
+            "Value": "1",
+            "Duration": 80
         },
         {
             "PowerHint": "LOW_POWER",
