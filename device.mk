@@ -262,7 +262,7 @@ PRODUCT_PACKAGES += \
     android.hardware.audio@7.1-impl:32 \
     android.hardware.audio.effect@7.0-impl:32 \
     android.hardware.bluetooth.audio@2.0-impl:32 \
-    audio_amplifier.universal7880_32 \
+    audio_amplifier.universal7880 \
     audio.primary.universal7880_32 \
     audio.bluetooth.default \
     audio.usb.default \

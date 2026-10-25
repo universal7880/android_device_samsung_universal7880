@@ -1,0 +1,7 @@
+{
+    global:
+        tfa9896_open;
+        tfa9896_enable;
+        tfa9896_close;
+    local: *;
+};

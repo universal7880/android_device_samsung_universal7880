@@ -1,16 +1,19 @@
 cc_library_shared {
     name: "audio_amplifier.universal7880",
+    vendor: true,
     relative_install_path: "hw",
-    compile_multilib: "both",
+    compile_multilib: "32",
     srcs: [
         "amplifier.c",
         "tfa.c",
     ],
+    header_libs: ["libaudio_system_headers"],
     shared_libs: [
         "liblog",
         "libutils",
         "libcutils",
         "libtinyalsa",
+        "libtfa98xx",
     ],
     include_dirs: [
         "external/tinyalsa/include",

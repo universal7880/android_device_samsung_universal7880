@@ -2773,13 +2773,16 @@ enum Tfa98xx_Error tfaRunSpeakerBoost(Tfa98xx_handle_t handle, int force, int pr
 #endif
 			/* calibrate */
 			err = tfaRunSpeakerCalibration(handle, profile);
+			if (err != Tfa98xx_Error_Ok)
+				return err;
             /* SL: Added dsp reset workaround for 96 and 97 */
             switch (TFA_GET_BF(handle, REV) & 0xff)
             {
-                case 0x96:
                 case 0x97:
                     err = tfa98xx_dsp_reset(handle, 1);
+                    if (err != Tfa98xx_Error_Ok) return err;
                     err = tfa98xx_dsp_reset(handle, 0);
+                    if (err != Tfa98xx_Error_Ok) return err;
                     pr_info("Reset 97 at first cold start up\n");
                     break;
                 default:
@@ -2828,9 +2831,14 @@ enum Tfa98xx_Error tfaRunSpeakerStartup(Tfa98xx_handle_t handle, int force, int 
 	}
 
 	/* SET auto_copy_mtp_to_iic (bit 5 of A3) to 1. Workaround for 72 and 88 (see PLMA5290) */
+	if (tfa98xx_dev_family(handle) == 2) {
 	err = reg_write(handle, 0xA3, 0x20);
 	if (err)
 		return err;
+	}
+
+	err = tfa98xx_set_mute(handle, Tfa98xx_Mute_Digital);
+	if (err) return err;
 
 	/* DSP is running now */
 	/* write all the files from the device list */
@@ -2874,6 +2882,14 @@ enum Tfa98xx_Error tfaRunSpeakerCalibration(Tfa98xx_handle_t handle, int profile
 		tfa98xx_key2(handle, 0);
 	}	
 
+	/* Synchronize sensing after SBSL, as required by the TFA9896 vendor path. */
+    if ((tfa98xx_get_device_revision(handle) & 0xff) == 0x96) {
+        err = tfa98xx_dsp_reset(handle, 1);
+        if (err) goto calibration_done;
+        msleep_interruptible(5);
+        err = tfa98xx_dsp_reset(handle, 0);
+        if (err) goto calibration_done;
+    }
 	/* await calibration, this should return ok */
 	err = tfaRunWaitCalibration(handle, &calibrateDone);
 	if (err == Tfa98xx_Error_Ok) {
@@ -2900,6 +2916,7 @@ enum Tfa98xx_Error tfaRunSpeakerCalibration(Tfa98xx_handle_t handle, int profile
 		}
 	}
 
+calibration_done:
 	/* When MTPOTC is set (cal=once) re-lock key2 */
 	if (TFA_GET_BF(handle, MTPOTC) == 1) {
 		tfa98xx_key2(handle, 1);
@@ -3458,11 +3475,13 @@ error_exit:
 		show_current_state(dev);
 
 	for( dev=0; dev < devcount; dev++) {
-		tfaRunUnmute(dev);	/* unmute */
+		/* Failed initialization must not expose an uncalibrated speaker. */
+		if (err == Tfa98xx_Error_Ok)
+			err = tfaRunUnmute(dev);
 		tfaContClose(dev); /* close all of them */
 	}
 
-	return err;
+	return (enum tfa_error)err;
 }
 
 enum tfa_error tfa_stop(void)
@@ -3503,7 +3522,7 @@ error_exit:
 	for( dev=0; dev < devcount; dev++) {
 		tfaContClose(dev); /* close all of them */
 	}
-	return err;
+	return (enum tfa_error)err;
 }
 
 /*
@@ -3558,7 +3577,7 @@ enum tfa_error tfa_reset(void)
 		tfaContClose(dev);
 	}
 
-	return err;
+	return (enum tfa_error)err;
 }
 
 /*

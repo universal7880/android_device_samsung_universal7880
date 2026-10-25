@@ -1,0 +1,38 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_library_shared {
+    name: "libtfa98xx",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: [
+        "controller.c",
+        "container.c",
+        "i2c.c",
+        "nxp/tfa/src/tfa_container.c",
+        "nxp/tfa/src/tfa_container_crc32.c",
+        "nxp/tfa/src/tfa_debug.c",
+        "nxp/tfa/src/tfa_dsp.c",
+        "nxp/tfa/src/tfa_hal.c",
+        "nxp/tfa/src/tfa_init.c",
+        "nxp/tfa/src/tfa_osal.c",
+    ],
+    local_include_dirs: [
+        "nxp/tfa/linux-user-inc",
+        "nxp/tfa/inc",
+        "nxp/tfa/src",
+        "nxp/hal/inc",
+        "nxp/utl/inc",
+    ],
+    export_include_dirs: ["include"],
+    shared_libs: ["liblog"],
+    cflags: [
+        "-DTFA98XX_FULL",
+        "-fno-strict-aliasing",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-function",
+        "-Wno-sign-compare",
+    ],
+    version_script: "exports.map",
+}

@@ -40,9 +40,13 @@ static void cont_get_devs(nxpTfaContainer_t *cont);
 
 static int float_to_int(uint32_t x)
 {
-	unsigned e = (0x7F + 31) - ((*(unsigned *) &x & 0x7F800000) >> 23);
-	unsigned m = 0x80000000 | (*(unsigned *) &x << 8);
-	return -(int)((m >> e) & -(e < 32));
+    unsigned exponent = (x >> 23) & 0xff;
+    /* Zero and fractional attenuation truncate to zero. Saturate before
+     * shifting so neither zero nor large IEEE values cause undefined shifts. */
+    if (exponent < 127) return 0;
+    if (exponent >= 134) return -128;
+    unsigned mantissa = 0x80000000u | (x << 8);
+    return -(int)(mantissa >> (158 - exponent));
 }
 
 void tfa_set_partial_update(int enp)
@@ -371,7 +375,9 @@ static enum Tfa98xx_Error tfaContWriteVstep(int dev_idx,  nxpTfaVolumeStep2File_
 
 	if (vstep < vp->vsteps) {
 		/* vol = (unsigned short)(voldB / (-0.5f)); */
-		vol = (unsigned short)(-2 * float_to_int(*((uint32_t *)&vp->vstep[vstep].attenuation)));
+		uint32_t attenuation;
+		memcpy(&attenuation, &vp->vstep[vstep], sizeof(attenuation));
+		vol = (unsigned short)(-2 * float_to_int(attenuation));
 		if (vol > 255)	/* restricted to 8 bits */
 			vol = 255;
 

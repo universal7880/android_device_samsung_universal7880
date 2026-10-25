@@ -18,13 +18,9 @@
 #define LOG_NDEBUG 0
 
 #include <cutils/log.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <errno.h>
-#include <dlfcn.h>
-#include <fcntl.h>
+#include <limits.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <audio_hw.h>
 #include <hardware/audio_amplifier.h>
@@ -43,6 +39,7 @@ typedef struct amp_device {
     audio_mode_t current_mode;
     int refcount[Audio_Mode_Max];
     amp_state_t amp_state;
+    pthread_mutex_t lock;
 } amp_device_t;
 
 static amp_device_t *amp_dev = NULL;
@@ -90,30 +87,32 @@ static int amp_enable_output_devices(amplifier_device_t *device,
         return 0;
     }
 
+    pthread_mutex_lock(&dev->lock);
     if (enable) {
+        if (dev->refcount[tfa_mode] == INT_MAX) {
+            pthread_mutex_unlock(&dev->lock);
+            return -EOVERFLOW;
+        }
         dev->refcount[tfa_mode]++;
-    } else if (!enable && dev->refcount[tfa_mode] > 0) {
+    } else if (dev->refcount[tfa_mode] > 0) {
         dev->refcount[tfa_mode]--;
+    } else {
+        pthread_mutex_unlock(&dev->lock);
+        return 0;
     }
 
-    ALOGV("%s: enable=%d, dev->refcount=%d, amp_state=%d", __func__, enable,
-          dev->refcount[tfa_mode], dev->amp_state);
-
-    if (enable && dev->amp_state == AMP_STATE_DISABLED &&  dev->refcount[tfa_mode] == 1) {
-        rc = tfa_power(dev->tfa_dev, true);
-        if (rc == 0) {
-            dev->amp_state = AMP_STATE_ENABLED;
+    /* Music and call routes share the container's single HQ profile. */
+    bool on = dev->refcount[Audio_Mode_Music_Normal] || dev->refcount[Audio_Mode_Voice];
+    if (on != (dev->amp_state == AMP_STATE_ENABLED)) {
+        rc = tfa_power(dev->tfa_dev, on);
+        if (!rc) {
+            dev->amp_state = on ? AMP_STATE_ENABLED : AMP_STATE_DISABLED;
+        } else {
+            /* A failed start must not prevent the next attempt from starting. */
+            dev->refcount[tfa_mode] += enable ? -1 : 1;
         }
-        ALOGV("%s: tfa_power(true) with rc=%d", __func__, rc);
-    } else if (!enable && dev->amp_state == AMP_STATE_ENABLED && dev->refcount[tfa_mode] == 0) {
-        rc = tfa_power(dev->tfa_dev, false);
-        if (rc == 0) {
-            dev->amp_state = AMP_STATE_DISABLED;
-        }
-        ALOGV("%s: tfa_power(false) with rc=%d", __func__, rc);
     }
-
-    // TODO: Distinguish between tfa modes
+    pthread_mutex_unlock(&dev->lock);
 
     return rc;
 }
@@ -122,7 +121,9 @@ static int amp_set_mode(amplifier_device_t *device, audio_mode_t mode)
 {
     amp_device_t *dev = (amp_device_t *) device;
 
+    pthread_mutex_lock(&dev->lock);
     dev->current_mode = mode;
+    pthread_mutex_unlock(&dev->lock);
 
     return 0;
 }
@@ -133,6 +134,8 @@ static int amp_dev_close(hw_device_t *device)
 
     tfa_device_close(dev->tfa_dev);
 
+    pthread_mutex_destroy(&dev->lock);
+    amp_dev = NULL;
     free(dev);
 
     return 0;
@@ -163,7 +166,16 @@ static int amp_module_open(const hw_module_t *module, const char *name,
     amp_dev = calloc(1, sizeof(amp_device_t));
     if (!amp_dev) {
         ALOGE("%s: Unable to allocate memory for amplifier device", __func__);
+        tfa_device_close(tfa_dev);
         return -ENOMEM;
+    }
+
+    int error = pthread_mutex_init(&amp_dev->lock, NULL);
+    if (error) {
+        tfa_device_close(tfa_dev);
+        free(amp_dev);
+        amp_dev = NULL;
+        return -error;
     }
 
     amp_dev->amp_dev.common.tag = HARDWARE_DEVICE_TAG;
@@ -183,7 +195,6 @@ static int amp_module_open(const hw_module_t *module, const char *name,
     amp_dev->amp_dev.set_parameters = NULL;
 
     amp_dev->current_mode = AUDIO_MODE_NORMAL;
-    memset(amp_dev->refcount, 0, Audio_Mode_Max);
     amp_dev->amp_state = AMP_STATE_DISABLED;
 
     amp_dev->tfa_dev = tfa_dev;
