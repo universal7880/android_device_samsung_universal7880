@@ -172,33 +172,17 @@ static enum Tfa98xx_Error tfa9891_specific(Tfa98xx_handle_t handle)
 
 static enum Tfa98xx_Error tfa9896_specific(Tfa98xx_handle_t handle)
 {
-        enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
-        unsigned short check_value;
-
-        if (!tfa98xx_handle_is_open(handle))
-                return Tfa98xx_Error_NotOpen;
-
-        /* all i2C registers must already set to default POR value */
-
-        /* $48:[3] - 1 ==> 0; iddqtestbst - default value changed.
-         * When Iddqtestbst is set to "0", the slewrate is reduced.
-         * This will lower the overshoot on IN-B to avoid NMOS damage of booster.
-         */
-		/* ----- generated code start ----- */
-		/*v17*/
-		reg_write(handle, 0x06, 0x000b); //POR=0x0001
-		reg_write(handle, 0x07, 0x3e7f); //POR=0x1e7f
-		reg_write(handle, 0x0a, 0x0d8a); //POR=0x0592
-		reg_write(handle, 0x48, 0x0300); //POR=0x0308
-		reg_write(handle, 0x88, 0x0100); //POR=0x0000
-		/* ----- generated code end   ----- */
-        /* $49:[0] - 1 ==> 0; CLIP - default value changed. 0 means CLIPPER on
-         */
-        error = reg_read(handle, 0x49, &check_value);
-        check_value &= ~0x1;
-        error = reg_write(handle, 0x49, check_value);
-
-        return error;
+    enum Tfa98xx_Error error;
+    unsigned short value;
+    if (!tfa98xx_handle_is_open(handle)) return Tfa98xx_Error_NotOpen;
+    /* Samsung's TFA9896 initialization; remaining tuning comes from the container. */
+    error = reg_write(handle, 0x0a, 0x0d8a);
+    if (error) return error;
+    error = reg_write(handle, 0x48, 0x0300);
+    if (error) return error;
+    error = reg_read(handle, 0x49, &value);
+    if (error) return error;
+    return reg_write(handle, 0x49, value & ~1);
 }
 
 static enum Tfa98xx_Error tfa9897_specific(Tfa98xx_handle_t handle)
@@ -633,14 +617,17 @@ static enum Tfa98xx_Error tfa9896_tfa_dsp_write_tables(Tfa98xx_handle_t dev_idx,
 	enum Tfa98xx_Error error;
 
 	/* Not used for max1! */
-	sample_rate=sample_rate;
+	(void)sample_rate;
 
 	error = tfa9896_dsp_write_vsfwdelay_table(dev_idx);
 	if (error == Tfa98xx_Error_Ok) {
 		error = tfa9896_dsp_write_cvfracdelay_table(dev_idx);
 	}
 
-	return error;
+	if (error != Tfa98xx_Error_Ok) return error;
+	error = tfa98xx_dsp_reset(dev_idx, 1);
+	if (error != Tfa98xx_Error_Ok) return error;
+	return tfa98xx_dsp_reset(dev_idx, 0);
 }
 
 #if 0 /* TODO: remove or use me */
@@ -736,7 +723,7 @@ static enum Tfa98xx_Error tfa9897_tfa_dsp_write_tables(Tfa98xx_handle_t dev_idx,
 	enum Tfa98xx_Error error;
 
 	/* Not used for max1! */
-	sample_rate=sample_rate;
+	(void)sample_rate;
 
 	error = tfa9897_dsp_write_vsfwdelay_table(dev_idx);
 	if (error == Tfa98xx_Error_Ok) {

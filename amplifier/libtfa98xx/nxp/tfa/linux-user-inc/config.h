@@ -3,11 +3,16 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include "NXP_I2C.h"
+#ifndef LOG_TAG
+#define LOG_TAG "tfa98xx"
+#endif
+#include <log/log.h>
 
 #ifdef __ANDROID__
 #include <sys/endian.h>
@@ -24,19 +29,19 @@
 #define _ASSERT(e)
 
 #ifndef _ERRORMSG
-#define _ERRORMSG(fmt,va...) fprintf(stderr, "tfa98xx: ERROR %s:%s:%d: "fmt,__FILE__,__func__,__LINE__, ##va)
+#define _ERRORMSG(fmt,va...) ALOGE("%s: " fmt, __func__, ##va)
 #endif
 #ifndef ERRORMSG
 #define ERRORMSG(x...) _ERRORMSG(x)
 #endif
 #ifndef PRINT
-#define PRINT(...)	printf(__VA_ARGS__)
+#define PRINT(...) ALOGV(__VA_ARGS__)
 #endif
 #ifndef PRINT_ERROR
-#define PRINT_ERROR(...)	 fprintf(stderr,__VA_ARGS__)
+#define PRINT_ERROR(...) ALOGE(__VA_ARGS__)
 #endif
 #ifndef PRINT_ASSERT
-#define PRINT_ASSERT(e)if ((e)) fprintf(stderr, "PrintAssert:%s (%s:%d) error code:%d\n",__FUNCTION__,__FILE__,__LINE__, e)
+#define PRINT_ASSERT(e) do { if ((e)) ALOGE("%s: error %d", __func__, (int)(e)); } while (0)
 #endif
 
 #ifndef __GNUC__
@@ -47,7 +52,7 @@ typedef int bool;
 
 #define tfa98xx_trace_printk PRINT
 #define pr_debug PRINT
-#define pr_info PRINT
+#define pr_info(...) ALOGI(__VA_ARGS__)
 #define pr_err ERRORMSG
 
 #define GFP_KERNEL 0
@@ -58,12 +63,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-typedef _Bool  bool;
 
-enum {
-	false = 0,
-	true = 1
-};
 
 #define BIT(x) (1 << (x))
 
