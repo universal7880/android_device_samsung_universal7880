@@ -27,6 +27,8 @@ constexpr std::array<int32_t, 7> kCpuLimits = {
         -1, 1794000, 1690000, 1586000, 1352000, 1144000, 1014000};
 // AP GPU caps from the same profiles; the first cap starts 2 C after the CPU cap.
 constexpr std::array<int32_t, 4> kGpuLimits = {0, 756, 548, 449};
+// Stock brightness index. Each selected panel retains its own brightness tables.
+constexpr std::array<int32_t, 2> kDisplayLimits = {0, 224};
 using policy::kTripStep;
 // Fixed-window AP filtering used by the Pie profile, sampled by the HAL at 2 s.
 constexpr size_t kWindowSize = 15;
@@ -57,6 +59,9 @@ ThrottlingSeverity severityForLevel(size_t level) {
 }  // namespace
 
 ApThermalPolicy::~ApThermalPolicy() {
+    if (hasDisplayPolicy() && !setDisplayLimit(0)) {
+        LOG(ERROR) << "Cannot release the AP thermal display request";
+    }
     if (hasChargingPolicy() && !setChargingLimit(0)) {
         LOG(ERROR) << "Cannot release the AP thermal charging request";
     }
@@ -70,9 +75,11 @@ bool ApThermalPolicy::initialize() {
     if (model == "a5y17lte") {
         firstTrip_ = 420;
         skinOffset_ = 77;
+        displayFirstTrip_ = 460;
     } else if (model == "a7y17lte") {
         firstTrip_ = 430;
         skinOffset_ = 80;
+        displayFirstTrip_ = 470;
     } else {
         LOG(ERROR) << "No AP thermal profile for model: " << model;
         return true;  // Die-temperature reporting and protection remain available.
@@ -121,6 +128,16 @@ bool ApThermalPolicy::initialize() {
         LOG(WARNING) << "No independent AP charging request; keeping kernel charging protection";
     }
 
+    displayRequest_.reset(TEMP_FAILURE_RETRY(open(
+            "/sys/class/lcd/panel/thermal_max_brightness", O_WRONLY | O_CLOEXEC)));
+    if (!hasDisplayPolicy()) {
+        if (errno != ENOENT) {
+            PLOG(ERROR) << "Cannot open the AP thermal display request";
+            return false;
+        }
+        LOG(WARNING) << "No independent AP display request; keeping normal brightness control";
+    }
+
     threshold_.type = TemperatureType::SKIN;
     threshold_.name = "ap-skin-estimate";
     threshold_.hotThrottlingThresholds.assign(kSeverityCount, NAN);
@@ -140,6 +157,8 @@ bool ApThermalPolicy::initialize() {
     gpuCoolingDevice_.name = "ap-gpu-limit";
     chargingCoolingDevice_.type = CoolingType::BATTERY;
     chargingCoolingDevice_.name = "ap-charging-limit";
+    displayCoolingDevice_.type = CoolingType::DISPLAY;
+    displayCoolingDevice_.name = "ap-display-limit";
     enabled_ = true;
     LOG(INFO) << "Using " << model << " AP thermal profile at " << path_;
     return update();
@@ -188,6 +207,19 @@ bool ApThermalPolicy::setChargingLimit(size_t level) {
     return true;
 }
 
+bool ApThermalPolicy::setDisplayLimit(size_t level) {
+    if (!hasDisplayPolicy() || appliedDisplayLevel_ == static_cast<int>(level)) return true;
+    const auto value = std::to_string(kDisplayLimits[level]);
+    if (lseek(displayRequest_.get(), 0, SEEK_SET) < 0 ||
+        !::android::base::WriteStringToFd(value, displayRequest_.get())) {
+        PLOG(ERROR) << "Cannot update the AP thermal display request";
+        return false;
+    }
+    appliedDisplayLevel_ = static_cast<int>(level);
+    LOG(INFO) << "AP thermal brightness limit: " << value << ", level " << level;
+    return true;
+}
+
 bool ApThermalPolicy::updateChargingLimit(int ap) {
     if (!hasChargingPolicy()) return true;
     int battery;
@@ -229,12 +261,16 @@ bool ApThermalPolicy::update() {
     const size_t level = policy::nextLevel(filtered, firstTrip_, level_, kCpuLimits.size());
     const size_t gpuLevel = hasGpuPolicy()
             ? policy::nextLevel(filtered, firstTrip_ + kTripStep, gpuLevel_, kGpuLimits.size()) : 0;
-    if (!setCpuLimit(level) || !setGpuLimit(gpuLevel) || !updateChargingLimit(filtered)) {
+    const size_t displayLevel = hasDisplayPolicy()
+            ? policy::nextLevel(filtered, displayFirstTrip_, displayLevel_, kDisplayLimits.size()) : 0;
+    if (!setCpuLimit(level) || !setGpuLimit(gpuLevel) || !updateChargingLimit(filtered) ||
+        !setDisplayLimit(displayLevel)) {
         setUnavailable();
         return false;
     }
     level_ = level;
     gpuLevel_ = gpuLevel;
+    displayLevel_ = displayLevel;
     std::lock_guard lock(mutex_);
     // Samsung estimates skin temperature as filtered AP temperature minus model gap.
     temperature_.value = (filtered - skinOffset_) / 10.0f;
@@ -243,6 +279,7 @@ bool ApThermalPolicy::update() {
     coolingDevice_.value = level_;
     gpuCoolingDevice_.value = gpuLevel_;
     chargingCoolingDevice_.value = chargingLevel_;
+    displayCoolingDevice_.value = displayLevel_;
     available_ = true;
     return true;
 }
@@ -267,6 +304,11 @@ CoolingDevice ApThermalPolicy::getGpuCoolingDevice() const {
 CoolingDevice ApThermalPolicy::getChargingCoolingDevice() const {
     std::lock_guard lock(mutex_);
     return chargingCoolingDevice_;
+}
+
+CoolingDevice ApThermalPolicy::getDisplayCoolingDevice() const {
+    std::lock_guard lock(mutex_);
+    return displayCoolingDevice_;
 }
 
 }  // namespace aidl::android::hardware::thermal

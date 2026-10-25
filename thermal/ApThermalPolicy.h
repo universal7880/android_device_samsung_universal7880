@@ -29,12 +29,15 @@ class ApThermalPolicy {
     CoolingDevice getGpuCoolingDevice() const;
     bool hasChargingPolicy() const { return chargingRequest_.get() >= 0; }
     CoolingDevice getChargingCoolingDevice() const;
+    bool hasDisplayPolicy() const { return displayRequest_.get() >= 0; }
+    CoolingDevice getDisplayCoolingDevice() const;
     const TemperatureThreshold& getThreshold() const { return threshold_; }
 
   private:
     bool setCpuLimit(size_t level);
     bool setGpuLimit(size_t level);
     bool setChargingLimit(size_t level);
+    bool setDisplayLimit(size_t level);
     bool updateChargingLimit(int ap);
     void setUnavailable();
 
@@ -42,17 +45,21 @@ class ApThermalPolicy {
     std::string path_;
     int firstTrip_ = 0;
     int skinOffset_ = 0;
+    int displayFirstTrip_ = 0;
     std::array<::android::base::unique_fd, 2> cpuRequests_;
     ::android::base::unique_fd gpuRequest_;
     ::android::base::unique_fd chargingRequest_;
+    ::android::base::unique_fd displayRequest_;
     std::deque<int> samples_;
     int64_t lastSampleMs_ = 0;
     size_t level_ = 0;
     size_t gpuLevel_ = 0;
     size_t chargingLevel_ = 0;
+    size_t displayLevel_ = 0;
     int appliedLevel_ = -1;
     int appliedGpuLevel_ = -1;
     int appliedChargingLevel_ = -1;
+    int appliedDisplayLevel_ = -1;
     TemperatureThreshold threshold_;
 
     mutable std::mutex mutex_;
@@ -61,6 +68,7 @@ class ApThermalPolicy {
     CoolingDevice coolingDevice_;
     CoolingDevice gpuCoolingDevice_;
     CoolingDevice chargingCoolingDevice_;
+    CoolingDevice displayCoolingDevice_;
 };
 
 }  // namespace aidl::android::hardware::thermal

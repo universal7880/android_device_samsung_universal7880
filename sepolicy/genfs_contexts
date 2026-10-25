@@ -15,3 +15,4 @@ genfscon sysfs /devices/11400000.mali/thermal_max_lock u:object_r:sysfs_gpu_ther
 
 # Independent AP charging limit; existing charging controls keep their labels.
 genfscon sysfs /devices/battery/power_supply/battery/thermal_siop_level u:object_r:sysfs_battery_thermal:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/thermal_max_brightness u:object_r:sysfs_display_thermal:s0

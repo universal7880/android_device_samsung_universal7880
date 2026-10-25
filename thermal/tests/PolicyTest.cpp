@@ -31,6 +31,13 @@ int main() {
         assert(nextLevel(900, gpuFirst, 0, 4) == 3);
         assert(nextLevel(-200, gpuFirst, 3, 4) == 0);
     }
+    for (int displayTrip : {460, 470}) {
+        assert(nextLevel(displayTrip - 1, displayTrip, 0, 2) == 0);
+        assert(nextLevel(displayTrip, displayTrip, 0, 2) == 1);
+        assert(nextLevel(displayTrip - 20, displayTrip, 1, 2) == 1);
+        assert(nextLevel(displayTrip - 21, displayTrip, 1, 2) == 0);
+        assert(nextLevel(900, displayTrip, 0, 2) == 1);
+    }
     // AP and battery conditions must both hold. The display override also covers AOD.
     assert(nextChargingLevel(900, 299, true, 0) == 0);
     assert(nextChargingLevel(299, 500, true, 0) == 0);
