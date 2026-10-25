@@ -47,3 +47,4 @@ type sysfs_ap_thermal, fs_type, sysfs_type;
 type sysfs_gpu_thermal, fs_type, sysfs_type;
 
 type sysfs_battery_thermal, fs_type, sysfs_type;
+type sysfs_display_thermal, fs_type, sysfs_type;
