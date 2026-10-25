@@ -196,6 +196,7 @@ ndk::ScopedAStatus Thermal::getCoolingDevices(std::vector<CoolingDevice>* out) {
     }
     if (apPolicy_.enabled()) out->push_back(apPolicy_.getCoolingDevice());
     if (apPolicy_.hasGpuPolicy()) out->push_back(apPolicy_.getGpuCoolingDevice());
+    if (apPolicy_.hasChargingPolicy()) out->push_back(apPolicy_.getChargingCoolingDevice());
     return ndk::ScopedAStatus::ok();
 }
 

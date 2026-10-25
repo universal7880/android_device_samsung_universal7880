@@ -8,6 +8,7 @@
 #include <cassert>
 #include <iostream>
 using aidl::android::hardware::thermal::policy::nextLevel;
+using aidl::android::hardware::thermal::policy::nextChargingLevel;
 int main() {
     for (int first : {420, 430}) {
         assert(nextLevel(first - 1, first, 0, 7) == 0);
@@ -30,5 +31,22 @@ int main() {
         assert(nextLevel(900, gpuFirst, 0, 4) == 3);
         assert(nextLevel(-200, gpuFirst, 3, 4) == 0);
     }
+    // AP and battery conditions must both hold. The display override also covers AOD.
+    assert(nextChargingLevel(900, 299, true, 0) == 0);
+    assert(nextChargingLevel(299, 500, true, 0) == 0);
+    assert(nextChargingLevel(300, 300, true, 0) == 1);
+    assert(nextChargingLevel(450, 300, true, 0) == 1);
+    for (size_t level = 1; level <= 4; ++level) {
+        const auto trip = aidl::android::hardware::thermal::policy::kChargingTrips[level - 1];
+        assert(nextChargingLevel(trip, 300, true, 0) == level);
+        assert(nextChargingLevel(trip - 20, 280, true, level) == level);
+        assert(nextChargingLevel(trip - 21, 300, true, level) == level - 1);
+        assert(nextChargingLevel(900, 279, true, level) == 0);
+        assert(nextChargingLevel(900, 500, false, level) == 0);
+    }
+    assert(nextChargingLevel(900, 900, true, 0) == 4);
+    assert(nextChargingLevel(-200, -200, true, 4) == 0);
+    assert(nextChargingLevel(300, 300, true, 4) == 1);
+    std::cout << "Charging AP/BAT gates, display override and hysteresis: PASS\n";
     std::cout << "A5/A7 CPU/GPU thresholds, hysteresis and extreme-temperature recovery: PASS\n";
 }
