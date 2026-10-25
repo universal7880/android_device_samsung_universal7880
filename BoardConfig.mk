@@ -113,7 +113,6 @@ $(call soong_config_set_string_list,libfmjni,external_srcs,//$(DEVICE_PATH)/fm:l
 $(call soong_config_set_string_list,libfmjni,external_shared_libs,libbinder_ndk liblog //$(DEVICE_PATH)/fm:vendor.lineage.hardware.fmradio-V1-ndk)
 
 # Wifi
-BOARD_HAS_QCOM_WLAN := true
 BOARD_WLAN_DEVICE := qcwcn
 BOARD_HOSTAPD_DRIVER := NL80211
 BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
@@ -125,9 +124,6 @@ WIFI_DRIVER_FW_PATH_P2P := "p2p"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 WIFI_AVOID_IFACE_RESET_MAC_CHANGE := true
 WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
-
-# Wifi loader
-BOARD_HAVE_SAMSUNG_WIFI := true
 
 # Build fingerprint
 BUILD_FINGERPRINT := "samsung/a7y17lteskt/a7y17lteskt:9/PPR1.180610.011/A720SKSU5CUJ2:user/release-keys"
