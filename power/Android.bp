@@ -3,10 +3,10 @@
 
 cc_library_static {
     name: "libperfmgr-ext-universal7880",
+    defaults: ["android.hardware.power-ndk_shared"],
     vendor: true,
     srcs: ["PowerMode.cpp"],
     shared_libs: [
-        "android.hardware.power-V4-ndk",
         "libbase",
     ],
     cflags: ["-Wall", "-Werror"],
