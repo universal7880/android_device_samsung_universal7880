@@ -39,7 +39,7 @@ int64_t bootTimeMs() {
     return static_cast<int64_t>(time.tv_sec) * 1000 + time.tv_nsec / 1000000;
 }
 
-bool readApTemperature(const std::string& path, int* value) {
+bool readTemperature(const std::string& path, int* value) {
     std::string text;
     return ::android::base::ReadFileToString(path, &text) &&
             ::android::base::ParseInt(::android::base::Trim(text), value) &&
@@ -57,6 +57,9 @@ ThrottlingSeverity severityForLevel(size_t level) {
 }  // namespace
 
 ApThermalPolicy::~ApThermalPolicy() {
+    if (hasChargingPolicy() && !setChargingLimit(0)) {
+        LOG(ERROR) << "Cannot release the AP thermal charging request";
+    }
     if (gpuRequest_.get() >= 0 && !setGpuLimit(0)) {
         LOG(ERROR) << "Cannot release the AP thermal GPU request";
     }
@@ -79,7 +82,7 @@ bool ApThermalPolicy::initialize() {
     for (const auto* candidate : {"/sys/devices/virtual/sec/sec-ap-thermistor/temperature",
                                   "/sys/class/sec/sec-ap-thermistor/temperature"}) {
         int value;
-        if (readApTemperature(candidate, &value)) {
+        if (readTemperature(candidate, &value)) {
             path_ = candidate;
             break;
         }
@@ -108,6 +111,16 @@ bool ApThermalPolicy::initialize() {
         LOG(WARNING) << "No independent AP thermal GPU request; keeping kernel GPU protection";
     }
 
+    chargingRequest_.reset(TEMP_FAILURE_RETRY(open(
+            "/sys/class/power_supply/battery/thermal_siop_level", O_WRONLY | O_CLOEXEC)));
+    if (!hasChargingPolicy()) {
+        if (errno != ENOENT) {
+            PLOG(ERROR) << "Cannot open the AP thermal charging request";
+            return false;
+        }
+        LOG(WARNING) << "No independent AP charging request; keeping kernel charging protection";
+    }
+
     threshold_.type = TemperatureType::SKIN;
     threshold_.name = "ap-skin-estimate";
     threshold_.hotThrottlingThresholds.assign(kSeverityCount, NAN);
@@ -125,6 +138,8 @@ bool ApThermalPolicy::initialize() {
     coolingDevice_.name = "ap-cpu-limit";
     gpuCoolingDevice_.type = CoolingType::GPU;
     gpuCoolingDevice_.name = "ap-gpu-limit";
+    chargingCoolingDevice_.type = CoolingType::BATTERY;
+    chargingCoolingDevice_.name = "ap-charging-limit";
     enabled_ = true;
     LOG(INFO) << "Using " << model << " AP thermal profile at " << path_;
     return update();
@@ -160,6 +175,33 @@ bool ApThermalPolicy::setGpuLimit(size_t level) {
     return true;
 }
 
+bool ApThermalPolicy::setChargingLimit(size_t level) {
+    if (!hasChargingPolicy() || appliedChargingLevel_ == static_cast<int>(level)) return true;
+    const auto value = std::to_string(policy::kChargingLevels[level]);
+    if (lseek(chargingRequest_.get(), 0, SEEK_SET) < 0 ||
+        !::android::base::WriteStringToFd(value, chargingRequest_.get())) {
+        PLOG(ERROR) << "Cannot update the AP thermal charging request";
+        return false;
+    }
+    appliedChargingLevel_ = static_cast<int>(level);
+    LOG(INFO) << "AP thermal charging limit: " << value << "%, level " << level;
+    return true;
+}
+
+bool ApThermalPolicy::updateChargingLimit(int ap) {
+    if (!hasChargingPolicy()) return true;
+    int battery;
+    if (!readTemperature("/sys/class/power_supply/battery/temp", &battery)) return false;
+    // Power HAL reports framework interactivity, including screen-off and AOD.
+    // A missing producer keeps the conservative screen-on charging policy.
+    const bool screenOn = ::android::base::GetBoolProperty(
+            "vendor.universal7880.interactive", true);
+    const auto level = policy::nextChargingLevel(ap, battery, screenOn, chargingLevel_);
+    if (!setChargingLimit(level)) return false;
+    chargingLevel_ = level;
+    return true;
+}
+
 void ApThermalPolicy::setUnavailable() {
     std::lock_guard lock(mutex_);
     available_ = false;
@@ -169,7 +211,7 @@ bool ApThermalPolicy::update() {
     if (!enabled_) return true;
     int raw;
     const int64_t now = bootTimeMs();
-    if (now < 0 || !readApTemperature(path_, &raw)) {
+    if (now < 0 || !readTemperature(path_, &raw)) {
         // Preserve the last cap; a failed read must not release thermal mitigation.
         samples_.clear();
         setUnavailable();
@@ -187,7 +229,7 @@ bool ApThermalPolicy::update() {
     const size_t level = policy::nextLevel(filtered, firstTrip_, level_, kCpuLimits.size());
     const size_t gpuLevel = hasGpuPolicy()
             ? policy::nextLevel(filtered, firstTrip_ + kTripStep, gpuLevel_, kGpuLimits.size()) : 0;
-    if (!setCpuLimit(level) || !setGpuLimit(gpuLevel)) {
+    if (!setCpuLimit(level) || !setGpuLimit(gpuLevel) || !updateChargingLimit(filtered)) {
         setUnavailable();
         return false;
     }
@@ -200,6 +242,7 @@ bool ApThermalPolicy::update() {
             static_cast<ThrottlingSeverity>(gpuLevel_));
     coolingDevice_.value = level_;
     gpuCoolingDevice_.value = gpuLevel_;
+    chargingCoolingDevice_.value = chargingLevel_;
     available_ = true;
     return true;
 }
@@ -219,6 +262,11 @@ CoolingDevice ApThermalPolicy::getCoolingDevice() const {
 CoolingDevice ApThermalPolicy::getGpuCoolingDevice() const {
     std::lock_guard lock(mutex_);
     return gpuCoolingDevice_;
+}
+
+CoolingDevice ApThermalPolicy::getChargingCoolingDevice() const {
+    std::lock_guard lock(mutex_);
+    return chargingCoolingDevice_;
 }
 
 }  // namespace aidl::android::hardware::thermal

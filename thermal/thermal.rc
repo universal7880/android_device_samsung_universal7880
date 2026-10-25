@@ -1,4 +1,6 @@
 on post-fs-data
+    chown system system /sys/class/power_supply/battery/thermal_siop_level
+    chmod 0640 /sys/class/power_supply/battery/thermal_siop_level
     chown system system /sys/devices/11400000.mali/thermal_max_lock
     chmod 0640 /sys/devices/11400000.mali/thermal_max_lock
 

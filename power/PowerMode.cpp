@@ -99,6 +99,8 @@ class PowerMode {
 
     void setInteractive(bool interactive) {
         std::lock_guard lock(mLock);
+        // Publish even the initial callback when the in-memory state already matches.
+        writeProperty("vendor.universal7880.interactive", interactive ? "1" : "0");
         if (interactive) {
             for (auto& input : mInputs) {
                 if (input.disabled && writeNumber(input.path, 1)) {
