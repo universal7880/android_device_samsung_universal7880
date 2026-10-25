@@ -174,7 +174,7 @@ endif
 BOARD_SECCOMP_POLICY += $(DEVICE_PATH)/seccomp
 
 # Power
-TARGET_POWER_LIBPERFMGR_MODE_EXTENSION_LIB := //$(DEVICE_PATH):libperfmgr-ext-universal7880
+$(call soong_config_set,power_libperfmgr,mode_extension_lib,//$(DEVICE_PATH):libperfmgr-ext-universal7880)
 
 # SELinux
 BOARD_SEPOLICY_TEE_FLAVOR := mobicore
