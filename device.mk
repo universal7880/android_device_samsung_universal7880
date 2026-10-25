@@ -21,6 +21,10 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Display configuration
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/display/display_port_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_port_0.xml
+
 # Display density
 PRODUCT_VENDOR_PROPERTIES += ro.sf.lcd_density=420
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0 -->
+<displayConfiguration>
+    <!-- The shared panel driver uses fixed low ALPM brightness. Keep doze on
+         the float API: integer brightness zero means OFF, while float zero
+         is a valid minimum brightness during the screen-off transition. -->
+    <dozeBrightnessSensorValueToBrightness>
+        <item>0.0</item>
+    </dozeBrightnessSensorValueToBrightness>
+    <defaultDozeBrightness>0.0</defaultDozeBrightness>
+</displayConfiguration>
