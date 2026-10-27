@@ -1,9 +1,6 @@
 # Proprietary files are from Samsung package version A720SKSU5CUJ2, unless pinned
 # DISABLE_DEPS preserves the unchecked installation of ELF blobs previously copied as files.
 
-# AptX - from crosshatch - QP1A.190711.020
--product/lib64/libaptX_encoder.so;DISABLE_DEPS|df1c89d7af1bb35808d5fe3496b04ba066c10cbc
-
 # Camera
 -lib/hw/camera.exynos5.so:lib/hw/camera.vendor.exynos5.so;DISABLE_DEPS
 -lib64/hw/camera.exynos5.so:lib64/hw/camera.vendor.exynos5.so;DISABLE_DEPS
