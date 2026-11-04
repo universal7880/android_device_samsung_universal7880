@@ -25,9 +25,6 @@ bluetooth.profile.sap.server.enabled?=true
 # BLE
 bluetooth.le.disable_apcf_extended_features=1
 
-# BPF
-ro.kernel.ebpf.supported=false
-
 # Charger
 ro.charger.enable_suspend=true
 
