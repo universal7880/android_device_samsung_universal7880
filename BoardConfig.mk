@@ -50,13 +50,14 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 include hardware/samsung_slsi-linaro/config/BoardConfig7880.mk
 
 # Extracted with libbootimg
-BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
+BOARD_CUSTOM_BOOTIMG_MK := $(DEVICE_PATH)/mkbootimg.mk
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x02000000 --tags_offset 0x00000100
 BOARD_KERNEL_BASE := 0x10000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_IMAGE_NAME := Image
 #BOARD_KERNEL_CMDLINE := The bootloader ignores the cmdline from the boot.img
 BOARD_KERNEL_SEPARATED_DT := true
+BOARD_USES_FULL_RECOVERY_IMAGE := true
 TARGET_KERNEL_CLANG_COMPILE := false
 TARGET_KERNEL_LLVM_BINUTILS := false
 TARGET_CUSTOM_DTBTOOL := dtbhtoolExynos
@@ -187,6 +188,7 @@ PRODUCT_SOONG_NAMESPACES += $(DEVICE_PATH)
 
 # Kernel config
 TARGET_KERNEL_CONFIG := lineage-universal7880_defconfig
+KERNEL_CONFIG_OVERRIDE += CONFIG_RD_XZ=y
 
 # OTA
 TARGET_OTA_ASSERT_DEVICE := universal7880,a5y17lte,a5y17ltexx,a5y17ltecan,a5y17ltektt,a5y17ltelgt,a5y17lteskt,a7y17lte,a7y17ltexx,a7y17lteskt
