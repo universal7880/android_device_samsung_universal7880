@@ -37,10 +37,6 @@
 -vendor/lib64/libqfp_sensortest.so;DISABLE_DEPS
 -vendor/lib64/libsynaFpSensorTestNwd.so;DISABLE_DEPS
 
-# Gatekeeper
--vendor/lib/hw/gatekeeper.exynos7880.so;DISABLE_DEPS
--vendor/lib64/hw/gatekeeper.exynos7880.so;DISABLE_DEPS
-
 # GPS
 -lib/libfloatingfeature.so;DISABLE_DEPS
 -lib64/libfloatingfeature.so;DISABLE_DEPS

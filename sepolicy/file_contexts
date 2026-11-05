@@ -178,9 +178,6 @@
 /(vendor|system/vendor)/bin/hw/android\.hardware\.audio\.service\.universal7880                 u:object_r:hal_audio_default_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.lineage\.livedisplay@2\.1-service\.universal7880         u:object_r:hal_lineage_livedisplay_sysfs_exec:s0
 
-# Gatekeeper
-/(vendor|system/vendor)/bin/hw/android\.hardware\.gatekeeper@1\.0-service\.software             u:object_r:hal_gatekeeper_default_exec:s0
-
 /dev/radio0                 u:object_r:fm_device:s0
 
 /(vendor|system/vendor)/bin/hw/vendor\.lineage\.hardware\.fmradio-service\.si47xx    u:object_r:hal_fmradio_default_exec:s0
@@ -202,6 +199,5 @@
 
 /sys/devices/11400000\.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0
 
-# Gatekeeper context files
 /efs/TEE                                      u:object_r:gatekeeper_efs_file:s0
 /efs/TEE/gk_context(_sub)?_[0-9a-f]+          u:object_r:gatekeeper_efs_file:s0
