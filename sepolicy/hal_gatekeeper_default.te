@@ -1,0 +1,4 @@
+# Samsung Gatekeeper stores its context in /efs/TEE.
+allow hal_gatekeeper_default efs_file:dir search;
+allow hal_gatekeeper_default gatekeeper_efs_file:dir rw_dir_perms;
+allow hal_gatekeeper_default gatekeeper_efs_file:file create_file_perms;
