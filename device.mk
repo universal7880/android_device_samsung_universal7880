@@ -175,10 +175,7 @@ PRODUCT_PACKAGES += \
 
 # Gatekeeper
 PRODUCT_PACKAGES += \
-    android.hardware.gatekeeper@1.0-impl \
-    android.hardware.gatekeeper@1.0-service
-
-PRODUCT_VENDOR_PROPERTIES += ro.hardware.gatekeeper=exynos7880
+    android.hardware.gatekeeper-service.universal7880
 
 # Keymaster
 PRODUCT_PACKAGES += \

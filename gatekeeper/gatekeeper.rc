@@ -1,0 +1,5 @@
+service vendor.gatekeeper /vendor/bin/hw/android.hardware.gatekeeper-service
+    interface aidl android.hardware.gatekeeper.IGatekeeper/default
+    class hal
+    user system
+    group system
