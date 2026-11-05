@@ -2,18 +2,18 @@
 # DISABLE_DEPS preserves the unchecked installation of ELF blobs previously copied as files.
 
 # Camera
--lib/hw/camera.exynos5.so:lib/hw/camera.vendor.exynos5.so;DISABLE_DEPS
--lib64/hw/camera.exynos5.so:lib64/hw/camera.vendor.exynos5.so;DISABLE_DEPS
--lib/libexynoscamera.so;DISABLE_DEPS
--lib64/libexynoscamera.so;DISABLE_DEPS
--lib/libexynoscamera3.so;DISABLE_DEPS
--lib64/libexynoscamera3.so;DISABLE_DEPS
--lib/libhwjpeg.so;DISABLE_DEPS;MODULE_SUFFIX=_blob
--lib64/libhwjpeg.so;DISABLE_DEPS;MODULE_SUFFIX=_blob
--lib/libuniapi.so;DISABLE_DEPS
--lib64/libuniapi.so;DISABLE_DEPS
--lib/libuniplugin.so;DISABLE_DEPS
--lib64/libuniplugin.so;DISABLE_DEPS
+-lib/hw/camera.exynos5.so:vendor/lib/hw/camera.vendor.exynos5.so;DISABLE_DEPS
+-lib64/hw/camera.exynos5.so:vendor/lib64/hw/camera.vendor.exynos5.so;DISABLE_DEPS
+-lib/libexynoscamera.so:vendor/lib/libexynoscamera.so;DISABLE_DEPS
+-lib64/libexynoscamera.so:vendor/lib64/libexynoscamera.so;DISABLE_DEPS
+-lib/libexynoscamera3.so:vendor/lib/libexynoscamera3.so;DISABLE_DEPS
+-lib64/libexynoscamera3.so:vendor/lib64/libexynoscamera3.so;DISABLE_DEPS
+-lib/libuniapi.so:vendor/lib/libuniapi.so;DISABLE_DEPS
+-lib64/libuniapi.so:vendor/lib64/libuniapi.so;DISABLE_DEPS
+-lib/libuniplugin.so:vendor/lib/libuniplugin.so;DISABLE_DEPS
+-lib64/libuniplugin.so:vendor/lib64/libuniplugin.so;DISABLE_DEPS
+-lib/libsensorlistener.so:vendor/lib/libsensorlistener.so;DISABLE_DEPS
+-lib64/libsensorlistener.so:vendor/lib64/libsensorlistener.so;DISABLE_DEPS
 
 # DRM
 -vendor/lib/liboemcrypto.so;DISABLE_DEPS
@@ -78,10 +78,6 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -vendor/lib64/libMcRegistry.so;DISABLE_DEPS
 -vendor/bin/mcDriverDaemon;DISABLE_DEPS
 
-# libsecnativefeature
--lib/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
--lib64/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
-
 # RIL dependencies
 -lib/libfloatingfeature.so:vendor/lib/libfloatingfeature.so
 -lib64/libfloatingfeature.so:vendor/lib64/libfloatingfeature.so
@@ -111,10 +107,6 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -vendor/lib64/libvkmanager_vendor.so;DISABLE_DEPS|c251a0386644c03760148177047ddb0c437029e5
 -vendor/lib64/vendor.samsung.hardware.radio.bridge@2.0.so;DISABLE_DEPS|ac01bab3a779374005bb6b94e8b354107671d5dc
 -vendor/lib64/vendor.samsung.hardware.radio.channel@2.0.so;DISABLE_DEPS|44d2173ab0187ec3460dd54135e2b406bc93b098
-
-# Sensors
--lib/libsensorlistener.so;DISABLE_DEPS
--lib64/libsensorlistener.so;DISABLE_DEPS
 
 ## Firmware and hardware data
 

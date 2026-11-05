@@ -70,8 +70,10 @@ patchelf --replace-needed libvndsecril-client.so libsecril-client.so $BLOB_ROOT/
 
 # Link each legacy blob to its compatibility shim without linker injection.
 for LIBDIR in lib lib64; do
-    "${PATCHELF}" --add-needed libcamera_client_shim.so "$BLOB_ROOT/$LIBDIR/libexynoscamera.so"
-    "${PATCHELF}" --add-needed libexynoscamera_shim.so "$BLOB_ROOT/$LIBDIR/libexynoscamera.so"
+    CAMERA_LIBDIR="$BLOB_ROOT/vendor/$LIBDIR"
+
+    "${PATCHELF}" --add-needed libcamera_client_shim.so "$CAMERA_LIBDIR/libexynoscamera.so"
+    "${PATCHELF}" --add-needed libexynoscamera_shim.so "$CAMERA_LIBDIR/libexynoscamera.so"
     "${PATCHELF}" --add-needed libbauthtzcommon_shim.so "$BLOB_ROOT/vendor/$LIBDIR/libbauthserver.so"
 done
 

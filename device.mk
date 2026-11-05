@@ -152,6 +152,7 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
+    libhwjpeg \
     libexynoscamera_shim \
     libcamera_client_shim \
     camera.exynos5 \
