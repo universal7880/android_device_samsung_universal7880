@@ -38,8 +38,6 @@
 -vendor/lib64/libsynaFpSensorTestNwd.so;DISABLE_DEPS
 
 # GPS
--lib/libfloatingfeature.so;DISABLE_DEPS
--lib64/libfloatingfeature.so;DISABLE_DEPS
 -vendor/bin/hw/gpsd;DISABLE_DEPS
 vendor/etc/gnss/ca.pem
 -vendor/lib64/hw/gps.default.so;DISABLE_DEPS
@@ -83,6 +81,10 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 # libsecnativefeature
 -lib/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
 -lib64/libsecnativefeature.so;DISABLE_DEPS;MODULE_SUFFIX=_system
+
+# RIL dependencies
+-lib/libfloatingfeature.so:vendor/lib/libfloatingfeature.so
+-lib64/libfloatingfeature.so:vendor/lib64/libfloatingfeature.so
 
 # RIL - N975FXXU6ETLL (R)
 -vendor/bin/cbd;DISABLE_DEPS|aae9a11fefb25f0293aa7da714a093d5f017d826
