@@ -155,6 +155,7 @@ PRODUCT_PACKAGES += \
     libhwjpeg \
     libexynoscamera_shim \
     libcamera_client_shim \
+    libsensorlistener \
     camera.exynos5 \
     android.hardware.camera.provider@2.5-service
 

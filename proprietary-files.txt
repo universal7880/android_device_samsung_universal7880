@@ -12,8 +12,6 @@
 -lib64/libuniapi.so:vendor/lib64/libuniapi.so;DISABLE_DEPS
 -lib/libuniplugin.so:vendor/lib/libuniplugin.so;DISABLE_DEPS
 -lib64/libuniplugin.so:vendor/lib64/libuniplugin.so;DISABLE_DEPS
--lib/libsensorlistener.so:vendor/lib/libsensorlistener.so;DISABLE_DEPS
--lib64/libsensorlistener.so:vendor/lib64/libsensorlistener.so;DISABLE_DEPS
 
 # DRM
 -vendor/lib/liboemcrypto.so;DISABLE_DEPS
