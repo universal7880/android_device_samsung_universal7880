@@ -72,6 +72,11 @@ patchelf --replace-needed libvndsecril-client.so libsecril-client.so $BLOB_ROOT/
 for LIBDIR in lib lib64; do
     CAMERA_LIBDIR="$BLOB_ROOT/vendor/$LIBDIR"
 
+    for CAMERA_BLOB in hw/camera.vendor.exynos5.so libexynoscamera.so libexynoscamera3.so; do
+        "${PATCHELF}" --replace-needed libcamera_client.so libcamera_compat.so \
+            "$CAMERA_LIBDIR/$CAMERA_BLOB"
+    done
+
     "${PATCHELF}" --add-needed libcamera_client_shim.so "$CAMERA_LIBDIR/libexynoscamera.so"
     "${PATCHELF}" --add-needed libexynoscamera_shim.so "$CAMERA_LIBDIR/libexynoscamera.so"
     "${PATCHELF}" --add-needed libbauthtzcommon_shim.so "$BLOB_ROOT/vendor/$LIBDIR/libbauthserver.so"
