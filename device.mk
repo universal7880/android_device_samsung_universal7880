@@ -153,6 +153,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libhwjpeg \
     libexynoscamera_shim \
+    libcamera_compat \
     libcamera_client_shim \
     libsensorlistener \
     camera.exynos5 \
