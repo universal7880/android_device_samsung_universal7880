@@ -1,0 +1,10 @@
+on post-fs-data
+    mkdir /data/vendor/mediadrm 0770 media mediadrm
+    restorecon_recursive /data/vendor/mediadrm
+
+service vendor.drm-widevine /vendor/bin/hw/android.hardware.drm-service.widevine
+    interface aidl android.hardware.drm.IDrmFactory/widevine
+    class hal
+    user media
+    group media mediadrm drmrpc system inet readproc radio
+    ioprio rt 4

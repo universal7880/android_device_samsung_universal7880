@@ -17,10 +17,6 @@
 -vendor/lib/liboemcrypto.so;DISABLE_DEPS
 -vendor/lib/mediadrm/libwvdrmengine.so;DISABLE_DEPS
 
-# DRM (Widevine HIDL)
--vendor/bin/hw/android.hardware.drm@1.1-service.widevine;DISABLE_DEPS
--vendor/lib/libwvhidl.so;DISABLE_DEPS
-
 # Fingerprint
 -vendor/lib/libbauthserver.so;DISABLE_DEPS
 -vendor/lib/libbauthtzcommon.so;DISABLE_DEPS

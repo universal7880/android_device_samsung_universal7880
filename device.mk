@@ -161,15 +161,10 @@ PRODUCT_PACKAGES += \
 
 # DRM
 PRODUCT_PACKAGES += \
-    android.hardware.drm@1.0-impl \
-    android.hardware.drm@1.0-service \
-    android.hardware.drm@1.3 \
     android.hardware.drm-service.clearkey \
     libfwdlockengine
 
-# DRM (Widevine) service
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/android.hardware.drm@1.1-service.widevine.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.drm@1.1-service.widevine.rc
+PRODUCT_PACKAGES += android.hardware.drm-service.widevine.universal7880
 
 # FastCharge
 PRODUCT_PACKAGES += \
