@@ -1,0 +1,13 @@
+cc_library_shared {
+    name: "libsensorlistener",
+    vendor: true,
+    compile_multilib: "both",
+
+    srcs: ["SensorListener.cpp"],
+    cflags: ["-Wall", "-Wextra", "-Werror", "-fvisibility=hidden"],
+    shared_libs: [
+        "android.frameworks.sensorservice-V1-ndk",
+        "android.hardware.sensors-V3-ndk",
+        "libbinder_ndk",
+    ],
+}
