@@ -30,7 +30,7 @@
 #include <hardware/hardware.h>
 #include <hardware/camera3.h>
 #include <utils/threads.h>
-#include <camera/CameraMetadata.h>
+#include "CameraMetadata.h"
 
 #include "SECCameraProperties.h"
 
@@ -140,7 +140,7 @@ const camera_metadata_t * camera_construct_default_request_settings(
 
     ALOGV("%s->%08X->%08X", __FUNCTION__, (uintptr_t)device, (uintptr_t)(((wrapper_camera_device_t*)device)->vendor));
 
-    android::CameraMetadata metadata;
+    android::hardware::camera::common::helper::CameraMetadata metadata;
     metadata = VENDOR_CALL(device, construct_default_request_settings, type);
 
     /* enable phase detection auto focus by default */

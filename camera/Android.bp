@@ -16,10 +16,12 @@ cc_library_shared {
         "android.hardware.graphics.bufferqueue@2.0_genc++_headers",
     ],
 
+    static_libs: ["//hardware/samsung:android.hardware.camera.common-helper.samsung"],
+
     shared_libs: [
         "libhardware",
         "liblog",
-        "libcamera_client",
+        "libcamera_metadata",
         "libutils",
         "libcutils",
         "android.hidl.token@1.0-utils",
