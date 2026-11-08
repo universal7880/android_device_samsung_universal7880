@@ -190,6 +190,7 @@ PRODUCT_PACKAGES += \
 
 # Radio
 PRODUCT_VENDOR_PROPERTIES += \
+    ro.telephony.default_network=9 \
     vendor.sec.rild.libpath=/vendor/lib64/libsec-ril.so \
     vendor.sec.rild.libpath2=/vendor/lib64/libsec-ril-dsds.so
 
@@ -238,6 +239,8 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 # Bluetooth
+PRODUCT_VENDOR_PROPERTIES += bluetooth.le.disable_apcf_extended_features=1
+
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth-service.universal7880 \
     AntHalService-Soong \
@@ -393,7 +396,8 @@ $(call inherit-product, hardware/samsung_slsi-linaro/config/config.mk)
 # Graphics
 PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.egl=mali \
-    ro.opengles.version=196610
+    ro.opengles.version=196610 \
+    ro.surface_flinger.max_frame_buffer_acquired_buffers=3
 
 # Graphics support libraries
 PRODUCT_PACKAGES += \
