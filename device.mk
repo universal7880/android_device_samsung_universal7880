@@ -25,6 +25,11 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/display_port_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_port_0.xml
 
+# SoC
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.soc.manufacturer=Samsung \
+    ro.soc.model=Exynos 7880
+
 # Display density
 PRODUCT_VENDOR_PROPERTIES += ro.sf.lcd_density=420
 
@@ -384,6 +389,11 @@ PRODUCT_PACKAGES += vndservicemanager
 TARGET_SYSTEM_PROP += device/samsung/universal7880/system.prop
 
 $(call inherit-product, hardware/samsung_slsi-linaro/config/config.mk)
+
+# Graphics
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.hardware.egl=mali \
+    ro.opengles.version=196610
 
 # Graphics support libraries
 PRODUCT_PACKAGES += \
