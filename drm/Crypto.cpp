@@ -7,6 +7,8 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#include <array>
+#include <cstring>
 #include <limits>
 #include <map>
 #include <mutex>
@@ -96,7 +98,12 @@ class Crypto final : public drm::BnCryptoPlugin {
     }
 
     ScopedAStatus decrypt(const drm::DecryptArgs& args, int32_t* result) override {
-        if (args.keyId.size() != 16 || args.iv.size() != 16 || args.offset < 0 ||
+        const bool clear = args.mode == drm::Mode::UNENCRYPTED;
+        const std::array<uint8_t, 16> emptyKeyOrIv{};
+        const auto validKeyOrIv = [clear](const Bytes& bytes) {
+            return bytes.size() == 16 || (clear && bytes.empty());
+        };
+        if (!validKeyOrIv(args.keyId) || !validKeyOrIv(args.iv) || args.offset < 0 ||
             args.source.offset < 0 || args.source.size < 0 || args.pattern.encryptBlocks < 0 ||
             args.pattern.skipBlocks < 0) {
             return error(Status::BAD_VALUE);
@@ -124,14 +131,15 @@ class Crypto final : public drm::BnCryptoPlugin {
         samples.reserve(args.subSamples.size());
         uint64_t total = 0;
         for (const auto& sample : args.subSamples) {
-            if (sample.numBytesOfClearData < 0 || sample.numBytesOfEncryptedData < 0) {
+            if (sample.numBytesOfClearData < 0 || sample.numBytesOfEncryptedData < 0 ||
+                (clear && sample.numBytesOfEncryptedData != 0)) {
                 return error(Status::BAD_VALUE);
             }
-            auto clear = static_cast<uint32_t>(sample.numBytesOfClearData);
+            auto clearBytes = static_cast<uint32_t>(sample.numBytesOfClearData);
             auto encrypted = static_cast<uint32_t>(sample.numBytesOfEncryptedData);
-            total += static_cast<uint64_t>(clear) + encrypted;
+            total += static_cast<uint64_t>(clearBytes) + encrypted;
             if (total > std::numeric_limits<int32_t>::max()) return error(Status::BAD_VALUE);
-            samples.push_back({clear, encrypted});
+            samples.push_back({clearBytes, encrypted});
         }
         if (total > static_cast<uint64_t>(args.source.size)) return error(Status::BAD_VALUE);
 
@@ -163,11 +171,20 @@ class Crypto final : public drm::BnCryptoPlugin {
             if (!output) return error(Status::BAD_VALUE);
         }
 
+        if (clear && !args.secure) {
+            // MediaCodec sends clear codec configuration through the crypto plugin.
+            std::memmove(output, input, total);
+            *result = total;
+            return ScopedAStatus::ok();
+        }
+
+        const auto* keyId = args.keyId.empty() ? emptyKeyOrIv.data() : args.keyId.data();
+        const auto* iv = args.iv.empty() ? emptyKeyOrIv.data() : args.iv.data();
         Legacy::Pattern pattern{static_cast<uint32_t>(args.pattern.encryptBlocks),
                                 static_cast<uint32_t>(args.pattern.skipBlocks)};
         android::AString detail;
         ssize_t written =
-            plugin_->decrypt(args.secure, args.keyId.data(), args.iv.data(), mode, pattern, input,
+            plugin_->decrypt(args.secure, keyId, iv, mode, pattern, input,
                              samples.data(), samples.size(), output, &detail);
         if (written < 0) return legacyStatus(written);
         if (static_cast<uint64_t>(written) > total) return error(Status::ERROR_DRM_DECRYPT);
