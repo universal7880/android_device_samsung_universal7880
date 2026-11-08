@@ -357,6 +357,7 @@ PRODUCT_PACKAGES += \
 # Legacy vendor dependencies
 PRODUCT_PACKAGES += \
     libprotobuf-cpp-lite-v29 \
+    libprotobuf-cpp-lite-vendorcompat \
     libprotobuf-cpp-full-v29 \
     libhidlbase-v32 \
     libhidlbase-v32.vendor
