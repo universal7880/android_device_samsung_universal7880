@@ -187,14 +187,16 @@ PRODUCT_PACKAGES += \
 
 # Radio
 PRODUCT_PACKAGES += \
-    android.hardware.radio@1.4 \
-    android.hardware.radio.config@1.2 \
-    android.hardware.radio.deprecated@1.0 \
-    vendor.samsung.hardware.radio@2.0 \
-    vendor.samsung.hardware.radio@2.1 \
-    libxml2 \
-    libprotobuf-cpp-full \
+    libxml2.vendor \
     libprotobuf-cpp-full-3.9.1-vendorcompat \
+    android.hardware.radio@1.4.vendor \
+    android.hardware.radio.config@1.2.vendor \
+    android.hardware.radio.deprecated@1.0.vendor \
+    vendor.samsung.hardware.radio@2.0.vendor \
+    vendor.samsung.hardware.radio@2.1.vendor \
+    libhidltransport.vendor \
+    libhwbinder.vendor \
+    libnetutils.vendor \
     libsqlite.vendor
 
 # Doze
@@ -375,8 +377,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
     android.hidl.manager@1.0 \
-    libhidltransport \
-    libhwbinder \
     vndservicemanager
 
 # System.prop
