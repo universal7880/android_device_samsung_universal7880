@@ -374,10 +374,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.1-service.typec
 
-PRODUCT_PACKAGES += \
-    android.hidl.base@1.0 \
-    android.hidl.manager@1.0 \
-    vndservicemanager
+PRODUCT_PACKAGES += vndservicemanager
 
 # System.prop
 TARGET_SYSTEM_PROP += device/samsung/universal7880/system.prop
