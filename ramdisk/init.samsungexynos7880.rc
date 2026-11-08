@@ -497,7 +497,6 @@ on fs
     write /sys/class/scsi_disk/0:0:0:0/cache_type "none"
     mount_all /vendor/etc/fstab.samsungexynos7880
     swapon_all /vendor/etc/fstab.samsungexynos7880
-    setprop ro.crypto.fuse_sdcard true
     chown radio system /efs
 
 # Permissions for ION

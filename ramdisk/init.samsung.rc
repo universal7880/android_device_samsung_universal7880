@@ -58,7 +58,6 @@ on init
     chmod 0600 /proc/extra
 
 on fs
-    setprop ro.crypto.fde_algorithm AES-256-XTS-DISK
 # Set model name by gpio
     setprop ro.product.model ${ro.boot.product.model}
 
@@ -1028,15 +1027,6 @@ on charger
     chmod 0775 /efs/Battery
     chown radio system /efs/Battery/batt_capacity_max
     chmod 0664 /efs/Battery/batt_capacity_max
-
-#@VOLD Emergency reset
-on property:vold.emergency_reset=1
-    start installd
-
-on property:vold.decrypt=trigger_reset_main
-    stop surfaceflinger
-    start surfaceflinger
-    class_reset main
 
 on property:sys.sysctl.swappiness=*
     write /proc/sys/vm/swappiness ${sys.sysctl.swappiness}
