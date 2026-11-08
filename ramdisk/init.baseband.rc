@@ -72,9 +72,3 @@ service cpboot-daemon /vendor/bin/cbd -d -tss310 -bm -mm -P platform/13540000.dw
 
 on property:ro.multisim.simslotcount=*
    write /sys/module/modem_ctrl_ss310ap/parameters/ds_detect ${ro.multisim.simslotcount}
-
-on property:ro.multisim.simslotcount=1
-    setprop persist.radio.multisim.config ss
-
-on property:ro.multisim.simslotcount=2
-    setprop persist.radio.multisim.config dsds

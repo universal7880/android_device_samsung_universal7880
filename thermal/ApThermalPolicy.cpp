@@ -71,7 +71,7 @@ ApThermalPolicy::~ApThermalPolicy() {
 }
 
 bool ApThermalPolicy::initialize() {
-    const auto model = ::android::base::GetProperty("ro.vendor.universal7880.device", "");
+    const auto model = ::android::base::GetProperty("ro.boot.vendor.universal7880.device", "");
     if (model == "a5y17lte") {
         firstTrip_ = 420;
         skinOffset_ = 77;

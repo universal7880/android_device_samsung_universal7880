@@ -40,6 +40,3 @@ allow system_server sysfs_sec:file write;
 allow system_server sysfs_devices_system_cpu:file write;
 allow system_server sysfs_virtual:file write;
 allow system_server sysfs_iio_writable:file write;
-
-# Select the device-specific power profile overlay.
-get_prop(system_server, vendor_universal7880_variant_prop)

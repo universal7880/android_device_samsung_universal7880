@@ -4,6 +4,5 @@ vendor_internal_prop(vendor_nfc_prop)
 # Fingerprint HAL configuration
 vendor_internal_prop(vendor_fingerprint_config_prop)
 
-vendor_public_prop(vendor_universal7880_variant_prop)
 
 vendor_internal_prop(vendor_thermal_state_prop)

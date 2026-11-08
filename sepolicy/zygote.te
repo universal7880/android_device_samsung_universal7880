@@ -1,2 +1,0 @@
-# Select the device-specific power profile before preloading framework resources.
-get_prop(zygote, vendor_universal7880_variant_prop)

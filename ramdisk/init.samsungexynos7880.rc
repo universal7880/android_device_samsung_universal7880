@@ -574,12 +574,6 @@ service watchdogd /system/bin/watchdogd 10 20
     class core
     seclabel u:r:watchdogd:s0
 
-on property:ro.multisim.simslotcount=1
-    setprop persist.radio.multisim.config ss
-
-on property:ro.multisim.simslotcount=2
-    setprop persist.radio.multisim.config dsds
-
 on property:init.svc.bootanim=stopped
 # set property for touchkey light voltage table
     chown system system /efs/FactoryApp/tkey_light_version
