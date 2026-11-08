@@ -34,8 +34,6 @@ PRODUCT_PACKAGES += \
     PowerProfileA7
 
 # VINTF
-PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
-
 PRODUCT_PACKAGES += \
     universal7880_framework_compatibility_matrix.4.xml
 
