@@ -157,6 +157,8 @@ PRODUCT_PACKAGES += \
     libcamera_client_shim \
     libsensorlistener \
     camera.exynos5 \
+    libgui.vendor \
+    libpower.vendor \
     android.hardware.camera.provider@2.5-service
 
 # DRM
