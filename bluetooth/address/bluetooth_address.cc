@@ -48,8 +48,7 @@ bool BluetoothAddress::string_to_bytes(const char* addr_str, uint8_t* addr) {
 bool BluetoothAddress::get_local_address(uint8_t* local_addr) {
   char property[PROPERTY_VALUE_MAX] = {0};
 
-  // Get local bdaddr storage path from a system property.
-  if (property_get(PROPERTY_BT_BDADDR_PATH, property, NULL)) {
+  if (property_get(PROPERTY_BT_BDADDR_PATH, property, "/efs/bluetooth/bt_addr")) {
     ALOGD("%s: Trying %s", __func__, property);
 
     int addr_fd = open(property, O_RDONLY);
