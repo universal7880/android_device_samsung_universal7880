@@ -192,7 +192,8 @@ PRODUCT_PACKAGES += \
     vendor.samsung.hardware.radio@2.1 \
     libxml2 \
     libprotobuf-cpp-full \
-    libprotobuf-cpp-full-3.9.1-vendorcompat
+    libprotobuf-cpp-full-3.9.1-vendorcompat \
+    libsqlite.vendor
 
 # Doze
 PRODUCT_PACKAGES += \
