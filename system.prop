@@ -35,9 +35,7 @@ dalvik.vm.heapmaxfree=8m
 debug.sf.treat_170m_as_sRGB=1
 debug.sf.predict_hwc_composition_strategy=0
 ro.zygote.disable_gl_preload=1
-ro.opengles.version=196610
 ro.surface_flinger.max_frame_buffer_acquired_buffers=3
-ro.hardware.egl=mali
 
 # Media
 debug.stagefright.ccodec=1
@@ -51,10 +49,6 @@ telephony.lteOnCdmaDevice=0
 
 # SDcardfs
 ro.sys.sdcardfs=false
-
-# SoC
-ro.soc.manufacturer=Samsung
-ro.soc.model=Exynos 7880
 
 # Wifi
 wifi.interface=wlan0
