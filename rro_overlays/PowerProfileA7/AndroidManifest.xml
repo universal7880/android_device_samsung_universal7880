@@ -7,6 +7,6 @@
         android:targetPackage="android"
         android:isStatic="true"
         android:priority="1"
-        android:requiredSystemPropertyName="ro.vendor.universal7880.device"
+        android:requiredSystemPropertyName="ro.boot.vendor.universal7880.device"
         android:requiredSystemPropertyValue="a7y17lte" />
 </manifest>
