@@ -186,6 +186,10 @@ PRODUCT_PACKAGES += \
     AdvancedDisplay
 
 # Radio
+PRODUCT_VENDOR_PROPERTIES += \
+    vendor.sec.rild.libpath=/vendor/lib64/libsec-ril.so \
+    vendor.sec.rild.libpath2=/vendor/lib64/libsec-ril-dsds.so
+
 PRODUCT_PACKAGES += \
     libxml2.vendor \
     libprotobuf-cpp-full-3.9.1-vendorcompat \
@@ -247,6 +251,8 @@ PRODUCT_PACKAGES += \
     Tag
 
 # Audio
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.audio_hal.force_voice_config=wide
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/mixer_gains.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_gains.xml \
     $(LOCAL_PATH)/configs/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
