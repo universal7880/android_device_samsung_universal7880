@@ -1,12 +1,10 @@
 #### hal_wifi_default
 #
 
-# /efs
+# The WLAN driver may initialize the MAC file in the Wi-Fi HAL's context.
 allow hal_wifi_default efs_file:dir search;
-
-# /efs/wifi
-allow hal_wifi_default wifi_efs_file:dir search;
-allow hal_wifi_default wifi_efs_file:file { open read };
+allow hal_wifi_default wifi_efs_file:dir { search write add_name };
+allow hal_wifi_default wifi_efs_file:file { create getattr open read write };
 
 # load .ko modules
 allow hal_wifi_default self:capability { sys_module sys_resource };
