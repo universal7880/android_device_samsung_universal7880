@@ -366,9 +366,7 @@ PRODUCT_PACKAGES += \
     sensors.universal7880
 
 # Vibrator
-PRODUCT_PACKAGES += \
-    android.hardware.vibrator@1.0-impl \
-    android.hardware.vibrator@1.0-service
+PRODUCT_PACKAGES += android.hardware.vibrator-service.samsung
 
 # Legacy vendor dependencies
 PRODUCT_PACKAGES += \
