@@ -38,10 +38,6 @@ PRODUCT_PACKAGES += \
     PowerProfileA5 \
     PowerProfileA7
 
-# VINTF
-PRODUCT_PACKAGES += \
-    universal7880_framework_compatibility_matrix.4.xml
-
 # Flat device tree for boot image
 PRODUCT_HOST_PACKAGES += \
     dtbhtoolExynos
