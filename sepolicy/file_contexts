@@ -46,22 +46,39 @@
 
 ####################################
 # efs files
-/efs/FactoryApp(/.*)?        u:object_r:app_efs_file:s0
-/efs/FactoryApp/baro_delta   u:object_r:baro_delta_factoryapp_efs_file:s0
-/efs/FactoryApp/factorymode  u:object_r:factorymode_factoryapp_efs_file:s0
-/efs/FactoryApp/fdata        u:object_r:radio_factoryapp_efs_file:s0
-/efs/FactoryApp/hist_nv      u:object_r:radio_factoryapp_efs_file:s0
-/efs/FactoryApp/prox_cal     u:object_r:sensor_factoryapp_efs_file:s0
-/efs/FactoryApp/test_nv      u:object_r:radio_factoryapp_efs_file:s0
+/efs                                        -l u:object_r:rootfs:s0
+/mnt/efs(/.*)?                              u:object_r:efs_file:s0
+/mnt/vendor/efs                             -l u:object_r:efs_file:s0
+/mnt/efs/Battery(/.*)?                      u:object_r:battery_efs_file:s0
+/mnt/efs/DAK(/.*)?                          u:object_r:prov_efs_file:s0
+/mnt/efs/afc(/.*)?                          u:object_r:sec_efs_file:s0
+/mnt/efs/bluetooth(/.*)?                    u:object_r:bluetooth_efs_file:s0
+/mnt/efs/cpk(/.*)?                          u:object_r:cpk_efs_file:s0
+/mnt/efs/imei(/.*)?                         u:object_r:imei_efs_file:s0
+/mnt/efs/nfc(/.*)?                          u:object_r:nfc_efs_file:s0
+/mnt/efs/pfw_data(/.*)?                     u:object_r:pfw_efs_file:s0
+/mnt/efs/prov(/.*)?                         u:object_r:prov_efs_file:s0
+/mnt/efs/prov_data(/.*)?                    u:object_r:prov_efs_file:s0
+/mnt/efs/root(/.*)?                         u:object_r:app_efs_file:s0
+/mnt/efs/tee(/.*)?                          u:object_r:tee_efs_file:s0
+/mnt/efs/wifi(/.*)?                         u:object_r:wifi_efs_file:s0
 
-/efs/drm(/.*)?               u:object_r:drm_efs_file:s0
-/efs/gyro_cal_data           u:object_r:sensor_efs_file:s0
-/efs/h2k\.dat                u:object_r:cpk_efs_file:s0
-/efs/nv_data.bin(.*)         u:object_r:bin_nv_data_efs_file:s0
-/efs/nv.log                  u:object_r:bin_nv_data_efs_file:s0
-/efs/\.nv_core\.bak(.*)      u:object_r:bin_nv_data_efs_file:s0
-/efs/wv\.keys                u:object_r:cpk_efs_file:s0
-/efs/factory\.prop           u:object_r:factoryprop_efs_file:s0
+/mnt/efs/FactoryApp(/.*)?                   u:object_r:app_efs_file:s0
+/mnt/efs/FactoryApp/baro_delta              u:object_r:baro_delta_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/factorymode             u:object_r:factorymode_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/fdata                   u:object_r:radio_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/hist_nv                 u:object_r:radio_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/prox_cal                u:object_r:sensor_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/test_nv                 u:object_r:radio_factoryapp_efs_file:s0
+
+/mnt/efs/drm(/.*)?                          u:object_r:drm_efs_file:s0
+/mnt/efs/gyro_cal_data                      u:object_r:sensor_efs_file:s0
+/mnt/efs/h2k\.dat                           u:object_r:cpk_efs_file:s0
+/mnt/efs/nv_data\.bin(.*)                   u:object_r:bin_nv_data_efs_file:s0
+/mnt/efs/nv\.log                            u:object_r:bin_nv_data_efs_file:s0
+/mnt/efs/\.nv_core\.bak(.*)                 u:object_r:bin_nv_data_efs_file:s0
+/mnt/efs/wv\.keys                           u:object_r:cpk_efs_file:s0
+/mnt/efs/factory\.prop                      u:object_r:factoryprop_efs_file:s0
 
 ####################################
 # data files
@@ -192,5 +209,5 @@
 
 /sys/devices/11400000\.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0
 
-/efs/TEE                                      u:object_r:gatekeeper_efs_file:s0
-/efs/TEE/gk_context(_sub)?_[0-9a-f]+          u:object_r:gatekeeper_efs_file:s0
+/mnt/efs/TEE                                u:object_r:gatekeeper_efs_file:s0
+/mnt/efs/TEE/gk_context(_sub)?_[0-9a-f]+    u:object_r:gatekeeper_efs_file:s0

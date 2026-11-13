@@ -1,7 +1,7 @@
 on post-fs
-    export MC_AUTH_TOKEN_PATH /efs
-    mkdir /efs/TEE  0770 radio system
-    restorecon_recursive /efs/TEE
+    export MC_AUTH_TOKEN_PATH /mnt/efs
+    mkdir /mnt/efs/TEE  0770 radio system
+    restorecon_recursive /mnt/efs/TEE
     chmod 0660 /dev/t-base-tui
     chown system system /dev/t-base-tui
 

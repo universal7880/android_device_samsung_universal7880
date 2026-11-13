@@ -90,8 +90,8 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 
 TARGET_USERIMAGES_USE_EXT4 := true
 
-# Root extra folders
-BOARD_ROOT_EXTRA_FOLDERS += efs
+# Keep the legacy path for Samsung blobs on the LineageOS system image.
+BOARD_ROOT_EXTRA_SYMLINKS += /mnt/efs:/efs
 TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/config.fs
 
 # Retrofit dynamic partitions use the existing SYSTEM partition.

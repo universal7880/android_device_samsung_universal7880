@@ -19,7 +19,7 @@ struct Result {
 
 class Trustlet {
   public:
-    explicit Trustlet(std::string contextDirectory = "/efs/TEE");
+    explicit Trustlet(std::string contextDirectory = "/mnt/efs/TEE");
     ~Trustlet();
 
     Trustlet(const Trustlet&) = delete;

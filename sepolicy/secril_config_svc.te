@@ -1,2 +1,5 @@
-# /efs/factory.prop
+# /mnt/efs/factory.prop
 allow secril_config_svc factoryprop_efs_file:file r_file_perms;
+
+# Follow the Samsung vendor EFS alias.
+allow secril_config_svc efs_file:lnk_file r_file_perms;
