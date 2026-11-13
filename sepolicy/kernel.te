@@ -18,9 +18,6 @@ allow kernel { app_efs_file battery_efs_file efs_file sensor_efs_file }:file rw_
 allow kernel wifi_efs_file:dir r_dir_perms;
 allow kernel wifi_efs_file:file r_file_perms;
 
-# /data/misc/conn/.wifiver.info
-allow kernel wifi_data_file:file rw_file_perms;
-
 # sysfs_lcd
 allow kernel sysfs_lcd:file { open read };
 
