@@ -74,9 +74,6 @@
 /(vendor|system/vendor)/bin/hw/android\.hardware\.drm-service\.widevine u:object_r:hal_drm_widevine_exec:s0
 /data/vendor/mediadrm(/.*)?       u:object_r:mediadrm_data_file:s0
 
-# mobicore
-/data/misc/mcRegistry(/.*)?    u:object_r:mobicore_data_file:s0
-
 # biometrics
 /data/biometrics(/.*)?       u:object_r:fingerprintd_data_file:s0
 
