@@ -11,3 +11,6 @@ ro.multisim.simslotcount       u:object_r:vendor_radio_prop:s0 exact int
 ro.vendor.fingerprint.type               u:object_r:vendor_fingerprint_config_prop:s0 exact string
 ro.vendor.fingerprint.max_enrollments    u:object_r:vendor_fingerprint_config_prop:s0 exact int
 vendor.universal7880.interactive         u:object_r:vendor_thermal_state_prop:s0 exact bool
+
+# MobiCore daemon readiness
+sys.mobicoredaemon.enable               u:object_r:tee_prop:s0 exact string
