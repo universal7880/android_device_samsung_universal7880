@@ -16,6 +16,10 @@ import re
 
 def FullOTA_Assertions(info):
   AddBootloaderAssertion(info, info.input_zip)
+  info.script.AppendExtra(
+      'assert((getprop("ro.boot.dynamic_partitions_retrofit") == "true" && '
+      'getprop("ro.boot.super_partition") == "SYSTEM") || '
+      'abort("Install a recovery with retrofit dynamic partition support first."));')
 
 
 def IncrementalOTA_Assertions(info):
@@ -23,7 +27,7 @@ def IncrementalOTA_Assertions(info):
 
 
 def AddBootloaderAssertion(info, input_zip):
-  android_info = input_zip.read("OTA/android-info.txt")
+  android_info = input_zip.read("OTA/android-info.txt").decode("utf-8")
   m = re.search(r"require\s+version-bootloader\s*=\s*(\S+)", android_info)
   if m:
     bootloaders = m.group(1).split("|")
