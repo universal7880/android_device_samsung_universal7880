@@ -109,9 +109,6 @@ on post-fs-data
     mkdir /data/log/bt 0770 bluetooth bluetooth
     mkdir /data/vendor/bluetooth 0770 bluetooth bluetooth
 
-    #lpnetConfig AppSync
-    mkdir /data/misc/lpnet 0700 system system
-
     #MCPS
     #ARGOS with MCPS
     chown system system /sys/module/modem_argos_notifier/parameters/big_clat_rps
@@ -156,19 +153,7 @@ on post-fs-data
     chown system system /sys/module/mcps/parameters/num_mcps_dev
     chown system system /sys/module/mcps/version
 
-    # [ Wi-Fi init
-    # Create directory for hostapd
-    mkdir /data/hostapd 0770 system wifi
-
-    # give system access to wpa_supplicant.conf for backup and restore
-    mkdir /data/misc/wifi 0770 wifi system
-    mkdir /data/misc/wifi_share_profile 0771 wifi system
-    mkdir /data/misc/wifi_hostapd 0771 wifi system    
-
     mkdir /data/log/wifi/ 0775 system root
-    mkdir /data/misc/dhcp 0775 dhcp dhcp
-    mkdir /data/misc/reboot 0700 system system
-    chown dhcp dhcp /data/misc/dhcp
     chown system system /sys/kernel/ipv4/tcp_delack_seg
 
     # Wi-Fi temporary log Directory for Android Global DE policy
