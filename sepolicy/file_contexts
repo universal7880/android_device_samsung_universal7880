@@ -81,7 +81,7 @@
 /data/biometrics(/.*)?       u:object_r:fingerprintd_data_file:s0
 
 # camera
-/data/camera/ISP_CV          u:object_r:camera_data_file:s0
+/data/vendor/camera(/.*)?    u:object_r:camera_vendor_data_file:s0
 
 ####################################
 # sysfs files

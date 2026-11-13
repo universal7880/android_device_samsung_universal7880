@@ -43,7 +43,7 @@ on post-fs-data
     chown system radio /sys/class/audio/earjack/mic_adc
 
 # Permissions Camera
-    mkdir /data/camera 0770 media system
+    mkdir /data/vendor/camera 0770 cameraserver camera
     chown system radio /sys/class/camera/rear/rear_camfw
     chown system radio /sys/class/camera/rear/rear_camfw_full
     chown system radio /sys/class/camera/rear/rear_checkfw_user

@@ -9,3 +9,7 @@ vndbinder_use(hal_camera_default)
 # Framework SensorManager and its sensor event callbacks.
 binder_call(hal_camera_default, system_server)
 allow system_server hal_camera_default:binder call;
+
+# FIMC-IS stores calibration and hardware error counts in the caller context.
+allow hal_camera_default camera_vendor_data_file:dir rw_dir_perms;
+allow hal_camera_default camera_vendor_data_file:file create_file_perms;
