@@ -42,7 +42,16 @@ PRODUCT_PACKAGES += \
 PRODUCT_HOST_PACKAGES += \
     dtbhtoolExynos
 
+# Dynamic partitions
+PRODUCT_USE_DYNAMIC_PARTITIONS := true
+PRODUCT_RETROFIT_DYNAMIC_PARTITIONS := true
+
+PRODUCT_PACKAGES += fastbootd
+
 # Ramdisk
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/ramdisk/fstab.samsungexynos7880:$(TARGET_COPY_OUT_RAMDISK)/system/etc/fstab.samsungexynos7880
+
 PRODUCT_PACKAGES += \
     fstab.samsungexynos7880 \
     init.baseband.rc \
