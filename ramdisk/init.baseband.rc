@@ -13,7 +13,7 @@ on init
     write /sys/class/net/rmnet6/queues/rx-0/rps_cpus 6
     write /sys/class/net/rmnet7/queues/rx-0/rps_cpus 6
 
-on fs
+on post-fs
     chown radio system /mnt/efs
     chmod 0771 /mnt/efs
     chown radio radio sys/devices/virtual/misc/multipdp/waketime
