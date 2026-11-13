@@ -92,11 +92,11 @@ on post-fs-data
     chmod 0660 /dev/mst_ctrl
 
 # for WIFI MAC address
-    mkdir /efs/wifi 0775 wifi root
-    chown wifi root /efs/wifi/.mac.info
-    chmod 0664 /efs/wifi/.mac.info
-    chown wifi root /efs/wifi/.mac.cob
-    chmod 0664 /efs/wifi/.mac.cob
+    mkdir /mnt/efs/wifi 0775 wifi root
+    chown wifi root /mnt/efs/wifi/.mac.info
+    chmod 0664 /mnt/efs/wifi/.mac.info
+    chown wifi root /mnt/efs/wifi/.mac.cob
+    chmod 0664 /mnt/efs/wifi/.mac.cob
 
 # Permision for xlat control
     chmod 0660 /sys/kernel/clat/xlat_plat
@@ -266,8 +266,8 @@ on boot
     # RTC status
     chown system system /sys/power/rtc_status
     chmod 0444 /sys/power/rtc_status
-    chown system system /efs/FactoryApp/rtc_status
-    chmod 0664 /efs/FactoryApp/rtc_status
+    chown system system /mnt/efs/FactoryApp/rtc_status
+    chmod 0664 /mnt/efs/FactoryApp/rtc_status
 
     # MSP Core Status
     chown system system /sys/devices/system/cpu/cpu1/online
@@ -434,8 +434,8 @@ on boot
     chown system radio /sys/class/fingerprint/fingerprint/bfs_values
 
 # sem_daemon permission
-    chown system system /efs/sec_efs/ssp_data
-    chmod 0644 /efs/sec_efs/ssp_data
+    chown system system /mnt/efs/sec_efs/ssp_data
+    chmod 0644 /mnt/efs/sec_efs/ssp_data
 
 #MST HW Support
 #setprop ro.mst.support 1
@@ -449,12 +449,12 @@ on boot
     chmod 0660 /dev/ttySAC0
 
     # for BT MAC address
-    mkdir /efs/bluetooth 0770 system bluetooth
+    mkdir /mnt/efs/bluetooth 0770 system bluetooth
     # if already exist
-    chown system bluetooth /efs/bluetooth
-    chown system bluetooth /efs/bluetooth/bt_addr
-    chmod 0770 /efs/bluetooth
-    chmod 0640 /efs/bluetooth/bt_addr
+    chown system bluetooth /mnt/efs/bluetooth
+    chown system bluetooth /mnt/efs/bluetooth/bt_addr
+    chmod 0770 /mnt/efs/bluetooth
+    chmod 0640 /mnt/efs/bluetooth/bt_addr
 
     chmod 0660 /sys/class/rfkill/rfkill0/state
     chmod 0660 /sys/class/rfkill/rfkill0/device/extldo
@@ -497,7 +497,7 @@ on fs
     write /sys/class/scsi_disk/0:0:0:0/cache_type "none"
     mount_all /vendor/etc/fstab.samsungexynos7880
     swapon_all /vendor/etc/fstab.samsungexynos7880
-    chown radio system /efs
+    chown radio system /mnt/efs
 
 # Permissions for ION
     chmod 0660 /sys/class/ion_cma/ion_video_ext/isolated
@@ -576,24 +576,24 @@ service watchdogd /system/bin/watchdogd 10 20
 
 on property:init.svc.bootanim=stopped
 # set property for touchkey light voltage table
-    chown system system /efs/FactoryApp/tkey_light_version
-    chown system system /efs/FactoryApp/tkey_light_crc
-    chown system system /efs/FactoryApp/tkey_light0
-    chown system system /efs/FactoryApp/tkey_light1
-    chown system system /efs/FactoryApp/tkey_light2
-    chown system system /efs/FactoryApp/tkey_light3
-    chown system system /efs/FactoryApp/tkey_light4
-    chown system system /efs/FactoryApp/tkey_light5
-    chown system system /efs/FactoryApp/tkey_light6
-    chown system system /efs/FactoryApp/tkey_light7
-    chown system system /efs/FactoryApp/tkey_light8
-    chown system system /efs/FactoryApp/tkey_light9
-    chown system system /efs/FactoryApp/tkey_light10
-    chown system system /efs/FactoryApp/tkey_light11
-    chown system system /efs/FactoryApp/tkey_light12
-    chown system system /efs/FactoryApp/tkey_light13
-    chown system system /efs/FactoryApp/tkey_light14
-    chown system system /efs/FactoryApp/tkey_light15
+    chown system system /mnt/efs/FactoryApp/tkey_light_version
+    chown system system /mnt/efs/FactoryApp/tkey_light_crc
+    chown system system /mnt/efs/FactoryApp/tkey_light0
+    chown system system /mnt/efs/FactoryApp/tkey_light1
+    chown system system /mnt/efs/FactoryApp/tkey_light2
+    chown system system /mnt/efs/FactoryApp/tkey_light3
+    chown system system /mnt/efs/FactoryApp/tkey_light4
+    chown system system /mnt/efs/FactoryApp/tkey_light5
+    chown system system /mnt/efs/FactoryApp/tkey_light6
+    chown system system /mnt/efs/FactoryApp/tkey_light7
+    chown system system /mnt/efs/FactoryApp/tkey_light8
+    chown system system /mnt/efs/FactoryApp/tkey_light9
+    chown system system /mnt/efs/FactoryApp/tkey_light10
+    chown system system /mnt/efs/FactoryApp/tkey_light11
+    chown system system /mnt/efs/FactoryApp/tkey_light12
+    chown system system /mnt/efs/FactoryApp/tkey_light13
+    chown system system /mnt/efs/FactoryApp/tkey_light14
+    chown system system /mnt/efs/FactoryApp/tkey_light15
 
 # Configure the governor before starting the hint manager.
 on boot
