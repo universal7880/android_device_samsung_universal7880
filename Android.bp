@@ -1,13 +1,6 @@
 soong_namespace {
 }
 
-// Retain the Android 10 framework matrix for legacy vendor HALs.
-vintf_compatibility_matrix {
-    name: "universal7880_framework_compatibility_matrix.4.xml",
-    stem: "compatibility_matrix.4.xml",
-    srcs: ["compatibility_matrix.4.xml"],
-}
-
 cc_library_headers {
     name: "libaudio_headers_universal7880",
     vendor_available: true,
