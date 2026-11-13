@@ -30,6 +30,7 @@ type sysfs_mmc, fs_type, sysfs_type, mlstrustedobject;
 
 ### data types
 type mediadrm_data_file, file_type, data_file_type;
+type camera_vendor_data_file, file_type, data_file_type;
 type nfc_vendor_data_file, data_file_type, file_type;
 
 allow sysfs_type tmpfs:filesystem associate;
