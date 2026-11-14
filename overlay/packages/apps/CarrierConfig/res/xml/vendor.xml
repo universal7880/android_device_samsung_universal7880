@@ -1,11 +1,8 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <carrier_config_list>
     <carrier_config>
-	<!-- GPS config -->
-        <string name="gps.supl_host">supl.google.com</string>
-        <string name="gps.supl_port">7275</string>
+        <!-- SUPL host, port and mode are set by vendor/etc/gps_debug.conf. -->
         <string name="gps.supl_ver">0x20000</string>
-        <string name="gps.supl_mode">1</string>
         <string name="gps.supl_es">1</string>
         <string name="gps.lpp_profile">0</string>
         <string name="gps.use_emergency_pdn_for_emergency_supl">1</string>
