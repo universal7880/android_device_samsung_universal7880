@@ -339,6 +339,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/gps/gps_debug.conf:$(TARGET_COPY_OUT_VENDOR)/etc/gps_debug.conf
 
 # Keys
+PRODUCT_VENDOR_PROPERTIES += qemu.hw.mainkeys=1
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/keylayout/gpio_keys.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/gpio_keys.kl \
     $(LOCAL_PATH)/configs/keylayout/sec_touchkey.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/sec_touchkey.kl
