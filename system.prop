@@ -31,7 +31,6 @@ dalvik.vm.heapmaxfree=8m
 # Graphics
 debug.sf.treat_170m_as_sRGB=1
 debug.sf.predict_hwc_composition_strategy=0
-ro.zygote.disable_gl_preload=1
 
 # Media
 debug.stagefright.ccodec=1
