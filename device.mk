@@ -393,6 +393,11 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += vndservicemanager
 
+# ART heap limits for generic system images
+PRODUCT_VENDOR_PROPERTIES += \
+    dalvik.vm.heapgrowthlimit=128m \
+    dalvik.vm.heapsize=512m
+
 # System.prop
 TARGET_SYSTEM_PROP += device/samsung/universal7880/system.prop
 
