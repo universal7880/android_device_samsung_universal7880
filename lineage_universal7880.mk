@@ -20,14 +20,11 @@ $(call inherit-product, device/samsung/universal7880/device.mk)
 # Inherit from the 64 bit configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 
-# Inherit Android Go defaults
-$(call inherit-product, $(SRC_TARGET_DIR)/product/go_defaults.mk)
-
 # Inherit from the common Open Source product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
-# Inherit the Lineage Android Go product configuration
-$(call inherit-product, vendor/lineage/config/common_full_go_phone.mk)
+# Inherit some common Lineage stuff.
+$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
 # Boot animation
 TARGET_BOOTANIMATION_PRELOAD := true
