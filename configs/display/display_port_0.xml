@@ -2,6 +2,9 @@
 <!-- Copyright (C) 2026 The LineageOS Project
      SPDX-License-Identifier: Apache-2.0 -->
 <displayConfiguration>
+    <!-- Preserve the previous default of 111 on Android's 1–255 scale. -->
+    <screenBrightnessDefault>0.43307087</screenBrightnessDefault>
+
     <!-- The shared panel driver uses fixed low ALPM brightness. Keep doze on
          the float API: integer brightness zero means OFF, while float zero
          is a valid minimum brightness during the screen-off transition. -->
