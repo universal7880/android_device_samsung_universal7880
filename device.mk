@@ -408,7 +408,8 @@ $(call inherit-product, hardware/samsung_slsi-linaro/config/config.mk)
 PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.egl=mali \
     ro.opengles.version=196610 \
-    ro.surface_flinger.max_frame_buffer_acquired_buffers=3
+    ro.surface_flinger.max_frame_buffer_acquired_buffers=3 \
+    ro.zygote.disable_gl_preload=1
 
 # Graphics support libraries
 PRODUCT_PACKAGES += \
