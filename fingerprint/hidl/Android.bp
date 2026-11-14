@@ -1,0 +1,23 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_binary {
+    name: "android.hardware.biometrics.fingerprint@2.1-service.universal7880",
+    vendor: true,
+    relative_install_path: "hw",
+    init_rc: ["fingerprint-compat.rc"],
+    vintf_fragments: ["fingerprint-compat.xml"],
+    srcs: ["service.cpp"],
+    shared_libs: [
+        "android.hardware.biometrics.common-V4-ndk",
+        "android.hardware.biometrics.fingerprint-V4-ndk",
+        "android.hardware.biometrics.fingerprint@2.1",
+        "android.hardware.keymaster-V4-ndk",
+        "libbase",
+        "libbinder_ndk",
+        "libhidlbase",
+        "libutils",
+    ],
+    header_libs: ["libhardware_headers"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

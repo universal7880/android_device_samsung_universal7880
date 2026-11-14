@@ -367,6 +367,7 @@ PRODUCT_PACKAGES += \
 # Fingerprint
 PRODUCT_PACKAGES += \
     android.hardware.biometrics.fingerprint-service.samsung \
+    android.hardware.biometrics.fingerprint@2.1-service.universal7880 \
     libbauthtzcommon_shim
 
 PRODUCT_VENDOR_PROPERTIES += \
