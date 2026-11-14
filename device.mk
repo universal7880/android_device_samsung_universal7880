@@ -21,6 +21,12 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Hardware settings shared with GSIs.
+PRODUCT_PACKAGES += \
+    Universal7880FrameworkOverlay \
+    Universal7880SettingsOverlay \
+    Universal7880SystemUIOverlay
+
 # Display configuration
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/display_port_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_port_0.xml

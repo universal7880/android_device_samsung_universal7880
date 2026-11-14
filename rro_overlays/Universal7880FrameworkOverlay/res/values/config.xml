@@ -24,52 +24,9 @@
          format is UMTS|LTE|... -->
     <string translatable="false" name="config_radio_access_family">GSM | WCDMA | LTE</string>
 
-    <!-- ############################################################## -->
-    <!-- ### HARDWARE KEYS                                              -->
-    <!-- ############################################################## -->
-
-    <!-- Control the behavior when the user long presses the home button.
-            0 - Nothing
-            1 - Menu key
-            2 - Recent apps view in SystemUI
-            3 - Launch assist intent
-            4 - Voice Search
-            5 - In-app Search
-         This needs to match the constants in
-         policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
-    -->
-    <integer name="config_longPressOnHomeBehavior">3</integer>
-
-    <!-- Control the behavior when the user double-taps the home button.
-            0 - Nothing
-            1 - Menu
-            2 - Recent apps view in SystemUI
-            3 - Launch assist intent
-            4 - Voice Search
-            5 - In-app Search
-         This needs to match the constants in
-         policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
-    -->
-    <integer name="config_doubleTapOnHomeBehavior">2</integer>
-
-    <!-- ############################################################## -->
-    <!-- ### DISPLAY                                                    -->
-    <!-- ############################################################## -->
-
-    <!-- Flag indicating whether we should enable the automatic brightness in Settings.
-         Software implementation will be used if config_hardware_auto_brightness_available is not set -->
     <bool name="config_automatic_brightness_available">true</bool>
 
-    <!-- Array of light sensor LUX values to define our levels for auto backlight brightness support.
-         The N entries of this array define N  1 zones as follows:
-
-         Zone 0:        0 <= LUX < array[0]
-         Zone 1:        array[0] <= LUX < array[1]
-         ...
-         Zone N:        array[N - 1] <= LUX < array[N]
-         Zone N + 1     array[N] <= LUX < infinity
-
-         Must be overridden in platform specific overlays -->
+    <!-- Ambient-light control points in lux. The framework prepends 0 lux. -->
     <integer-array name="config_autoBrightnessLevels">
         <item>10</item>
         <item>50</item>
@@ -103,13 +60,8 @@
         <item>255</item>
     </integer-array>
 
-    <!-- Operating voltage for bluetooth controller. 0 by default -->
-    <integer name="config_bluetooth_operating_voltage_mv">4</integer>
-
-    <!-- Default screen brightness setting.
-         Must be in the range specified by minimum and maximum. -->
+    <!-- Minimum backlight level, in the framework's legacy 1–255 range. -->
     <integer name="config_screenBrightnessSettingMinimum">1</integer>
-    <integer name="config_screenBrightnessSettingDefault">111</integer>
 
     <!-- Doze (Ambient display) -->
     <string name="config_dozeComponent">com.android.systemui/com.android.systemui.doze.DozeService</string>
@@ -142,10 +94,6 @@
     <!-- Allow screen mirroring/miracast -->
     <bool name="config_enableWifiDisplay">true</bool>
 
-    <!-- The device supports freeform window management -->
-    <bool name="config_freeformWindowManagement">true</bool>
-
     <!-- Enable double tap to wake gesture -->
     <bool name="config_supportDoubleTapWake">true</bool>
-
 </resources>
