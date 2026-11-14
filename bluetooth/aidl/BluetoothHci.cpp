@@ -157,6 +157,27 @@ void BluetoothHci::hardwareError(const std::shared_ptr<Session>& session) {
     auto status = session->callback->hciEventReceived({0x10, 1, 0});
     if (!status.isOk()) ALOGW("Cannot notify the Bluetooth client of controller loss");
 }
+static void maskUnsupportedLeAdvertisingFilters(std::vector<uint8_t>& event) {
+    constexpr uint8_t kCommandComplete = 0x0e;
+    constexpr uint16_t kLeGetVendorCapabilities = 0xfd53;
+    constexpr size_t kBaseCapabilitiesSize = 14;
+    constexpr size_t kVersion095CapabilitiesSize = 20;
+
+    if (event.size() < kBaseCapabilitiesSize || event[0] != kCommandComplete ||
+        (event[3] | (event[4] << 8)) != kLeGetVendorCapabilities || event[5] != 0) {
+        return;
+    }
+
+    // The controller advertises APCF but returns opcode 0x0157 for the
+    // extended features request (0xfd57), which makes the host abort.
+    event[11] = 0;  // Filtering support.
+    event[12] = 0;  // Maximum filters.
+    if (event.size() >= kVersion095CapabilitiesSize) {
+        event[16] = 0;  // Tracked advertisements, little-endian.
+        event[17] = 0;
+    }
+}
+
 void BluetoothHci::receive(std::shared_ptr<Session> session) {
 #if defined(__ANDROID__)
     // Match the AOSP HCI reader priority, including SCO traffic under CPU load.
@@ -177,6 +198,7 @@ void BluetoothHci::receive(std::shared_ptr<Session> session) {
         if (payload && !readExact(session, packet.data() + header, payload)) break;
         if (session->stopping || session->failed) break;
         if (type == 4 && packet[0] == 0x10) break;
+        if (type == 4) maskUnsupportedLeAdvertisingFilters(packet);
         auto status = type == 2   ? session->callback->aclDataReceived(packet)
                       : type == 3 ? session->callback->scoDataReceived(packet)
                                   : session->callback->hciEventReceived(packet);
