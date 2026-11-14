@@ -248,7 +248,6 @@ PRODUCT_PACKAGES += \
 
 # Bluetooth
 PRODUCT_VENDOR_PROPERTIES += \
-    bluetooth.le.disable_apcf_extended_features=1 \
     bluetooth.device.class_of_device=90,2,12 \
     bluetooth.profile.a2dp.source.enabled?=true \
     bluetooth.profile.asha.central.enabled?=true \
