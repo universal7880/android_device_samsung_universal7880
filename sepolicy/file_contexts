@@ -211,3 +211,4 @@
 
 /mnt/efs/TEE                                u:object_r:gatekeeper_efs_file:s0
 /mnt/efs/TEE/gk_context(_sub)?_[0-9a-f]+    u:object_r:gatekeeper_efs_file:s0
+/vendor/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service\.universal7880 u:object_r:hal_fingerprint_compat_exec:s0
