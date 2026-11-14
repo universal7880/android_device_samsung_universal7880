@@ -247,7 +247,23 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 # Bluetooth
-PRODUCT_VENDOR_PROPERTIES += bluetooth.le.disable_apcf_extended_features=1
+PRODUCT_VENDOR_PROPERTIES += \
+    bluetooth.le.disable_apcf_extended_features=1 \
+    bluetooth.device.class_of_device=90,2,12 \
+    bluetooth.profile.a2dp.source.enabled?=true \
+    bluetooth.profile.asha.central.enabled?=true \
+    bluetooth.profile.avrcp.target.enabled?=true \
+    bluetooth.profile.bas.client.enabled?=true \
+    bluetooth.profile.gatt.enabled?=true \
+    bluetooth.profile.hfp.ag.enabled?=true \
+    bluetooth.profile.hid.device.enabled?=true \
+    bluetooth.profile.hid.host.enabled?=true \
+    bluetooth.profile.map.server.enabled?=true \
+    bluetooth.profile.opp.enabled?=true \
+    bluetooth.profile.pan.nap.enabled?=true \
+    bluetooth.profile.pan.panu.enabled?=true \
+    bluetooth.profile.pbap.server.enabled?=true \
+    bluetooth.profile.sap.server.enabled?=true
 
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth-service.universal7880 \
@@ -265,7 +281,9 @@ PRODUCT_PACKAGES += \
     Tag
 
 # Audio
-PRODUCT_VENDOR_PROPERTIES += ro.vendor.audio_hal.force_voice_config=wide
+PRODUCT_VENDOR_PROPERTIES += \
+    af.fast_track_multiplier=1 \
+    ro.vendor.audio_hal.force_voice_config=wide
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/mixer_gains.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_gains.xml \
@@ -302,6 +320,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sysconfig/fmradio-kor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sysconfig/sku_kor/fmradio.xml
 
 # Media
+PRODUCT_VENDOR_PROPERTIES += \
+    debug.stagefright.ccodec=1
+
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_telephony.xml \
@@ -394,10 +415,14 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += vndservicemanager
 
-# ART heap limits for generic system images
+# ART heap configuration
 PRODUCT_VENDOR_PROPERTIES += \
+    dalvik.vm.heapstartsize=8m \
     dalvik.vm.heapgrowthlimit=128m \
-    dalvik.vm.heapsize=512m
+    dalvik.vm.heapsize=512m \
+    dalvik.vm.heaptargetutilization=0.75 \
+    dalvik.vm.heapminfree=2m \
+    dalvik.vm.heapmaxfree=8m
 
 # System.prop
 TARGET_SYSTEM_PROP += device/samsung/universal7880/system.prop
@@ -409,6 +434,8 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.egl=mali \
     ro.opengles.version=196610 \
     ro.surface_flinger.max_frame_buffer_acquired_buffers=3 \
+    debug.sf.treat_170m_as_sRGB=1 \
+    debug.sf.predict_hwc_composition_strategy=0 \
     ro.zygote.disable_gl_preload=1
 
 # Graphics support libraries
