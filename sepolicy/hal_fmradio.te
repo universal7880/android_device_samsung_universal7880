@@ -15,3 +15,22 @@ allowxperm hal_fmradio_default fm_device:chr_file ioctl {
     0xfa00-0xfa07 0xfa0c 0xfa0f 0xfa11-0xfa12 0xfa14 0xfa16-0xfa18
     0xfa1a 0xfa20 0xfa27-0xfa28
 };
+
+type fm_audio_socket, file_type;
+unix_socket_connect(hal_fmradio_default, fm_audio, hal_audio_default)
+
+# The audio HAL receives only the write end of the FM pipe.
+allow hal_audio_default hal_fmradio_default:fd use;
+allow hal_audio_default hal_fmradio_default:fifo_file write;
+
+type fmradio_app, domain;
+app_domain(fmradio_app)
+hal_client_domain(fmradio_app, hal_fmradio)
+
+# Framework services used by activities, MediaSession and AudioTrack.
+allow fmradio_app { app_api_service audioserver_service }:service_manager find;
+# Binder validates the tuner client's session token when linking its death recipient.
+allow hal_fmradio_default fmradio_app:binder call;
+
+# The FM service passes only the read end of the pipe to the app.
+allow fmradio_app hal_fmradio_default:fifo_file { getattr read };

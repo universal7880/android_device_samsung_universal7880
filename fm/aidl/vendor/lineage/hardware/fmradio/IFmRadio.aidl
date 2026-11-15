@@ -25,4 +25,6 @@ interface IFmRadio {
     String programName();
     String radioText();
     int activeAf();
+    /** Opens the FM PCM stream for the process that opened the tuner. */
+    @nullable ParcelFileDescriptor openAudio();
 }

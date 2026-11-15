@@ -37,4 +37,5 @@ interface IFmRadio {
   String programName();
   String radioText();
   int activeAf();
+  @nullable ParcelFileDescriptor openAudio();
 }

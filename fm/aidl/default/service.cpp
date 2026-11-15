@@ -4,11 +4,18 @@
  */
 #define LOG_TAG "FmRadioService"
 #include <aidl/vendor/lineage/hardware/fmradio/BnFmRadio.h>
+#include <android-base/cmsg.h>
 #include <android/binder_manager.h>
 #include <android/binder_process.h>
+#include <cutils/sockets.h>
+#include <fcntl.h>
 #include <log/log.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
+#include <cerrno>
 #include <cstdlib>
+#include <cstring>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -31,7 +38,7 @@ class FmRadio : public BnFmRadio {
         if (!client) return ndk::ScopedAStatus::ok();
         auto binder = client->asBinder();
         if (clientBinder.get()) {
-            *result = clientBinder.get() == binder.get();
+            *result = isSessionOwner() && clientBinder.get() == binder.get();
             return ndk::ScopedAStatus::ok();
         }
         if (!radio.open()) return ndk::ScopedAStatus::ok();
@@ -44,12 +51,17 @@ class FmRadio : public BnFmRadio {
         }
         clientBinder = std::move(binder);
         deathCookie = cookie;
+        ownerUid = AIBinder_getCallingUid();
+        ownerPid = AIBinder_getCallingPid();
         *result = true;
         return ndk::ScopedAStatus::ok();
     }
 
     ndk::ScopedAStatus close(bool* result) override {
         std::lock_guard<std::mutex> lock(sessionMutex);
+        *result = false;
+        if (!isSessionOwner()) return ndk::ScopedAStatus::ok();
+        stopAudio();
         ++generation;
         if (clientBinder.get()) {
             AIBinder_unlinkToDeath(clientBinder.get(), deathRecipient.get(), deathCookie);
@@ -66,6 +78,10 @@ class FmRadio : public BnFmRadio {
     }
 
     ndk::ScopedAStatus powerDown(bool* result) override {
+        std::lock_guard<std::mutex> lock(sessionMutex);
+        *result = false;
+        if (!isSessionOwner()) return ndk::ScopedAStatus::ok();
+        stopAudio();
         *result = radio.powerDown();
         return ndk::ScopedAStatus::ok();
     }
@@ -121,7 +137,43 @@ class FmRadio : public BnFmRadio {
         return ndk::ScopedAStatus::ok();
     }
 
+    ndk::ScopedAStatus openAudio(ndk::ScopedFileDescriptor* result) override {
+        std::lock_guard<std::mutex> lock(sessionMutex);
+        if (!isSessionOwner()) return ndk::ScopedAStatus::ok();
+        stopAudio();
+
+        ndk::ScopedFileDescriptor control(socket_local_client(
+                "universal7880_fm_audio", ANDROID_SOCKET_NAMESPACE_RESERVED,
+                SOCK_STREAM | SOCK_CLOEXEC | SOCK_NONBLOCK));
+        int pipeFds[2];
+        if (control.get() < 0 || pipe2(pipeFds, O_CLOEXEC) != 0) {
+            ALOGE("Cannot open FM audio stream: %s", strerror(errno));
+            return ndk::ScopedAStatus::ok();
+        }
+        ndk::ScopedFileDescriptor reader(pipeFds[0]);
+        ndk::ScopedFileDescriptor writer(pipeFds[1]);
+        if (fcntl(writer.get(), F_SETFL, O_NONBLOCK) < 0 ||
+            android::base::SendFileDescriptors(control.get(), "F", 1, writer.get()) != 1) {
+            ALOGE("Cannot hand off FM audio pipe: %s", strerror(errno));
+            return ndk::ScopedAStatus::ok();
+        }
+        audioStream = std::move(control);
+        *result = std::move(reader);
+        return ndk::ScopedAStatus::ok();
+    }
+
   private:
+    bool isSessionOwner() const {
+        return clientBinder.get() && ownerUid == AIBinder_getCallingUid() &&
+               ownerPid == AIBinder_getCallingPid();
+    }
+
+    void stopAudio() {
+        if (audioStream.get() < 0) return;
+        shutdown(audioStream.get(), SHUT_RDWR);
+        audioStream.set(-1);
+    }
+
     struct DeathCookie {
         std::weak_ptr<FmRadio> service;
         uint64_t generation;
@@ -134,6 +186,7 @@ class FmRadio : public BnFmRadio {
         std::lock_guard<std::mutex> lock(service->sessionMutex);
         // A delayed notification must not close a replacement session.
         if (cookie->generation != service->generation) return;
+        service->stopAudio();
         ++service->generation;
         service->clientBinder = nullptr;
         service->deathCookie = nullptr;
@@ -147,6 +200,9 @@ class FmRadio : public BnFmRadio {
     Si47xx radio;
     std::mutex sessionMutex;
     ndk::SpAIBinder clientBinder;
+    ndk::ScopedFileDescriptor audioStream;
+    uid_t ownerUid = 0;
+    pid_t ownerPid = 0;
     DeathCookie* deathCookie = nullptr;
     uint64_t generation = 0;
     ndk::ScopedAIBinder_DeathRecipient deathRecipient;

@@ -49,6 +49,12 @@ bool FmRadioClient::open() {
     return call(false, &IFmRadio::open, clientToken);
 }
 
+#ifdef FM_RADIO_VENDOR_AUDIO
+int FmRadioClient::openAudio() {
+    return call(ndk::ScopedFileDescriptor{}, &IFmRadio::openAudio).release();
+}
+#endif
+
 bool FmRadioClient::close() {
     return call(false, &IFmRadio::close);
 }

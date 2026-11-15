@@ -11,6 +11,7 @@
 class FmRadioClient {
   public:
     bool open();
+    int openAudio();
     bool close();
     bool powerUp(float mhz);
     bool powerDown();

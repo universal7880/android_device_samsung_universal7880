@@ -56,6 +56,13 @@ const JNINativeMethod methods[] = {
 };
 }  // namespace
 
+#ifdef FM_RADIO_VENDOR_AUDIO
+extern "C" JNIEXPORT jint JNICALL
+Java_com_android_fmradio_FmAudio_openAudio(JNIEnv*, jclass) {
+    return radio.openAudio();
+}
+#endif
+
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
     JNIEnv* env;
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) return JNI_ERR;

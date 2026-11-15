@@ -8,3 +8,17 @@ filegroup {
         "FmRadioClient.cpp",
     ],
 }
+
+cc_library_shared {
+    name: "libfmjni.vendor",
+    stem: "libfmjni",
+    vendor: true,
+    srcs: [":libfmjni-universal7880-srcs"],
+    cflags: ["-DFM_RADIO_VENDOR_AUDIO"],
+    header_libs: ["jni_headers"],
+    shared_libs: [
+        "libbinder_ndk",
+        "liblog",
+        "vendor.lineage.hardware.fmradio-V2-ndk",
+    ],
+}

@@ -5,4 +5,7 @@
     <component-override package="com.android.fmradio">
         <component class=".FmMainActivity" enabled="false" />
     </component-override>
+    <component-override package="org.lineageos.fmradio.vendor">
+        <component class="com.android.fmradio.FmMainActivity" enabled="false" />
+    </component-override>
 </config>
