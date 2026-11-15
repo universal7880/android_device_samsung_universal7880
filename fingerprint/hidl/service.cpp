@@ -9,7 +9,6 @@
 #include <android/hardware/biometrics/fingerprint/2.1/IBiometricsFingerprint.h>
 #include <endian.h>
 #include <hardware/hw_auth_token.h>
-#include <hidl/HidlLazyUtils.h>
 #include <hidl/HidlTransportSupport.h>
 
 #include <algorithm>
@@ -473,7 +472,7 @@ int main() {
     ABinderProcess_startThreadPool();
     android::hardware::configureRpcThreadpool(1, true);
     const auto service = sp<FingerprintCompat>::make();
-    if (android::hardware::LazyServiceRegistrar::getInstance().registerService(service) != android::OK) {
+    if (service->registerAsService() != android::OK) {
         LOG(ERROR) << "Cannot register the fingerprint HIDL adapter";
         return EXIT_FAILURE;
     }
