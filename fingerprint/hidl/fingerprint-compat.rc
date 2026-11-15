@@ -1,7 +1,8 @@
+on post-fs-data
+    start vendor.fingerprint-compat
+
 service vendor.fingerprint-compat /vendor/bin/hw/android.hardware.biometrics.fingerprint@2.1-service.universal7880
     class hal
     interface android.hardware.biometrics.fingerprint@2.1::IBiometricsFingerprint default
     user system
     group system
-    disabled
-    oneshot
