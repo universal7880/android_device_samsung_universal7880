@@ -317,9 +317,15 @@ PRODUCT_PACKAGES += \
     libaudioroute
 
 # FM radio
-PRODUCT_PACKAGES += \
-    FMRadio \
-    vendor.lineage.hardware.fmradio-service.si47xx
+ifeq ($(TARGET_USE_VENDOR_FM_RADIO),true)
+PRODUCT_PACKAGES += FMRadio.vendor
+$(call soong_config_set_bool,fmradio,vendor,true)
+$(call soong_config_set,fmradio,vendor_jni,//$(LOCAL_PATH)/fm:libfmjni.vendor)
+else
+PRODUCT_PACKAGES += FMRadio
+endif
+
+PRODUCT_PACKAGES += vendor.lineage.hardware.fmradio-service.si47xx
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sysconfig/fmradio-kor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sysconfig/sku_kor/fmradio.xml

@@ -33,6 +33,7 @@
 
 /* FM digital interface (the captured audio is read through device 0). */
 #define SOUND_FM_DEVICE 4
+#define SOUND_FM_VENDOR_CAPTURE
 
 /* Voice calls */
 #define SOUND_PLAYBACK_VOICE_DEVICE 2
