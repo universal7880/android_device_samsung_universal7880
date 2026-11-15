@@ -317,6 +317,7 @@ PRODUCT_PACKAGES += \
     libaudioroute
 
 # FM radio
+TARGET_USE_VENDOR_FM_RADIO ?= true
 ifeq ($(TARGET_USE_VENDOR_FM_RADIO),true)
 PRODUCT_PACKAGES += FMRadio.vendor
 $(call soong_config_set_bool,fmradio,vendor,true)
