@@ -82,8 +82,8 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -vendor/bin/hw/rild;DISABLE_DEPS|c77d17bde3312077a77a3a8238a62e649a996f44
 -vendor/lib/libengmode_client.so;DISABLE_DEPS|38b95cf93d0c1f497e1d8a6370e53b903bb03510
 -vendor/lib/libril.so;DISABLE_DEPS|3e64e6fa4078d892d2c83b21edd1632bcf7fd827
--vendor/lib/libsec-ril-dsds.so;DISABLE_DEPS|1bf5ba8954f7d0b8fc13b71aa4df7aa0bb0fa5ae
--vendor/lib/libsec-ril.so;DISABLE_DEPS|5888ae1363fdb0ba5ec9e02df0cd1a12d64e6184
+-vendor/lib/libsec-ril-dsds.so;DISABLE_DEPS|1bf5ba8954f7d0b8fc13b71aa4df7aa0bb0fa5ae|3457a9c003eeba408578abde90b946f9eb380621
+-vendor/lib/libsec-ril.so;DISABLE_DEPS|5888ae1363fdb0ba5ec9e02df0cd1a12d64e6184|4210baed9a2b1d05cde98b6b8e2170ad5390eb2d
 -vendor/lib/libsec_semRil.so;DISABLE_DEPS|0e098bc1099a8cb466e29b2918c8968d214fb56c
 -vendor/lib/libsecnativefeature.so;DISABLE_DEPS|268dfdbb80196ac0d16abcce9109f87518753361
 -vendor/lib/libsecril-client.so|af77c32b35ab1a2b7ee5f38e529e7eb8dee0a195
@@ -93,8 +93,8 @@ vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin
 -vendor/lib/vendor.samsung.hardware.radio.channel@2.0.so;DISABLE_DEPS|8f1ef76608e97b5864e30ea2f2aff2f685eb4d8e
 -vendor/lib64/libengmode_client.so;DISABLE_DEPS|ac3615bb78e4e569841abd804c0278c6de181b2c
 -vendor/lib64/libril.so;DISABLE_DEPS|d81e76523a5a28fdf488fa42c0e1d4a2b15fff19
--vendor/lib64/libsec-ril-dsds.so;DISABLE_DEPS|7f3ca549dd6ee972c19c18441ccfbe58171e6daf
--vendor/lib64/libsec-ril.so;DISABLE_DEPS|55bd2ceb611360e13d5907120203dd51daf60e89
+-vendor/lib64/libsec-ril-dsds.so;DISABLE_DEPS|7f3ca549dd6ee972c19c18441ccfbe58171e6daf|bc907b1be3f49d900457607ac6a8f52d81c089d6
+-vendor/lib64/libsec-ril.so;DISABLE_DEPS|55bd2ceb611360e13d5907120203dd51daf60e89|c109f82bce9e9c07c3af7ab021c3f0c7a36e5ad2
 -vendor/lib64/libsec_semRil.so;DISABLE_DEPS|7987ec9be7bf937438c43fc0b9859f6c9b4b5787
 -vendor/lib64/libsecnativefeature.so;DISABLE_DEPS|db918252c537272b99651bee58e6ab017549b623
 -vendor/lib64/libsecril-client.so|86b71fb3fb1daa5bc5293d38779c528126e0cfa3

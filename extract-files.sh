@@ -52,6 +52,21 @@ if [ -z "${SRC}" ]; then
     SRC="adb"
 fi
 
+function blob_fixup_dry() {
+    case "$1" in
+        vendor/lib/libsec-ril.so|vendor/lib/libsec-ril-dsds.so|vendor/lib64/libsec-ril.so|vendor/lib64/libsec-ril-dsds.so)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+function blob_fixup() {
+    python3 "${MY_DIR}/ril/fixup-efs-paths.py" "$2" || exit 1
+}
+
 # Initialize the helper
 setup_vendor "${DEVICE}" "${VENDOR}" "${ANDROID_ROOT}" false "${CLEAN_VENDOR}"
 
