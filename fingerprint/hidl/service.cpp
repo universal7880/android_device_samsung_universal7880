@@ -77,6 +77,11 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
     SessionCallback(uint32_t group, sp<IBiometricsFingerprintClientCallback> client)
         : group_(group), client_(std::move(client)) {}
 
+    void setClient(const sp<IBiometricsFingerprintClientCallback>& client) {
+        std::lock_guard lock(mutex_);
+        client_ = client;
+    }
+
     template <typename Command>
     bool request(Reply reply, Command command) {
         {
@@ -122,7 +127,7 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
     ScopedAStatus onAcquired(aidl_fp::AcquiredInfo info, int32_t vendorCode) override {
         // AIDL places UNKNOWN before the shared GOOD through VENDOR values.
         if (info >= aidl_fp::AcquiredInfo::GOOD && info <= aidl_fp::AcquiredInfo::VENDOR) {
-            client_->onAcquired(kDeviceId, static_cast<FingerprintAcquiredInfo>(
+            client()->onAcquired(kDeviceId, static_cast<FingerprintAcquiredInfo>(
                     static_cast<int32_t>(info) - static_cast<int32_t>(aidl_fp::AcquiredInfo::GOOD)),
                     vendorCode);
         }
@@ -139,12 +144,12 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
             }
             removing_.clear();
         }
-        client_->onError(kDeviceId, toHidlError(error), vendorCode);
+        client()->onError(kDeviceId, toHidlError(error), vendorCode);
         return ScopedAStatus::ok();
     }
 
     ScopedAStatus onEnrollmentProgress(int32_t id, int32_t remaining) override {
-        client_->onEnrollResult(kDeviceId, id, group_, std::max(remaining, 0));
+        client()->onEnrollResult(kDeviceId, id, group_, std::max(remaining, 0));
         return ScopedAStatus::ok();
     }
 
@@ -163,23 +168,23 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
         hidl_vec<uint8_t> bytes;
         bytes.resize(sizeof(legacy));
         std::memcpy(bytes.data(), &legacy, sizeof(legacy));
-        client_->onAuthenticated(kDeviceId, id, group_, bytes);
+        client()->onAuthenticated(kDeviceId, id, group_, bytes);
         return ScopedAStatus::ok();
     }
 
     ScopedAStatus onAuthenticationFailed() override {
-        client_->onAuthenticated(kDeviceId, 0, group_, {});
+        client()->onAuthenticated(kDeviceId, 0, group_, {});
         return ScopedAStatus::ok();
     }
 
     ScopedAStatus onLockoutTimed(int64_t) override {
-        client_->onError(kDeviceId, FingerprintError::ERROR_LOCKOUT, 0);
+        client()->onError(kDeviceId, FingerprintError::ERROR_LOCKOUT, 0);
         return ScopedAStatus::ok();
     }
 
     ScopedAStatus onLockoutPermanent() override {
         // The framework fingerprint error code for permanent lockout is 9.
-        client_->onError(kDeviceId, static_cast<FingerprintError>(9), 0);
+        client()->onError(kDeviceId, static_cast<FingerprintError>(9), 0);
         return ScopedAStatus::ok();
     }
 
@@ -200,11 +205,12 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
                 return ScopedAStatus::ok();
             }
         }
+        const auto recipient = client();
         if (valid.empty()) {
-            client_->onEnumerate(kDeviceId, 0, group_, 0);
+            recipient->onEnumerate(kDeviceId, 0, group_, 0);
         }
         for (size_t i = 0; i < valid.size(); ++i) {
-            client_->onEnumerate(kDeviceId, valid[i], group_, valid.size() - i - 1);
+            recipient->onEnumerate(kDeviceId, valid[i], group_, valid.size() - i - 1);
         }
         return ScopedAStatus::ok();
     }
@@ -221,6 +227,11 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
     }
 
   private:
+    sp<IBiometricsFingerprintClientCallback> client() {
+        std::lock_guard lock(mutex_);
+        return client_;
+    }
+
     ScopedAStatus complete(Reply reply, int64_t value) {
         std::lock_guard lock(mutex_);
         if (pending_ == reply) {
@@ -232,7 +243,7 @@ class SessionCallback : public aidl_fp::BnSessionCallback {
     }
 
     const uint32_t group_;
-    const sp<IBiometricsFingerprintClientCallback> client_;
+    sp<IBiometricsFingerprintClientCallback> client_;
     std::mutex mutex_;
     std::condition_variable ready_;
     Reply pending_ = Reply::None;
@@ -256,7 +267,6 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
     Return<uint64_t> setNotify(const sp<IBiometricsFingerprintClientCallback>& callback) override {
         if (!callback) return 0;
         if (client_ == callback) return kDeviceId;
-        if (!closeSession()) return 0;
         const auto linked = callback->linkToDeath(death_, 0);
         if (!linked.isOk() || !static_cast<bool>(linked)) return 0;
         if (client_) {
@@ -264,6 +274,8 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
             if (!unlinked.isOk()) LOG(WARNING) << "Cannot unlink the previous HIDL callback";
         }
         client_ = callback;
+        // The framework can replace its callback after selecting the active group.
+        if (callback_) callback_->setClient(callback);
         return kDeviceId;
     }
 
@@ -331,20 +343,20 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
                                  uint32_t /*timeoutSec*/) override {
         if (!activeGroup(group)) {
             LOG(ERROR) << "HIDL enrollment has no active AIDL session for group " << group;
-            return enrollmentError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_HW_UNAVAILABLE);
+            return reportError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_HW_UNAVAILABLE);
         }
         hw_auth_token_t token;
         std::memcpy(&token, bytes.data(), sizeof(token));
         if (token.version != HW_AUTH_TOKEN_VERSION) {
             LOG(ERROR) << "HIDL enrollment received an unsupported auth token version";
-            return enrollmentError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_UNABLE_TO_PROCESS);
+            return reportError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_UNABLE_TO_PROCESS);
         }
         cancellation_.reset();
         LOG(INFO) << "Forwarding HIDL enrollment to the AIDL HAL for group " << group;
         const auto status = session_->enroll(decodeToken(token), &cancellation_);
         if (!status.isOk()) {
             LOG(ERROR) << "AIDL fingerprint enrollment request failed: " << status.getDescription();
-            return enrollmentError(RequestStatus::SYS_EIO, FingerprintError::ERROR_HW_UNAVAILABLE);
+            return reportError(RequestStatus::SYS_EIO, FingerprintError::ERROR_HW_UNAVAILABLE);
         }
         return RequestStatus::SYS_OK;
     }
@@ -373,8 +385,15 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
     }
 
     Return<RequestStatus> enumerate() override {
-        if (!session_) return RequestStatus::SYS_EINVAL;
-        return toRequestStatus(session_->enumerateEnrollments());
+        if (!session_) {
+            LOG(ERROR) << "HIDL enumeration has no active AIDL session";
+            return reportError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_HW_UNAVAILABLE);
+        }
+        const auto status = toRequestStatus(session_->enumerateEnrollments());
+        if (status != RequestStatus::SYS_OK) {
+            return reportError(status, FingerprintError::ERROR_HW_UNAVAILABLE);
+        }
+        return status;
     }
 
     Return<RequestStatus> remove(uint32_t group, uint32_t id) override {
@@ -400,12 +419,12 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
     }
 
   private:
-    RequestStatus enrollmentError(RequestStatus status, FingerprintError error) {
+    RequestStatus reportError(RequestStatus status, FingerprintError error) {
         // Some framework clients discard the synchronous HIDL request status.
         if (client_) {
             const auto delivered = client_->onError(kDeviceId, error, 0);
             if (!delivered.isOk()) {
-                LOG(WARNING) << "Cannot report HIDL enrollment error: " << delivered.description();
+                LOG(WARNING) << "Cannot report HIDL fingerprint error: " << delivered.description();
             }
         }
         return status;
