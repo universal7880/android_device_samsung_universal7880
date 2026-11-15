@@ -9,8 +9,10 @@ cc_binary {
     srcs: [
         "Crypto.cpp",
         "Drm.cpp",
+        "Efs.cpp",
         "Service.cpp",
     ],
+    ldflags: ["-Wl,--export-dynamic-symbol=fopen"],
     init_rc: ["widevine.rc"],
     vintf_fragments: ["widevine.xml"],
     header_libs: ["media_plugin_headers"],

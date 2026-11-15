@@ -12,5 +12,7 @@ allow hal_drm_widevine vendor_data_file:file { create open read write getattr } 
 
 allow hal_drm_widevine cpk_efs_file:file { open read getattr };
 allow hal_drm_widevine efs_file:dir search;
+allow hal_drm_widevine efs_file:lnk_file read;
+allow hal_drm_widevine mnt_vendor_file:dir search;
 
 allow hal_drm_widevine secmem_device:chr_file { open read write ioctl };
