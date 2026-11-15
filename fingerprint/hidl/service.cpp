@@ -268,22 +268,38 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
     }
 
     Return<RequestStatus> setActiveGroup(uint32_t group, const hidl_string&) override {
-        if (!client_ || group > std::numeric_limits<int32_t>::max()) return RequestStatus::SYS_EINVAL;
+        if (!client_ || group > std::numeric_limits<int32_t>::max()) {
+            LOG(ERROR) << "Cannot set fingerprint group " << group << ": invalid group or no callback";
+            return RequestStatus::SYS_EINVAL;
+        }
         if (activeGroup(group)) return RequestStatus::SYS_OK;
-        if (!closeSession()) return RequestStatus::SYS_EIO;
+        if (!closeSession()) {
+            LOG(ERROR) << "Cannot close the previous fingerprint session";
+            return RequestStatus::SYS_EIO;
+        }
 
         const std::string instance = std::string(aidl_fp::IFingerprint::descriptor) + "/default";
         const auto hal = aidl_fp::IFingerprint::fromBinder(
                 ndk::SpAIBinder(AServiceManager_checkService(instance.c_str())));
+        if (!hal) {
+            LOG(ERROR) << "Fingerprint AIDL service unavailable: " << instance;
+            return RequestStatus::SYS_EIO;
+        }
         std::vector<aidl_fp::SensorProps> sensors;
-        if (!hal || !hal->getSensorProps(&sensors).isOk() || sensors.size() != 1) {
+        const auto propsStatus = hal->getSensorProps(&sensors);
+        if (!propsStatus.isOk() || sensors.size() != 1) {
+            LOG(ERROR) << "Cannot select fingerprint sensor: " << propsStatus.getDescription()
+                       << ", sensors=" << sensors.size();
             return RequestStatus::SYS_EIO;
         }
         auto callback = ndk::SharedRefBase::make<SessionCallback>(group, client_);
         std::shared_ptr<aidl_fp::ISession> session;
         // The AIDL HAL selects its own vendor storage path for this user.
-        if (!hal->createSession(sensors.front().commonProps.sensorId, group, callback, &session).isOk()
-                || !session) {
+        const auto sessionStatus =
+                hal->createSession(sensors.front().commonProps.sensorId, group, callback, &session);
+        if (!sessionStatus.isOk() || !session) {
+            LOG(ERROR) << "Cannot create fingerprint session for group " << group << ": "
+                       << sessionStatus.getDescription();
             return RequestStatus::SYS_EIO;
         }
         group_ = group;
@@ -313,12 +329,24 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
 
     Return<RequestStatus> enroll(const hidl_array<uint8_t, kTokenSize>& bytes, uint32_t group,
                                  uint32_t /*timeoutSec*/) override {
-        if (!activeGroup(group)) return RequestStatus::SYS_EINVAL;
+        if (!activeGroup(group)) {
+            LOG(ERROR) << "HIDL enrollment has no active AIDL session for group " << group;
+            return enrollmentError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_HW_UNAVAILABLE);
+        }
         hw_auth_token_t token;
         std::memcpy(&token, bytes.data(), sizeof(token));
-        if (token.version != HW_AUTH_TOKEN_VERSION) return RequestStatus::SYS_EINVAL;
+        if (token.version != HW_AUTH_TOKEN_VERSION) {
+            LOG(ERROR) << "HIDL enrollment received an unsupported auth token version";
+            return enrollmentError(RequestStatus::SYS_EINVAL, FingerprintError::ERROR_UNABLE_TO_PROCESS);
+        }
         cancellation_.reset();
-        return toRequestStatus(session_->enroll(decodeToken(token), &cancellation_));
+        LOG(INFO) << "Forwarding HIDL enrollment to the AIDL HAL for group " << group;
+        const auto status = session_->enroll(decodeToken(token), &cancellation_);
+        if (!status.isOk()) {
+            LOG(ERROR) << "AIDL fingerprint enrollment request failed: " << status.getDescription();
+            return enrollmentError(RequestStatus::SYS_EIO, FingerprintError::ERROR_HW_UNAVAILABLE);
+        }
+        return RequestStatus::SYS_OK;
     }
 
     Return<uint64_t> getAuthenticatorId() override {
@@ -372,6 +400,17 @@ class FingerprintCompat : public hidl_fp::IBiometricsFingerprint {
     }
 
   private:
+    RequestStatus enrollmentError(RequestStatus status, FingerprintError error) {
+        // Some framework clients discard the synchronous HIDL request status.
+        if (client_) {
+            const auto delivered = client_->onError(kDeviceId, error, 0);
+            if (!delivered.isOk()) {
+                LOG(WARNING) << "Cannot report HIDL enrollment error: " << delivered.description();
+            }
+        }
+        return status;
+    }
+
     static RequestStatus toRequestStatus(const ScopedAStatus& status) {
         if (status.isOk()) return RequestStatus::SYS_OK;
         LOG(ERROR) << "Fingerprint AIDL request failed: " << status.getDescription();
