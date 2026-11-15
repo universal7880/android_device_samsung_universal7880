@@ -9,6 +9,9 @@
 
 on early-init
     symlink /mnt/efs /mnt/vendor/efs
+    symlink /mnt/vendor/efs/FactoryApp/serial_no /mnt/vendor/ril_serial
+    # Keep the RIL's final path component on EFS for lchown().
+    symlink /mnt/vendor/efs/imei /mnt/imei
 
 on post-fs-data
     mkdir /data/vendor/secradio 0770 radio radio
