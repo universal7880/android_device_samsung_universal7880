@@ -2,3 +2,7 @@ on fs
     wait /dev/block/platform/13540000.dwmmc0
     symlink /dev/block/platform/13540000.dwmmc0 /dev/block/bootdevice
     symlink /dev/block/platform/13540000.dwmmc0/by-name/SYSTEM /dev/block/platform/13540000.dwmmc0/by-name/system
+    symlink /dev/block/platform/13540000.dwmmc0/by-name/BOOT /dev/block/by-name/boot
+    symlink /dev/block/platform/13540000.dwmmc0/by-name/RECOVERY /dev/block/by-name/recovery
+    symlink /dev/block/platform/13540000.dwmmc0/by-name/USERDATA /dev/block/by-name/userdata
+    symlink /dev/block/platform/13540000.dwmmc0/by-name/CACHE /dev/block/by-name/cache
