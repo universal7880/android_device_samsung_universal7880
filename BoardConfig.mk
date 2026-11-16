@@ -49,6 +49,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 include hardware/samsung_slsi-linaro/config/BoardConfig7880.mk
 
 # Extracted with libbootimg
+BOARD_CUSTOM_BOOTIMG := true
 BOARD_CUSTOM_BOOTIMG_MK := $(DEVICE_PATH)/mkbootimg.mk
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x02000000 --tags_offset 0x00000100
 BOARD_KERNEL_BASE := 0x10000000
