@@ -178,6 +178,8 @@
 
 # virtual
 /sys/devices/virtual(/.*)?    u:object_r:sysfs_virtual:s0
+# Preserve the common touchscreen label on the links used by the Power HAL.
+/sys/devices/virtual/sec/(tsp|sec_touchkey)/input -l u:object_r:sysfs_sec_touchscreen:s0
 /sys/devices/virtual/block/loop[0-9]+(/.*)?    u:object_r:sysfs_loop:s0
 
 # iio
