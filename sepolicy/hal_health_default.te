@@ -1,0 +1,2 @@
+# The Samsung common policy labels /sys/class/power_supply as sysfs_battery.
+allow hal_health_default sysfs_battery:dir { open read search };
