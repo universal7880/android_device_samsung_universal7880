@@ -18,3 +18,4 @@ sys.mobicoredaemon.enable               u:object_r:tee_prop:s0 exact string
 # Vibrator effect durations
 ro.vendor.vibrator_hal.click_duration    u:object_r:vendor_vibrator_config_prop:s0 exact int
 ro.vendor.vibrator_hal.tick_duration     u:object_r:vendor_vibrator_config_prop:s0 exact int
+ro.vendor.vibrator_hal.texture_tick_duration u:object_r:vendor_vibrator_config_prop:s0 exact int
