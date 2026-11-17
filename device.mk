@@ -412,8 +412,9 @@ PRODUCT_PACKAGES += \
 # Vibrator
 PRODUCT_PACKAGES += android.hardware.vibrator-service.samsung
 PRODUCT_VENDOR_PROPERTIES += \
-    ro.vendor.vibrator_hal.click_duration=20 \
-    ro.vendor.vibrator_hal.tick_duration=10
+    ro.vendor.vibrator_hal.click_duration=50 \
+    ro.vendor.vibrator_hal.tick_duration=50 \
+    ro.vendor.vibrator_hal.texture_tick_duration=30
 
 # Legacy vendor dependencies
 PRODUCT_PACKAGES += \
