@@ -1,2 +1,2 @@
-allow nfc sec_efs_file:dir search;
+# Traverse the EFS mount to reach NFC factory data.
 allow nfc efs_file:dir search;

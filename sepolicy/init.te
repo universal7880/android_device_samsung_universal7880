@@ -1,52 +1,45 @@
 # Mount debugfs on /sys/kernel/debug.
 allow init debugfs:dir mounton;
 
-# Mount EFS on /mnt/efs
+# Mount EFS on /mnt/efs.
 allow init efs_file:dir  mounton;
 
-# /dev/block/mmcblk0p[0-9]
-allow init emmcblk_device:blk_file rw_file_perms;
-
+# Set ownership or mode on block-device symlinks.
 allow init block_device:lnk_file { setattr };
+
+# Create and maintain symlinks on init-managed tmpfs.
 allow init tmpfs:lnk_file create_file_perms;
 
-# /sys/class/power_supply/battery and /sys/class/android_usb/android0
-allow init proc:file { getattr setattr read write open };
-
-# /data
-allow init sdcardd_exec:file r_file_perms;
-
-# sysfs iio:device[0-9]
-allow init sysfs:lnk_file setattr;
-
-# read/chown mDNIE symlinks
+# Follow and set attributes on mDNIe symlinks.
 allow init sysfs_mdnie:lnk_file { read setattr };
 
-# read/chown camera firmware
-allow init sysfs_camera:file { relabelto setattr };
-allow init sysfs_camera:filesystem associate;
+# Label camera sysfs attributes and set their ownership and mode.
+allow init { sysfs_camera sysfs_camera_control }:file { relabelto setattr };
 
-# ZRAM
-allow init ram_device:blk_file rw_file_perms;
-
-# sysfs
+# Apply init ownership and mode to Bluetooth, display, modem data and GNSS attributes.
 allow init sysfs_bluetooth_writable:file setattr;
 allow init sysfs_mdnie:file setattr;
 allow init sysfs_multipdp:file setattr;
-allow init sysfs_devices_system_cpu:file write;
 allow init sysfs_gps:file setattr;
-allow init sysfs_sec:file setattr ;
 allow init sysfs_brightness:file setattr;
-allow init sysfs_input_writable:file setattr;
-allow init sysfs_lcd:file { setattr open };
-allow init sysfs_svc:file setattr;
-allow init sysfs_modem:file { setattr open write };
-allow init sysfs_wlan_fwpath:file setattr;
-allow init sysfs_virtual:file {read open setattr write };
-allow init sysfs_virtual:lnk_file read;
-allow init sysfs_batteryinfo:file setattr;
-allow init sysfs_modem:file r_file_perms;
-allow init sysfs:file setattr;
 
+# Set DAC ownership and mode on the touchscreen and touchkey enable controls.
+allow init sysfs_touchscreen_writable:file setattr;
+
+# Open panel attributes and apply the ownership and mode declared by init.
+allow init sysfs_lcd:file { setattr open };
+
+# Configure the modem SIM-detection attribute.
+allow init sysfs_modem:file { setattr write };
+
+# Set ownership and mode on battery attributes.
+allow init sysfs_batteryinfo:file setattr;
+
+# Read the modem SIM-detection attribute.
+allow init sysfs_modem:file r_file_perms;
+
+# Connect init to the RIL property socket.
 unix_socket_connect(init, property, rild)
-allow init socket_device:sock_file { unlink create setattr };
+
+# Label the physical backing device for retrofit dynamic partitions.
+allow init super_block_device:blk_file relabelto;

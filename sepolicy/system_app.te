@@ -1,8 +1,7 @@
-allow system_app sysfs_mdnie:{ file lnk_file } rw_file_perms;
-allow system_app sysfs_mdnie:dir search;
+# Call wificond to request Wi-Fi controller operations.
 allow system_app wificond:binder call;
+# Read the kernel page allocator statistics.
 allow system_app proc_pagetypeinfo:file { read open getattr };
-allow system_app sysfs_virtual:dir search;
-allow system_app sysfs_virtual:file { read open getattr };
 
+# Allow system apps to use the FM tuner service.
 hal_client_domain(system_app, hal_fmradio)

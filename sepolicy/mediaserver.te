@@ -1,14 +1,9 @@
-# /efs
-allow mediaserver efs_file:dir r_dir_perms;
+# Traverse the mounted EFS directory.
+allow mediaserver efs_file:dir search;
 
-# /efs/wv.keys
-allow mediaserver efs_file:file r_file_perms;
-
-# /dev/m2m1shot_jpeg
-allow mediaserver camera_device:chr_file { read write open getattr ioctl };
-
-# Snap permissions
+# Retain sensor service and socket access used by legacy Snap builds.
 allow mediaserver sensorservice_service:service_manager { find };
 allow mediaserver system_server:unix_stream_socket { read write };
 
+# Read camera configuration exported to media processes.
 allow mediaserver exported_camera_prop:file read;

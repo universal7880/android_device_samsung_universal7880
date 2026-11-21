@@ -1,5 +1,8 @@
-# /mnt/efs/factory.prop
+# Read Samsung factory modem settings.
 allow secril_config_svc factoryprop_efs_file:file r_file_perms;
 
 # Follow the Samsung vendor EFS alias.
-allow secril_config_svc efs_file:lnk_file r_file_perms;
+allow secril_config_svc vendor_efs_link:lnk_file r_file_perms;
+
+# Read Samsung modem configuration from EFS.
+allow secril_config_svc ril_telephony_efs_file:file { getattr open read };

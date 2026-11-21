@@ -1,66 +1,39 @@
-# Allow rild to change perms
+# Change ownership of modem configuration files.
 allow rild self:capability { chown };
 
-# Allow additiional efs access
-allow rild bin_nv_data_efs_file:file create_file_perms;
-allow rild imei_efs_file:dir r_dir_perms;
-allow rild imei_efs_file:file rw_file_perms;
-allow rild app_efs_file:dir r_dir_perms;
-allow rild app_efs_file:file r_file_perms;
+# Create and replace the named NV records. Common policy covers their contents.
+allow rild bin_nv_data_efs_file:file { create rename };
 
-# /mnt/efs/factory.prop
+# Update the named operator and SIM selection records.
+allow rild ril_imei_config_efs_file:file { getattr open read write };
+
+# Read and update /mnt/efs/factory.prop.
 allow rild factoryprop_efs_file:file { open read write };
 
-# /dev
-allow rild audioserver:dir r_dir_perms;
-# /proc/<pid>/cmdline
-allow rild audioserver:file r_file_perms;
+# Read the command lines of the media processes queried by the modem library.
+allow rild { audioserver mediaserver }:dir { getattr search };
+allow rild { audioserver mediaserver }:file { getattr open read };
 
-# /dev/mbin0
+# Resolve the modem block device and read Samsung PARAM settings.
 allow rild block_device:dir r_dir_perms;
-allow rild emmcblk_device:blk_file r_file_perms;
+allow rild samsung_param_block_device:blk_file r_file_perms;
 
-# /dev/umts_boot0, /dev/umts_ipc0
-allow rild vendor_radio_device:chr_file rw_file_perms;
-
-# /sys/devices/virtual/misc/multipdp/waketime
+# Configure the modem packet-data wake timeout.
 allow rild sysfs_multipdp:file rw_file_perms;
 
-# /proc/sys/net/ipv6/conf/*/accept_ra_defrtr
-allow rild proc_net:file rw_file_perms;
+# Traverse the legacy SDET PLMN lookup path used by the modem library.
+allow rild { mnt_user_file storage_file }:dir search;
+allow rild { mnt_user_file storage_file }:lnk_file { getattr read };
 
-# gpsd
-allow rild gpsd:dir search;
-allow rild gpsd:file r_file_perms;
-
-# rild reads /proc/pid/cmdline of mediaserver
-allow rild mediaserver:dir { open read search getattr };
-allow rild mediaserver:file { open read getattr };
-
-# /data/vendor/secradio/*
-allow rild radio_vendor_data_file:dir { add_name open read remove_name write search };
-allow rild radio_vendor_data_file:file { create getattr ioctl lock open read unlink write };
-
-# sdcard/SDET_PLMN/input/MNCMCC.txt
-allow rild storage_file:dir { r_dir_perms };
-allow rild storage_file:lnk_file { r_file_perms };
-allow rild mnt_user_file:dir { r_dir_perms };
-allow rild mnt_user_file:lnk_file { r_file_perms };
-
-# Modem firmware download
-allow rild radio_block_device:blk_file r_file_perms;
-
-# proc
-allow rild proc_qtaguid_stat:file r_file_perms;
-
-# binder
+# Call the vendor radio HAL over Binder.
 allow rild hal_radio_default:binder call;
 
-# audio hal
-allow rild hal_audio_default:dir search;
-allow rild hal_audio_default:file r_file_perms;
+# Follow the vendor EFS entry point and the legacy IMEI alias.
+allow rild { vendor_efs_link ril_imei_link }:lnk_file { getattr read };
 
-allow rild mnt_vendor_file:dir search;
+# Follow the dedicated symlink to the factory serial number.
+allow rild ril_serial_link:lnk_file { getattr read };
+allow rild factory_serial_efs_file:file r_file_perms;
 
-# Follow the Samsung vendor EFS alias.
-allow rild efs_file:lnk_file r_file_perms;
+# Read and update the modem configuration cached in EFS.
+allow rild ril_telephony_efs_file:file { getattr open read setattr write };

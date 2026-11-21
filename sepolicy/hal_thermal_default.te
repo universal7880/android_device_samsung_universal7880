@@ -1,23 +1,23 @@
+# Allow the AIDL thermal service to use Binder.
 binder_use(hal_thermal_default)
 
-# The common policy grants read access to thermal files. Add sysfs traversal
-# and symlink access for the thermal class and zone-to-cooling-device links.
-allow hal_thermal_default sysfs:dir search;
-allow hal_thermal_default sysfs:lnk_file read;
-allow hal_thermal_default sysfs_virtual:dir search;
+# Follow thermal class links and zone-to-cooling-device links.
 allow hal_thermal_default sysfs_thermal:lnk_file read;
 
 # Read the AP thermistor; CPU limits use per-open PM QoS requests.
 r_dir_file(hal_thermal_default, sysfs_ap_thermal)
 allow hal_thermal_default pm_qos_device:chr_file { open write getattr };
 
+# Apply the AP thermal policy limit to the GPU.
 allow hal_thermal_default sysfs_gpu_thermal:file rw_file_perms;
 
 # Battery temperature and framework interactivity select the charging policy.
 allow hal_thermal_default sysfs_battery:dir search;
-r_dir_file(hal_thermal_default, sysfs_batteryinfo)
+allow hal_thermal_default sysfs_batteryinfo:dir search;
+allow hal_thermal_default sysfs_universal7880_battery_temp:file r_file_perms;
 allow hal_thermal_default sysfs_battery_thermal:file rw_file_perms;
 get_prop(hal_thermal_default, vendor_thermal_state_prop)
 
+# Apply the thermal backlight cap through the panel driver.
 allow hal_thermal_default sysfs_lcd:dir search;
 allow hal_thermal_default sysfs_display_thermal:file rw_file_perms;

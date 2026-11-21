@@ -1,13 +1,5 @@
-# /system/lib/omx/
-allow mediacodec system_file:dir r_dir_perms;
+# Discover the Exynos MFC, scaler and JPEG devices by their V4L2 names.
+r_dir_file(mediacodec, sysfs_video_codec)
 
-# /sys/class/video4linux/video6/name
-allow mediacodec sysfs:file r_file_perms;
-
-allow mediacodec sysfs:dir { open read };
-
-# sysfs_virtual
-allow mediacodec sysfs_virtual:dir { open read search };
-allow mediacodec sysfs_virtual:file { open read };
-
+# Request codec performance hints through the Power HAL.
 binder_call(mediacodec, hal_power_default)

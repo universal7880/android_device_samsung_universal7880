@@ -1,7 +1,4 @@
-allow hal_bluetooth_default bt_device:chr_file { read write open ioctl };
-
-allow hal_bluetooth_default efs_file:dir search;
-
+# Keep Bluetooth runtime state under /data/vendor/bluetooth.
 allow hal_bluetooth_default vendor_bluetooth_data_file:dir rw_dir_perms;
 allow hal_bluetooth_default vendor_bluetooth_data_file:file create_file_perms;
 

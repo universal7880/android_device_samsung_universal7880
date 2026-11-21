@@ -1,3 +1,5 @@
+# Panel brightness read and written by the Samsung Lights HAL.
 allow hal_light_default sysfs_brightness:file { open read write getattr };
-allow hal_light_default sysfs_virtual:dir search;
-allow hal_light_default sysfs_virtual:file { read write open getattr };
+
+# Read the panel's maximum brightness for scaling.
+allow hal_light_default sysfs_max_brightness:file { getattr open read };

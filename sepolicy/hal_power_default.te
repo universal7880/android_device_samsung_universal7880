@@ -1,14 +1,11 @@
-# Allow reading of sysfs nodes to find input devices
+# Traverse the physical input devices to reach the shared touchscreen controls.
+allow hal_power_default sysfs_touch_input_dir:dir search;
 
-allow hal_power_default sysfs_input_writable:dir { open read search getattr };
-allow hal_power_default sysfs_input_writable:file { open read write getattr };
+# Traverse DECON to read the display state before gating input.
+allow hal_power_default sysfs_graphics:dir search;
 
-allow hal_power_default sysfs_virtual:dir { open read search };
-allow hal_power_default sysfs_virtual:file { open read write getattr };
+# Read the panel level before gating input.
+allow hal_power_default sysfs_brightness:file { getattr open read };
 
-allow hal_power_default sysfs:dir { read open };
-allow hal_power_default sysfs:file { read write open };
-
-allow hal_power_default sysfs_brightness:file rw_file_perms;
-
+# Tell the thermal HAL whether the device is interactive.
 set_prop(hal_power_default, vendor_thermal_state_prop)

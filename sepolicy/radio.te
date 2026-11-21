@@ -1,3 +1,5 @@
+# Allow the radio process to call the GPU service.
 binder_call(radio, gpuservice)
 
+# Allow stat of system-app data directories.
 allow radio system_app_data_file:dir getattr;

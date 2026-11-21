@@ -1,9 +1,15 @@
-# sysfs
-allow hal_camera_default { sysfs_virtual sysfs_camera}:dir search;
-allow hal_camera_default sysfs_camera:file rw_file_perms;
+# Read camera hardware information and use the separate writable controls.
+allow hal_camera_default sysfs_camera:dir search;
+allow hal_camera_default sysfs_camera:file r_file_perms;
+allow hal_camera_default sysfs_camera_control:file rw_file_perms;
 
+# Find the graphics mapper used to handle camera buffers.
 allow hal_camera_default hal_graphics_mapper_hwservice:hwservice_manager find;
 
+# Use sync fence descriptors passed by the graphics composer.
+allow hal_camera_default hal_graphics_composer_default:fd use;
+
+# Use the vendor Binder context for Samsung camera components.
 vndbinder_use(hal_camera_default)
 
 # Framework SensorManager and its sensor event callbacks.

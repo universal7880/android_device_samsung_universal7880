@@ -1,18 +1,89 @@
-# mali debugfs
-genfscon debugfs /mali/			u:object_r:debugfs_mali:s0
+# Per-process GPU memory statistics read by the legacy passthrough memtrack HAL.
+genfscon debugfs /mali/mem u:object_r:debugfs_mali:s0
 
-# ion debugfs
-genfscon debugfs /ion/			u:object_r:debugfs_ion:s0
+# Per-client memory statistics and buffer totals read by the ION memtrack HAL.
+genfscon debugfs /ion/clients u:object_r:debugfs_ion:s0
+genfscon debugfs /ion/buffers -- u:object_r:debugfs_ion:s0
 
-# Double tap to wake
+# VM reclaim tuning used by the ZRAM init action.
+genfscon proc /sys/vm/swappiness -- u:object_r:proc_universal7880_swappiness:s0
+
+# Touchscreen double-tap-to-wake control.
 genfscon sysfs /devices/virtual/sec/tsp/dt2w_enable u:object_r:sysfs_touchscreen_writable:s0
 
 # The AP thermistor is distinct from the CPU/GPU die thermal zones.
 genfscon sysfs /devices/virtual/sec/sec-ap-thermistor u:object_r:sysfs_ap_thermal:s0
 genfscon sysfs /class/sec/sec-ap-thermistor u:object_r:sysfs_ap_thermal:s0
 
+# GPU frequency cap applied by the AP thermal policy.
 genfscon sysfs /devices/11400000.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0
 
-# Independent AP charging limit; existing charging controls keep their labels.
+# Battery temperature read before setting the charging limit.
+genfscon sysfs /devices/battery/power_supply/battery/temp -- u:object_r:sysfs_universal7880_battery_temp:s0
+
+# Separate AP thermal caps for charging current and display brightness.
 genfscon sysfs /devices/battery/power_supply/battery/thermal_siop_level u:object_r:sysfs_battery_thermal:s0
 genfscon sysfs /devices/14800000.dsim/lcd/panel/thermal_max_brightness u:object_r:sysfs_display_thermal:s0
+
+# Backlight for the capacitive navigation keys, controlled by the Lights HAL.
+genfscon sysfs /devices/virtual/sec/sec_touchkey/brightness u:object_r:sysfs_leds:s0
+
+# Panel brightness, operating mode and identification attributes.
+genfscon sysfs /devices/14800000.dsim/backlight/panel/brightness -- u:object_r:sysfs_brightness:s0
+genfscon sysfs /devices/14800000.dsim/backlight/panel/max_brightness -- u:object_r:sysfs_max_brightness:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/adaptive_control -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/alpm -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/dpui -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/dpui_dbg -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/lcd_type -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/lux -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/manufacture_code -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/temperature -- u:object_r:sysfs_lcd:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/window_type -- u:object_r:sysfs_lcd:s0
+
+# mDNIe display color and image adjustment controls.
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/mode -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/scenario -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/lux -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/sensorRGB -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/accessibility -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/night_mode -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/mdnie_ldu -- u:object_r:sysfs_mdnie:s0
+genfscon sysfs /devices/14800000.dsim/lcd/panel/mdnie/whiteRGB -- u:object_r:sysfs_mdnie:s0
+
+# Display controller information used by the graphics composer.
+genfscon sysfs /devices/14830000.decon_f -d u:object_r:sysfs_graphics:s0
+genfscon sysfs /devices/14830000.decon_f/vsync -- u:object_r:sysfs_graphics:s0
+genfscon sysfs /devices/14830000.decon_f/psr_info -- u:object_r:sysfs_graphics:s0
+
+# GNSS platform identification.
+genfscon sysfs /devices/soc0/machine -- u:object_r:sysfs_gps:s0
+genfscon sysfs /devices/soc0/revision -- u:object_r:sysfs_gps:s0
+
+# CP link control, SIM selection and packet-data wake timeout.
+genfscon sysfs /module/modem_ctrl_ss310ap/parameters/ds_detect -- u:object_r:sysfs_modem:s0
+genfscon sysfs /devices/virtual/misc/multipdp/waketime -- u:object_r:sysfs_multipdp:s0
+
+# Bluetooth external supply control.
+genfscon sysfs /devices/bluetooth/extldo -- u:object_r:sysfs_bluetooth_writable:s0
+
+# Factory camera module IDs whose ownership is set by vendor init.
+genfscon sysfs /devices/svc/Camera/SVC_front_module -- u:object_r:sysfs_samsung_module_id:s0
+genfscon sysfs /devices/svc/Camera/SVC_rear_module -- u:object_r:sysfs_samsung_module_id:s0
+
+# Factory display panel IDs whose ownership is set by vendor init.
+genfscon sysfs /devices/svc/OCTA/SVC_OCTA -- u:object_r:sysfs_samsung_module_id:s0
+genfscon sysfs /devices/svc/OCTA/SVC_OCTA_CHIPID -- u:object_r:sysfs_samsung_module_id:s0
+
+# V4L2 class links and hardware names scanned by the Exynos OMX libraries.
+genfscon sysfs /class/video4linux u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c00000.scaler/video51/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c10000.scaler/video50/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c20000.smfc/video12/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c30000.mfc0/video6/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c30000.mfc0/video7/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c30000.mfc0/video8/name u:object_r:sysfs_video_codec:s0
+genfscon sysfs /devices/12c30000.mfc0/video9/name u:object_r:sysfs_video_codec:s0
+
+# Board revision read by the modem boot daemon.
+genfscon sysfs /firmware/devicetree/base/model_info-system_rev -- u:object_r:sysfs_modem_board_revision:s0

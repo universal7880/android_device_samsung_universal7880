@@ -1,2 +1,5 @@
-# The Samsung common policy labels /sys/class/power_supply as sysfs_battery.
+# Enumerate power-supply devices under /sys/class/power_supply.
 allow hal_health_default sysfs_battery:dir { open read search };
+
+# Health reads battery temperature when reporting the battery state.
+allow hal_health_server sysfs_universal7880_battery_temp:file r_file_perms;
