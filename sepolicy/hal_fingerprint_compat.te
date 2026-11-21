@@ -1,6 +1,8 @@
+# Define a separate domain for the lazy HIDL fingerprint adapter.
 type hal_fingerprint_compat, domain;
 type hal_fingerprint_compat_exec, exec_type, vendor_file_type, file_type;
 
+# Run the adapter as a service and bridge requests to the fingerprint HAL.
 init_daemon_domain(hal_fingerprint_compat)
 hal_server_domain(hal_fingerprint_compat, hal_fingerprint)
 hal_client_domain(hal_fingerprint_compat, hal_fingerprint)

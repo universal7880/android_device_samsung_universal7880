@@ -1,2 +1,2 @@
-# /dev/block/mmcblk0p3
-allow fsck emmcblk_device:blk_file { read write open ioctl getattr };
+# Check and repair the EFS filesystem on its dedicated block device.
+allow fsck efs_block_device:blk_file { read write open ioctl getattr };

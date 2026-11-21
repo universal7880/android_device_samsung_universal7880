@@ -1,11 +1,11 @@
+# Traverse the EFS mount for legacy audio paths.
 allow hal_audio_default efs_file:dir search;
-allow hal_audio_default sec_efs_file:dir search;
-allow hal_audio_default sec_efs_file:file read;
-allow hal_audio_default sec_efs_file:file open;
 
-# Allow hal to take wakelock
+# Hold a wake lock while the audio HAL needs the device to stay awake.
 wakelock_use(hal_audio_default)
 
+# Connect to the modem daemon socket for telephony audio.
 allow hal_audio_default rild:unix_stream_socket connectto;
 
+# Configure the TFA98xx speaker amplifier over I2C.
 allow hal_audio_default amplifier_device:chr_file { open read write ioctl };

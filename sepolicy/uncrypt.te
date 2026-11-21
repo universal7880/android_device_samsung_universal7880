@@ -1,1 +1,0 @@
-allow uncrypt emmcblk_device:blk_file w_file_perms;

@@ -1,42 +1,14 @@
-# /efs
-allow system_server efs_file:dir r_dir_perms;
-
-# /efs/gyro_cal_data
-allow system_server sensor_efs_file:file r_file_perms;
-
-# /efs/prox_cal
-allow system_server efs_file:file r_file_perms;
-
-# /efs/FactoryApp
-allow system_server app_efs_file:dir r_dir_perms;
-allow system_server app_efs_file:file r_file_perms;
-
-# WifiMachine
-allow system_server self:capability { sys_module };
-allow system_server wifi_efs_file:dir r_dir_perms;
-allow system_server wifi_efs_file:file r_file_perms;
-
-# mDNIE
-allow system_server sysfs_mdnie:lnk_file rw_file_perms;
-allow system_server sysfs_mdnie:file rw_file_perms;
-
-# memtrack HAL
-allow system_server debugfs:dir r_dir_perms;
+# The passthrough memtrack HAL reads Mali and ION accounting in system_server.
 allow system_server debugfs_mali:dir r_dir_perms;
 allow system_server debugfs_mali:file r_file_perms;
+allow system_server debugfs_ion:dir { getattr search };
+allow system_server debugfs_ion:file r_file_perms;
 
-# debugfs ion
-allow system_server debugfs_ion:file rw_file_perms;
+# Apply the display brightness selected by the framework.
+allow system_server sysfs_brightness:file { getattr open read write };
 
-# sensor HAL
-allow system_server { io_device ssp_device }:chr_file rw_file_perms;
-allow system_server baro_delta_factoryapp_efs_file:file r_file_perms;
-allow system_server sensor_factoryapp_efs_file:file r_file_perms;
+# Read the panel's maximum brightness for scaling.
+allow system_server sysfs_max_brightness:file { getattr open read };
 
-# sysfs
-allow system_server sysfs_brightness:file write;
-allow system_server sysfs_input_writable:file write;
-allow system_server sysfs_sec:file write;
-allow system_server sysfs_devices_system_cpu:file write;
-allow system_server sysfs_virtual:file write;
-allow system_server sysfs_iio_writable:file write;
+# BatteryStats reads the legacy kernel wakeup source counters.
+allow system_server debugfs_wakeup_sources:file { getattr open read };

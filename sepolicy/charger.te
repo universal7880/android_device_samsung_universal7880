@@ -1,1 +1,2 @@
-allow charger sysfs_batteryinfo:file { open read getattr };
+# Read battery status and temperature while charging with Android shut down.
+allow charger { sysfs_batteryinfo sysfs_universal7880_battery_temp }:file { open read getattr };

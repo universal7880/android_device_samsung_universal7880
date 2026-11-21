@@ -1,219 +1,257 @@
-##########################
-# Devices
-#
+# Device nodes and sockets
+
+# Mali GPU and secure memory used by graphics and DRM.
 /dev/mali[0-9]*              u:object_r:gpu_device:s0
-
-/dev/bcm2079x                u:object_r:nfc_device:s0
-/dev/sec-nfc                 u:object_r:nfc_device:s0
-
-/dev/ttySAC0                 u:object_r:bt_device:s0
-
 /dev/s5p-smem                u:object_r:secmem_device:s0
 
+# V4L2 subdevices, hardware scaler and camera media nodes.
 /dev/v4l-subdev[0-9]*        u:object_r:video_device:s0
-/dev/video(/.*)?             u:object_r:video_device:s0
 /dev/m2m1shot_scaler[0-9]*   u:object_r:video_device:s0
 /dev/media[0-3]*             u:object_r:camera_device:s0
-/dev/m2m1shot_jpeg           u:object_r:camera_device:s0
 
-/dev/mtp_usb*                u:object_r:mtp_device:s0
+# NFC controller device nodes.
+/dev/sec-nfc                 u:object_r:nfc_device:s0
 
-/dev/__cbd_msg_              u:object_r:vendor_radio_device:s0
-/dev/umts.*                  u:object_r:vendor_radio_device:s0
-/dev/ehci_power              u:object_r:vendor_radio_device:s0
-/dev/mipi-lli/lli_control    u:object_r:vendor_radio_device:s0
+# Bluetooth UART and radio power switch.
+/dev/ttySAC0                 u:object_r:bt_device:s0
+/dev/rfkill                  u:object_r:rfkill_device:s0
 
+# TFA98xx speaker amplifier I2C device.
+/dev/i2c-20                  u:object_r:amplifier_device:s0
+
+# GNSS shares memory with the modem and exposes a dedicated IPC node.
 /dev/gnss_ipc                u:object_r:gps_device:s0
-/dev/ttySAC[1-9]*            u:object_r:gps_device:s0
 
-/dev/block/mmcblk0p[0-9]*    u:object_r:emmcblk_device:s0
+# The secondary UART is distinct from the Bluetooth transport on ttySAC0.
+/dev/ttySAC2                 -c u:object_r:serial_device:s0
 
+# Modem IPC and boot control device nodes.
+# Additional SS325AP interfaces absent from the Samsung common labels.
+/dev/umts_csd                -c u:object_r:vendor_radio_device:s0
+/dev/umts_ramdump0           -c u:object_r:vendor_radio_device:s0
+/dev/umts_ciq0               -c u:object_r:vendor_radio_device:s0
+
+# FM tuner device and the FM audio socket.
+/dev/radio0                 u:object_r:fm_device:s0
+/dev/socket/universal7880_fm_audio    u:object_r:fm_audio_socket:s0
+
+# Second SIM RIL sockets.
+/dev/socket/rild2                           u:object_r:rild_socket:s0
+/dev/socket/rild-debug2                     u:object_r:rild_debug_socket:s0
+
+# SIM Access Profile socket opened by init for the modem daemon.
+/dev/socket/sap_uim_socket1                  -s u:object_r:ril_sap_socket:s0
+
+# Secondary watchdog exposed by the Samsung kernel.
+/dev/watchdog1               u:object_r:watchdog_device:s0
+
+# Legacy schedtune cgroup used by adbroot and storaged.
+/dev/stune(/.*)?		u:object_r:cgroup:s0
+
+# eMMC partitions
+
+# PARAM configuration accessed by Samsung RIL and kernel drivers.
+/dev/block/mmcblk0p9 -b u:object_r:samsung_param_block_device:s0
+
+# Optional modem NV and carrier partitions named by the Samsung CP boot daemon.
+/dev/block/mmcblk0p7 -b u:object_r:samsung_cp_nv_block_device:s0
+/dev/block/mmcblk0p8 -b u:object_r:samsung_cp_nv_block_device:s0
+
+# CP_DEBUG partition used by the Samsung CP boot daemon.
+/dev/block/mmcblk0p22 -b u:object_r:samsung_cp_debug_block_device:s0
+
+# STEADY partition used for Samsung device state.
+/dev/block/mmcblk0p17 -b u:object_r:steady_block_device:s0
+
+# Boot and recovery images.
 /dev/block/mmcblk0p10        u:object_r:boot_block_device:s0
 /dev/block/mmcblk0p11        u:object_r:recovery_block_device:s0
+
+# Samsung OTA partition used for the Android bootloader message.
+/dev/block/mmcblk0p12        u:object_r:misc_block_device:s0
+
+# Modem firmware and factory reset protection.
 /dev/block/mmcblk0p13        u:object_r:radio_block_device:s0
+/dev/block/mmcblk0p16        u:object_r:frp_block_device:s0
+
+# Swap device used by Android's mkswap and swapon paths.
+/dev/block/zram0             -b u:object_r:swap_block_device:s0
+
+# Physical device for retrofit dynamic partitions, cache and userdata.
 /dev/block/mmcblk0p19        u:object_r:super_block_device:s0
 /dev/block/mmcblk0p20        u:object_r:cache_block_device:s0
 /dev/block/mmcblk0p25        u:object_r:userdata_block_device:s0
-/dev/block/mmcblk0p16        u:object_r:frp_block_device:s0
 
-/dev/rfkill                  u:object_r:rfkill_device:s0
+# EFS mount and data
 
-# TFA98xx amplifier
-/dev/i2c-20                  u:object_r:amplifier_device:s0
+# Mount point for the EFS filesystem.
+/mnt/efs                                    -d u:object_r:efs_file:s0
 
-# adbroot and storaged
-/dev/stune(/.*)?		u:object_r:cgroup:s0
-
-####################################
-# efs files
+# Legacy root alias and the vendor entry point to the EFS mount.
 /efs                                        -l u:object_r:rootfs:s0
-/mnt/efs(/.*)?                              u:object_r:efs_file:s0
-/mnt/vendor/efs                             -l u:object_r:efs_file:s0
-/mnt/imei                                   -l u:object_r:efs_file:s0
-/mnt/vendor/ril_serial                      -l u:object_r:efs_file:s0
-/mnt/efs/Battery(/.*)?                      u:object_r:battery_efs_file:s0
-/mnt/efs/DAK(/.*)?                          u:object_r:prov_efs_file:s0
+/mnt/vendor/efs                             -l u:object_r:vendor_efs_link:s0
+
+# Samsung RIL aliases for IMEI files and the factory serial number.
+/mnt/imei                                   -l u:object_r:ril_imei_link:s0
+/mnt/vendor/ril_serial                      -l u:object_r:ril_serial_link:s0
+
+# Fuel-gauge calibration maintained on EFS.
+/mnt/efs/Battery                            -d u:object_r:battery_efs_file:s0
+/mnt/efs/Battery/(batt_capacity_max|fg_full_voltage) -- u:object_r:factory_battery_efs_file:s0
+
+# Adaptive fast charging data.
 /mnt/efs/afc(/.*)?                          u:object_r:sec_efs_file:s0
+
+# Bluetooth, NFC and Wi-Fi factory data.
 /mnt/efs/bluetooth(/.*)?                    u:object_r:bluetooth_efs_file:s0
-/mnt/efs/cpk(/.*)?                          u:object_r:cpk_efs_file:s0
-/mnt/efs/imei(/.*)?                         u:object_r:imei_efs_file:s0
 /mnt/efs/nfc(/.*)?                          u:object_r:nfc_efs_file:s0
+/mnt/efs/wifi(/.*)?                         u:object_r:wifi_efs_file:s0
+
+# Device provisioning, firmware and trusted execution data.
+/mnt/efs/DAK(/.*)?                          u:object_r:prov_efs_file:s0
 /mnt/efs/pfw_data(/.*)?                     u:object_r:pfw_efs_file:s0
 /mnt/efs/prov(/.*)?                         u:object_r:prov_efs_file:s0
 /mnt/efs/prov_data(/.*)?                    u:object_r:prov_efs_file:s0
-/mnt/efs/root(/.*)?                         u:object_r:app_efs_file:s0
-/mnt/efs/tee(/.*)?                          u:object_r:tee_efs_file:s0
-/mnt/efs/wifi(/.*)?                         u:object_r:wifi_efs_file:s0
 
-/mnt/efs/FactoryApp(/.*)?                   u:object_r:app_efs_file:s0
+/mnt/efs/tee(/.*)?                          u:object_r:tee_efs_file:s0
+
+# Factory application data and legacy root directory.
+/mnt/efs/root(/.*)?                         u:object_r:app_efs_file:s0
+/mnt/efs/FactoryApp                         -d u:object_r:app_efs_file:s0
+
+# Factory calibration, battery history and the serial number used by the modem.
+/mnt/efs/FactoryApp/(accel_calibration_data|calibration_data|gyro_cal_data|hw_offset|prox_settings) -- u:object_r:factory_sensor_cal_efs_file:s0
+/mnt/efs/FactoryApp/(asoc|batt_after_manufactured|batt_cable_count|batt_discharge_level|batt_temp_charge|max_current|max_temp) -- u:object_r:factory_battery_efs_file:s0
+/mnt/efs/FactoryApp/cisd_(cable_data|data|data_a5y17lte|data_a7y17lte|fullcaprep_max|power_data|tx_data|wc_data) -- u:object_r:factory_battery_efs_file:s0
+/mnt/efs/FactoryApp/serial_no                -- u:object_r:factory_serial_efs_file:s0
+
+
 /mnt/efs/FactoryApp/baro_delta              u:object_r:baro_delta_factoryapp_efs_file:s0
 /mnt/efs/FactoryApp/factorymode             u:object_r:factorymode_factoryapp_efs_file:s0
+/mnt/efs/FactoryApp/prox_cal                u:object_r:sensor_factoryapp_efs_file:s0
+/mnt/efs/gyro_cal_data                      u:object_r:sensor_efs_file:s0
+
+# IMEI directory and factory product code.
+/mnt/efs/imei                               -d u:object_r:imei_efs_file:s0
+/mnt/efs/imei/selective                     -d u:object_r:imei_efs_file:s0
+/mnt/efs/imei/prodcode\.dat                 -- u:object_r:imei_efs_file:s0
+
+# Operator and SIM selection data referenced by the single- and dual-SIM RIL.
+/mnt/efs/imei/(mps_code|omcnw_code2?|replace_code)\.dat -- u:object_r:ril_imei_config_efs_file:s0
+/mnt/efs/imei/selective                     -- u:object_r:ril_imei_config_efs_file:s0
+
+# Modem factory records, NV backups and telephony configuration.
 /mnt/efs/FactoryApp/fdata                   u:object_r:radio_factoryapp_efs_file:s0
 /mnt/efs/FactoryApp/hist_nv                 u:object_r:radio_factoryapp_efs_file:s0
-/mnt/efs/FactoryApp/prox_cal                u:object_r:sensor_factoryapp_efs_file:s0
 /mnt/efs/FactoryApp/test_nv                 u:object_r:radio_factoryapp_efs_file:s0
-
-/mnt/efs/drm(/.*)?                          u:object_r:drm_efs_file:s0
-/mnt/efs/gyro_cal_data                      u:object_r:sensor_efs_file:s0
-/mnt/efs/h2k\.dat                           u:object_r:cpk_efs_file:s0
-/mnt/efs/nv_data\.bin(.*)                   u:object_r:bin_nv_data_efs_file:s0
-/mnt/efs/nv\.log                            u:object_r:bin_nv_data_efs_file:s0
-/mnt/efs/\.nv_core\.bak(.*)                 u:object_r:bin_nv_data_efs_file:s0
-/mnt/efs/wv\.keys                           u:object_r:cpk_efs_file:s0
+/mnt/efs/nv_data\.bin(\.md5)?              -- u:object_r:bin_nv_data_efs_file:s0
+/mnt/efs/nv\.log                           -- u:object_r:bin_nv_data_efs_file:s0
+/mnt/efs/\.nv_core\.bak(\.md5)?           -- u:object_r:bin_nv_data_efs_file:s0
 /mnt/efs/factory\.prop                      u:object_r:factoryprop_efs_file:s0
+/mnt/efs/telephony\.prop                   -- u:object_r:ril_telephony_efs_file:s0
 
-####################################
-# data files
+# Legacy DRM provisioning records.
+/mnt/efs/cpk(/.*)?                          u:object_r:cpk_efs_file:s0
+/mnt/efs/drm(/.*)?                          u:object_r:drm_efs_file:s0
+/mnt/efs/h2k\.dat                           u:object_r:cpk_efs_file:s0
+
+/mnt/efs/wv\.keys                              u:object_r:cpk_efs_file:s0
+
+# Gatekeeper context directory and per-user records.
+/mnt/efs/TEE                                u:object_r:gatekeeper_efs_file:s0
+/mnt/efs/TEE/gk_context(_sub)?_[0-9a-f]+    u:object_r:gatekeeper_efs_file:s0
+
+# Same-process HAL libraries
+
+# Legacy memtrack runs inside system_server and loads these vendor libraries.
+/(vendor|system/vendor)/lib(64)?/hw/android\.hardware\.memtrack@1\.0-impl\.so -- u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/hw/memtrack\.exynos5\.so -- u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib(64)?/android\.hardware\.memtrack@1\.0\.so -- u:object_r:same_process_hal_file:s0
+
+# Persistent service data
+
+# Legacy and vendor NFC state.
 /data/nfc(/.*)?              u:object_r:nfc_data_file:s0
 /data/vendor/nfc(/.*)?       u:object_r:nfc_vendor_data_file:s0
 
-# DRM
-/(vendor|system/vendor)/bin/hw/android\.hardware\.drm-service\.widevine u:object_r:hal_drm_widevine_exec:s0
+# Vendor camera, Bluetooth and Widevine state.
+/data/vendor/camera(/.*)?    u:object_r:camera_vendor_data_file:s0
+/data/vendor/bluetooth(/.*)?    u:object_r:vendor_bluetooth_data_file:s0
 /data/vendor/mediadrm(/.*)?       u:object_r:mediadrm_data_file:s0
 
-# camera
-/data/vendor/camera(/.*)?    u:object_r:camera_vendor_data_file:s0
+# Sysfs attributes
 
-####################################
-# sysfs files
-/sys/class/power_supply/battery/music -- u:object_r:sysfs:s0
-/sys/class/devfreq/exynos5-busfreq-mif(/.*)? -- u:object_r:sysfs:s0
+# Only the Bluetooth driver's rfkill attributes. The index is assigned at runtime.
+/sys/devices/bluetooth/rfkill/rfkill[0-9]+/(state|type) -- u:object_r:sysfs_bluetooth_writable:s0
 
-# bluetooth
-/sys/devices/bluetooth/rfkill/rfkill0/state  u:object_r:sysfs_bluetooth_writable:s0
-/sys/devices/bluetooth/rfkill/rfkill0/type   u:object_r:sysfs_bluetooth_writable:s0
-/sys/devices/bluetooth/extldo                u:object_r:sysfs_bluetooth_writable:s0
+# Samsung camera information and controls.
+/sys/devices/virtual/camera(/(rear|front|flash|ois|secure))? -d u:object_r:sysfs_camera:s0
+/sys/devices/virtual/camera/rear/(fw_update|rear_(afcal|calcheck|camfw|camfw_full|caminfo|camtype|checkfw_factory|checkfw_user|moduleid|sensorid|sensorid_exif)|rear[23]_sensorid_exif) -- u:object_r:sysfs_camera:s0
+/sys/devices/virtual/camera/front/front_(camfw|camfw_full|caminfo|camtype|checkfw_factory|moduleid|sensorid|sensorid_exif) -- u:object_r:sysfs_camera:s0
+/sys/devices/virtual/camera/ois/ois_(diff|exif|rawdata|selftest) -- u:object_r:sysfs_camera:s0
+/sys/devices/virtual/camera/secure/secure_sensorid -- u:object_r:sysfs_camera:s0
 
-# brightness
-/sys/devices/[0-9]*\.dsim/backlight/panel/brightness          u:object_r:sysfs_brightness:s0
-/sys/devices/[0-9]*\.dsim/backlight/panel/max_brightness      u:object_r:sysfs_brightness:s0
+# Writable camera controls and torch attributes used by the vendor HAL.
+/sys/devices/virtual/camera/rear/rear_(hwparam|sensor_standby) -- u:object_r:sysfs_camera_control:s0
+/sys/devices/virtual/camera/front/front_hwparam -- u:object_r:sysfs_camera_control:s0
+/sys/devices/virtual/camera/flash/(rear_flash|rear_torch_flash[23]?|front_torch_flash) -- u:object_r:sysfs_camera_control:s0
+/sys/devices/virtual/camera/ois/ois_power -- u:object_r:sysfs_camera_control:s0
 
-# camera
-/sys/devices/virtual/camera(/.*)?           u:object_r:sysfs_camera:s0
-
-# charger
+# Battery and charger information.
 /sys/devices/battery/power_supply(/.*)                                     u:object_r:sysfs_batteryinfo:s0
 /sys/devices/13870000.i2c/i2c-7/7-003d/s2mu004-charger/power_supply(/.*)   u:object_r:sysfs_batteryinfo:s0
 /sys/devices/13830000.i2c/i2c-10/10-003b/power_supply(/.*)                 u:object_r:sysfs_batteryinfo:s0
 
-# CP device
-/dev/spi_boot_link              u:object_r:radio_device:s0
+# Preserve the dedicated temperature label during power_supply restorecon.
+/sys/devices/battery/power_supply/battery/temp -- u:object_r:sysfs_universal7880_battery_temp:s0
 
-# cbd
-/sys/devices/10f24000.mipi-lli/lli_control  u:object_r:sysfs_mipi:s0
+# Preserve the dedicated charging limit label during restorecon.
+/sys/devices/battery/power_supply/battery/thermal_siop_level -- u:object_r:sysfs_battery_thermal:s0
 
-# gps
-/sys/devices/soc0/machine      u:object_r:sysfs_gps:s0
-/sys/devices/soc0/revision     u:object_r:sysfs_gps:s0
+# Power and Touch HAL input controls. Input indices depend on probe order.
+/sys/devices/i2c@20/i2c-6/6-0020/input/input[0-9]+/enabled -- u:object_r:sysfs_touchscreen_writable:s0
+/sys/devices/13890000\.i2c/i2c-9/9-00(20|48)/input/input[0-9]+/enabled -- u:object_r:sysfs_touchscreen_writable:s0
 
-# graphics
-/sys/devices/14830000.decon_f(/.*)?           u:object_r:sysfs_graphics:s0
+# Physical touchscreen and touchkey directories traversed to reach enabled.
+/sys/devices/i2c@20/i2c-6/6-0020/input/input[0-9]+ -d u:object_r:sysfs_touch_input_dir:s0
+/sys/devices/13890000\.i2c/i2c-9/9-00(20|48)/input/input[0-9]+ -d u:object_r:sysfs_touch_input_dir:s0
 
-# input
-/sys/devices/i2c@20/i2c-6/6-0020/input/input0(/.*)?         u:object_r:sysfs_input_writable:s0
-/sys/devices/13890000.i2c/i2c-9/9-0048/input/input1(/.*)?   u:object_r:sysfs_input_writable:s0
-/sys/devices/13890000.i2c/i2c-9/9-0020/input/input1(/.*)?   u:object_r:sysfs_input_writable:s0
-/sys/devices/10610000.hsi2c/i2c-0/0-a004/input/input2(/.*)? u:object_r:sysfs_input_writable:s0
-/sys/devices/gpio_keys/input/input3(/.*)?                   u:object_r:sysfs_input_writable:s0
-/sys/devices/hall/input/input4(/.*)?                        u:object_r:sysfs_input_writable:s0
-/sys/devices/certify_hall/input/input5(/.*)?                u:object_r:sysfs_input_writable:s0
-
-# lcd
-/sys/devices/[0-9]*\.dsim/lcd/panel/adaptive_control    u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/alpm                u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/dpui                u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/dpui_dbg            u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/lcd_type            u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/lux                 u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/manufacture_code    u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/temperature         u:object_r:sysfs_lcd:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/window_type         u:object_r:sysfs_lcd:s0
-
-# mmc
-/sys/devices/13560000.dwmmc2(/.*)?         u:object_r:sysfs_mmc:s0
-
-# modem
-/sys/module/modem_ctrl_ss310ap/parameters/ds_detect   u:object_r:sysfs_modem:s0
-
-# rild
-/sys/devices/virtual/misc/multipdp(/.*)     u:object_r:sysfs_multipdp:s0
-/dev/socket/rild2                           u:object_r:rild_socket:s0
-/dev/socket/rild-debug2                     u:object_r:rild_debug_socket:s0
-
-# mDNIe
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/mode          u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/scenario      u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/lux           u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/sensorRGB     u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/accessibility u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/night_mode    u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/mdnie_ldu     u:object_r:sysfs_mdnie:s0
-/sys/devices/[0-9]*\.dsim/lcd/panel/mdnie/whiteRGB      u:object_r:sysfs_mdnie:s0
-
-# sec
-/sys/class/sec(/.*)?           -- u:object_r:sysfs_sec:s0
-
-# svc
-/sys/devices/svc(/.*)?    u:object_r:sysfs_svc:s0
-
-# virtual
-/sys/devices/virtual(/.*)?    u:object_r:sysfs_virtual:s0
-# Preserve the common touchscreen label on the links used by the Power HAL.
+# Touchscreen and touchkey input links followed by the Power HAL.
 /sys/devices/virtual/sec/(tsp|sec_touchkey)/input -l u:object_r:sysfs_sec_touchscreen:s0
-/sys/devices/virtual/block/loop[0-9]+(/.*)?    u:object_r:sysfs_loop:s0
 
-# iio
-/sys/devices/13930000\.spi/spi_master/spi2/spi2\.0/iio:device[0-9](/.*)?    u:object_r:sysfs_iio_writable:s0
-/sys/bus/iio/devices(/.*)?                                                  u:object_r:sysfs_iio_writable:s0
+# SSP sensor names and IIO buffer directories.
+/sys/devices/13930000\.spi/spi_master/spi2/spi2\.0/iio:device[0-9]+(/buffer)? -d u:object_r:sysfs_iio:s0
+/sys/devices/13930000\.spi/spi_master/spi2/spi2\.0/iio:device[0-9]+/name -- u:object_r:sysfs_iio:s0
 
-####################################
+# Read the ADC identifier when looking for SSP IIO devices.
+/sys/devices/10650000\.adc/iio:device[0-9]+/name -- u:object_r:sysfs_iio:s0
 
-# lineage hals
+# IIO buffer attributes written by the Sensors HAL.
+/sys/devices/13930000\.spi/spi_master/spi2/spi2\.0/iio:device[0-9]+/buffer/(enable|length) -- u:object_r:sysfs_iio_writable:s0
+
+# Removable SD card paths traversed by vold and fsck.
+/sys/devices/13560000\.dwmmc2 -d u:object_r:sysfs_mmc:s0
+/sys/devices/13560000\.dwmmc2/mmc_host(/mmc[0-9]+)? -d u:object_r:sysfs_mmc:s0
+/sys/devices/13560000\.dwmmc2/mmc_host/mmc[0-9]+/mmc[0-9]+:[0-9a-f]{4} -d u:object_r:sysfs_mmc:s0
+/sys/devices/13560000\.dwmmc2/mmc_host/mmc[0-9]+/mmc[0-9]+:[0-9a-f]{4}/block(/mmcblk[0-9]+(/mmcblk[0-9]+p[0-9]+)?)? -d u:object_r:sysfs_mmc:s0
+
+# Block and partition uevents replayed by vold during coldboot.
+/sys/devices/13560000\.dwmmc2/mmc_host/mmc[0-9]+/mmc[0-9]+:[0-9a-f]{4}/block/mmcblk[0-9]+(/mmcblk[0-9]+p[0-9]+)?/uevent -- u:object_r:sysfs_mmc:s0
+
+# HAL executables
+
+# Samsung audio and Bluetooth services.
 /(vendor|system/vendor)/bin/hw/android\.hardware\.audio\.service\.universal7880                 u:object_r:hal_audio_default_exec:s0
-/(vendor|system/vendor)/bin/hw/vendor\.lineage\.livedisplay@2\.1-service\.universal7880         u:object_r:hal_lineage_livedisplay_sysfs_exec:s0
-
-/dev/radio0                 u:object_r:fm_device:s0
-
-/(vendor|system/vendor)/bin/hw/vendor\.lineage\.hardware\.fmradio-service\.si47xx    u:object_r:hal_fmradio_default_exec:s0
-
-/data/vendor/bluetooth(/.*)?    u:object_r:vendor_bluetooth_data_file:s0
-
 /(vendor|system/vendor)/bin/hw/android\.hardware\.bluetooth-service\.universal7880 u:object_r:hal_bluetooth_default_exec:s0
 
-# GNSS service
+# GNSS, FM radio and fingerprint compatibility services.
 /(vendor|system/vendor)/bin/hw/android\.hardware\.gnss@1\.0-service\.universal7880  u:object_r:hal_gnss_default_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.lineage\.hardware\.fmradio-service\.si47xx    u:object_r:hal_fmradio_default_exec:s0
+/vendor/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service\.universal7880 u:object_r:hal_fingerprint_compat_exec:s0
 
+# LiveDisplay and thermal services.
+/(vendor|system/vendor)/bin/hw/vendor\.lineage\.livedisplay@2\.1-service\.universal7880         u:object_r:hal_lineage_livedisplay_sysfs_exec:s0
 /vendor/bin/hw/android\.hardware\.thermal-service\.universal7880 u:object_r:hal_thermal_default_exec:s0
 
-# Keep restorecon consistent with the common thermal genfs label.
-/sys/devices/virtual/thermal(/.*)? u:object_r:sysfs_thermal:s0
-
-/sys/devices/virtual/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
-/sys/class/sec/sec-ap-thermistor(/.*)? u:object_r:sysfs_ap_thermal:s0
-
-/sys/devices/11400000\.mali/thermal_max_lock u:object_r:sysfs_gpu_thermal:s0
-
-/mnt/efs/TEE                                u:object_r:gatekeeper_efs_file:s0
-/mnt/efs/TEE/gk_context(_sub)?_[0-9a-f]+    u:object_r:gatekeeper_efs_file:s0
-/vendor/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service\.universal7880 u:object_r:hal_fingerprint_compat_exec:s0
-/dev/socket/universal7880_fm_audio    u:object_r:fm_audio_socket:s0
+# Widevine DRM service.
+/(vendor|system/vendor)/bin/hw/android\.hardware\.drm-service\.widevine u:object_r:hal_drm_widevine_exec:s0

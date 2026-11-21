@@ -1,16 +1,20 @@
-# /dev/block/mmcblk0p[0-9] (/dev/mbin0)
-type emmcblk_device, file_type;
+# Samsung PARAM configuration partition.
+type samsung_param_block_device, dev_type;
 
-# /dev/rfkill
+# Partition labels for the Samsung modem boot daemon.
+type samsung_cp_nv_block_device, dev_type;
+type samsung_cp_debug_block_device, dev_type;
+
+# Radio kill switch character device.
 type rfkill_device, dev_type;
 
-# /dev/s5p-smem
+# Samsung secure memory device for protected media buffers.
 type secmem_device, dev_type;
 
-# /dev/i2c-20 - TFA98xx amplifier
+# I2C controller exposed to the TFA98xx speaker amplifier HAL.
 type amplifier_device, dev_type;
 
-# GPS
+# GNSS IPC character device shared with the modem.
 type gps_device, dev_type;
 
 # Silicon Labs FM tuner

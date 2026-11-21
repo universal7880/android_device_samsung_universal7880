@@ -1,3 +1,4 @@
+# Let recovery fastbootd read and flash the physical recovery partition.
 recovery_only(`
   allow fastbootd recovery_block_device:blk_file rw_file_perms;
 ')

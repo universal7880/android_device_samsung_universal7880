@@ -1,2 +1,5 @@
-# HWC
+# Use Samsung secure memory for protected display composition.
 allow surfaceflinger secmem_device:chr_file rw_file_perms;
+
+# Opening /dev/mali0 creates a per-context entry under debugfs /mali/mem.
+allow surfaceflinger debugfs_mali:dir search;

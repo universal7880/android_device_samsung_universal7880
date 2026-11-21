@@ -1,25 +1,11 @@
-# /efs/FactoryApp/
-allow hal_sensors_default app_efs_file:dir rw_dir_perms;
-allow hal_sensors_default app_efs_file:file { rw_file_perms setattr };
+# The SSP driver can save calibration with the credentials of the sensor caller.
+allow hal_sensors_default { factory_sensor_cal_efs_file sensor_factoryapp_efs_file }:file { create rw_file_perms };
+type_transition hal_sensors_default app_efs_file:file factory_sensor_cal_efs_file "calibration_data";
+type_transition hal_sensors_default app_efs_file:file factory_sensor_cal_efs_file "gyro_cal_data";
+type_transition hal_sensors_default app_efs_file:file sensor_factoryapp_efs_file "prox_cal";
 
-# /efs
-allow hal_sensors_default efs_file:dir r_dir_perms;
-
-# /dev/batch_io and /dev/ssp_sensorhub
-allow hal_sensors_default { io_device ssp_device }:chr_file rw_file_perms;
-
-# iio_device
-allow hal_sensors_default iio_device:chr_file { open read };
-
-# sysfs_iio_writable
+# Enable the SSP IIO buffers and set their queue length.
 allow hal_sensors_default sysfs_iio_writable:file { open read getattr write };
-allow hal_sensors_default sysfs_iio_writable:dir { open read search };
-allow hal_sensors_default sysfs_iio_writable:lnk_file read;
 
-# sysfs_virtual
-allow hal_sensors_default sysfs_virtual:dir r_dir_perms;
-allow hal_sensors_default sysfs_virtual:file rw_file_perms;
-
-allow hal_sensors_default sysfs:file { open read getattr write };
-
+# Follow the IIO class links to the SSP devices.
 allow hal_sensors_default sysfs_iio:lnk_file read;

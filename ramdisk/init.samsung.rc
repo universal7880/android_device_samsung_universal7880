@@ -378,7 +378,6 @@ on boot
     chown system sdcard_rw /sys/class/power_supply/battery/store_mode
     chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/call
     chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/video
-    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/music
     chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/browser
     chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/hotspot
     chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/camera
@@ -648,10 +647,6 @@ on boot
     # eMMC/SD
     chown system system /sys/block/mmcblk0/device/unique_number
     chmod 440 /sys/block/mmcblk0/device/unique_number
-    chown system system /sys/block/mmcblk0/device/cid
-    chmod 444 /sys/block/mmcblk0/device/cid
-    chown system system /sys/block/mmcblk1/device/cid
-    chmod 444 /sys/block/mmcblk1/device/cid
     chown system system /sys/class/sec/sdcard/cd_cnt
     chmod 444 /sys/class/sec/sdcard/cd_cnt
     chown system system /sys/class/sec/sddata/sd_data
@@ -768,9 +763,6 @@ on boot
     # Permissions for Edtbo
     chown system system /sys/class/sec/sec_sysup/edtbo_update
     chown system system /sys/class/sec/sec_sysup/edtbo_version
-
-# Permissions for DMV data
-    chown system system /sys/kernel/alta_bigdata/dmv_info
 
     # MTP device permission
     chmod 0660 /dev/usb_mtp_gadget

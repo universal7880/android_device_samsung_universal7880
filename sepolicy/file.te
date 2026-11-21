@@ -1,51 +1,94 @@
-### efs types
-type baro_delta_factoryapp_efs_file, file_type;
-# widewine, drm
-type drm_efs_file, file_type;
-type factorymode_factoryapp_efs_file, file_type;
-type radio_factoryapp_efs_file, file_type;
-type sensor_efs_file, file_type;
-type sensor_factoryapp_efs_file, file_type;
-type factoryprop_efs_file, file_type, data_file_type;
+# Factory EFS records
 
-# gps
+# Sensor calibration and separate proximity, gyro and barometer records.
+type factory_sensor_cal_efs_file, file_type;
+type sensor_factoryapp_efs_file, file_type;
+type sensor_efs_file, file_type;
+type baro_delta_factoryapp_efs_file, file_type;
+
+# Battery calibration, device serial number and factory mode records.
+type factory_battery_efs_file, file_type;
+type factory_serial_efs_file, file_type;
+type factorymode_factoryapp_efs_file, file_type;
+
+# Modem factory records, SIM selection and cached telephony configuration.
+type radio_factoryapp_efs_file, file_type;
+type factoryprop_efs_file, file_type, data_file_type;
+type ril_imei_config_efs_file, file_type;
+type ril_telephony_efs_file, file_type;
+
+# Legacy DRM records.
+type drm_efs_file, file_type;
+
+# Vendor EFS mount alias, IMEI compatibility symlink and factory serial symlink.
+type vendor_efs_link, file_type;
+type ril_imei_link, file_type;
+type ril_serial_link, file_type;
+
+# Service sockets
+
+# SIM Access Profile socket created by init for the modem daemon.
+type ril_sap_socket, file_type;
+
+# Socket created by gpsd under its vendor data directory.
 type gps_socket, file_type;
 
-### sysfs types
-type sysfs_mdnie, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_mipi, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_multipdp, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_sec, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_camera, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_gps, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_brightness, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_input_writable, fs_type, sysfs_type, rw_fs_type, mlstrustedobject;
-type sysfs_svc, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_lcd, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_modem, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_virtual, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_iio_writable, fs_type, sysfs_type, rw_fs_type, mlstrustedobject;
-type sysfs_graphics, fs_type, sysfs_type, mlstrustedobject;
-type sysfs_mmc, fs_type, sysfs_type, mlstrustedobject;
+# Vendor service state
 
-### data types
+# Persistent state for Widevine, camera, NFC and Bluetooth under /data/vendor.
 type mediadrm_data_file, file_type, data_file_type;
 type camera_vendor_data_file, file_type, data_file_type;
 type nfc_vendor_data_file, data_file_type, file_type;
-
-allow sysfs_type tmpfs:filesystem associate;
-
-# debugfs types
-type debugfs_mali, fs_type, debugfs_type;
-type debugfs_ion, fs_type, debugfs_type;
-
 type vendor_bluetooth_data_file, file_type, data_file_type;
 
-# AP board thermistor used for the calibrated skin estimate.
+# Sysfs attributes
+
+# Panel controls, current backlight and the read-only backlight maximum.
+type sysfs_mdnie, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_lcd, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_brightness, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_max_brightness, fs_type, sysfs_type, mlstrustedobject;
+
+# Input device directories traversed by the Power and Touch HALs.
+type sysfs_touch_input_dir, fs_type, sysfs_type;
+
+# Camera hardware information and a separate type for writable controls.
+type sysfs_camera, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_camera_control, fs_type, sysfs_type, mlstrustedobject;
+
+# Factory camera module and display panel identifiers.
+type sysfs_samsung_module_id, fs_type, sysfs_type;
+
+# DECON display controller attributes used by the graphics composer.
+type sysfs_graphics, fs_type, sysfs_type, mlstrustedobject;
+
+# GNSS platform identification, modem SIM selection and packet-data wake timeout.
+type sysfs_gps, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_modem, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_multipdp, fs_type, sysfs_type, mlstrustedobject;
+
+# Board revision read by the modem boot daemon.
+type sysfs_modem_board_revision, fs_type, sysfs_type;
+
+# SSP IIO buffer controls and removable SD card controller attributes.
+type sysfs_iio_writable, fs_type, sysfs_type, rw_fs_type, mlstrustedobject;
+type sysfs_mmc, fs_type, sysfs_type, mlstrustedobject;
+
+# AP and battery temperature inputs and separate GPU, charging and display thermal limits.
 type sysfs_ap_thermal, fs_type, sysfs_type;
-
-# Dedicated AP-policy request, separate from the kernel TMU and user GPU locks.
+type sysfs_universal7880_battery_temp, fs_type, sysfs_type;
 type sysfs_gpu_thermal, fs_type, sysfs_type;
-
 type sysfs_battery_thermal, fs_type, sysfs_type;
 type sysfs_display_thermal, fs_type, sysfs_type;
+
+# V4L2 discovery for the Exynos codec, scaler and JPEG hardware.
+type sysfs_video_codec, fs_type, sysfs_type;
+
+# Procfs and debugfs attributes
+
+# VM swappiness configured by vendor init.
+type proc_universal7880_swappiness, fs_type, proc_type;
+
+# Mali and ION memory accounting used by the legacy memtrack HAL.
+type debugfs_mali, fs_type, debugfs_type;
+type debugfs_ion, fs_type, debugfs_type;

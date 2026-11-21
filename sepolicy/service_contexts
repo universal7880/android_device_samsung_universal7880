@@ -1,6 +1,8 @@
-# HWC
+# Legacy Exynos hardware composer service.
 Exynos.HWCService                           u:object_r:surfaceflinger_service:s0
+
+# Vendor FM tuner AIDL service.
 vendor.lineage.hardware.fmradio.IFmRadio/default    u:object_r:hal_fmradio_service:s0
 
-# Widevine
+# Widevine AIDL DRM factory.
 android.hardware.drm.IDrmFactory/widevine u:object_r:hal_drm_service:s0

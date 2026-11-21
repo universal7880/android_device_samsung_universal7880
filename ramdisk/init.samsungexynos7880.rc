@@ -29,13 +29,6 @@ on post-fs-data
 
     setprop vold.post_fs_data_done 1
 
-# C-STATE
-    chown system system /sys/module/cpuidle/parameters/off
-    chmod 0660 /sys/module/cpuidle/parameters/off
-
-# CPU Idle
-    chown system system /sys/module/cpuidle_exynos64/parameters/enable_mask
-
 # Permissions for audio
     chown system radio /sys/class/audio/earjack/select_jack
     chown system radio /sys/class/audio/earjack/key_state
@@ -98,14 +91,6 @@ on post-fs-data
     chown wifi root /mnt/efs/wifi/.mac.cob
     chmod 0664 /mnt/efs/wifi/.mac.cob
 
-# Permision for xlat control
-    chmod 0660 /sys/kernel/clat/xlat_plat
-    chown clat clat /sys/kernel/clat/xlat_plat
-    chmod 0660 /sys/kernel/clat/xlat_addrs
-    chown clat clat /sys/kernel/clat/xlat_addrs
-    chmod 0660 /sys/kernel/clat/xlat_v4_addrs
-    chown clat clat /sys/kernel/clat/xlat_v4_addrs
-
 # Fingerprint
     mkdir /dev/validity 0770 system system
     mkdir /data/validity 0770 system system
@@ -148,59 +133,6 @@ on boot
     chmod 0664 /sys/class/input_booster/level
     chmod 0664 /sys/class/input_booster/head
     chmod 0664 /sys/class/input_booster/tail
-
-    # PMS DVFS
-    chown system system /sys/power/cpuhotplug/enabled
-    chown system system /sys/power/cpuhotplug/min_online_cpu
-    chown system system /sys/power/cpuhotplug/max_online_cpu
-    chmod 0664 /sys/power/cpuhotplug/enabled
-    chmod 0664 /sys/power/cpuhotplug/min_online_cpu
-    chmod 0664 /sys/power/cpuhotplug/max_online_cpu
-
-    chown radio system /sys/class/devfreq/17000010.devfreq_mif/available_frequencies
-    chmod 0664 /sys/class/devfreq/17000010.devfreq_mif/available_frequencies
-    chown radio system /sys/class/devfreq/17000010.devfreq_mif/min_freq
-    chmod 0664 /sys/class/devfreq/17000010.devfreq_mif/min_freq
-    chown radio system /sys/class/devfreq/17000010.devfreq_mif/max_freq
-    chmod 0664 /sys/class/devfreq/17000010.devfreq_mif/max_freq
-
-    chown radio system /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/available_frequencies
-    chmod 0664 /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/available_frequencies
-    chown radio system /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/min_freq
-    chmod 0664 /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/min_freq
-    chown radio system /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/max_freq
-    chmod 0664 /sys/devices/17000010.devfreq_mif/devfreq/17000010.devfreq_mif/max_freq
-    chown radio system /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/available_frequencies
-    chmod 0664 /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/available_frequencies
-    chown radio system /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/min_freq
-    chmod 0664 /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/min_freq
-    chown radio system /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/max_freq
-    chmod 0664 /sys/devices/17000020.devfreq_int/devfreq/17000020.devfreq_int/max_freq
-    chown radio system /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/available_frequencies
-    chmod 0664 /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/available_frequencies
-    chown radio system /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/min_freq
-    chmod 0664 /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/min_freq
-    chown radio system /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/max_freq
-    chmod 0664 /sys/devices/17000030.devfreq_disp/devfreq/17000030.devfreq_disp/max_freq
-    chown radio system /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/available_frequencies
-    chmod 0664 /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/available_frequencies
-    chown radio system /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/min_freq
-    chmod 0664 /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/min_freq
-    chown radio system /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/max_freq
-    chmod 0664 /sys/devices/17000040.devfreq_cam/devfreq/17000040.devfreq_cam/max_freq
-
-    chown radio system /sys/devices/11400000.mali/dvfs_table
-    chmod 0664 /sys/devices/11400000.mali/dvfs_table
-    chown radio system /sys/devices/11400000.mali/dvfs_min_lock
-    chmod 0664 /sys/devices/11400000.mali/dvfs_min_lock
-    chown radio system /sys/devices/11400000.mali/dvfs_max_lock
-    chmod 0664 /sys/devices/11400000.mali/dvfs_max_lock
-
-    chown radio system /sys/devices/system/sec_os_ctrl/migrate_os
-    chmod 664 /sys/devices/system/sec_os_ctrl/migrate_os
-
-    chown radio system /sys/module/cpuidle/parameters/off
-    chmod 0664 /sys/module/cpuidle/parameters/off
 
     # sec_log
     chown system log /proc/sec_log
@@ -277,9 +209,6 @@ on boot
     chown system system /sys/devices/system/cpu/cpu5/online
     chown system system /sys/devices/system/cpu/cpu6/online
     chown system system /sys/devices/system/cpu/cpu7/online
-
-    # CPU Idle
-    chown system system /sys/module/cpuidle_exynos64/parameters/enable_mask
 
     # S/W self discharging
     chown system system /sys/power/cpufreq_self_discharging
@@ -440,10 +369,6 @@ on boot
 #MST HW Support
 #setprop ro.mst.support 1
 
-#Secure OS migration
-    chown radio system /sys/devices/system/sec_os_ctrl/migrate_os
-    chmod 664 /sys/devices/system/sec_os_ctrl/migrate_os
-
 # permissions for bluetooth.
     chown bluetooth bluetooth /dev/ttySAC0
     chmod 0660 /dev/ttySAC0
@@ -496,6 +421,7 @@ on boot
 on fs
     write /sys/class/scsi_disk/0:0:0:0/cache_type "none"
     mount_all /vendor/etc/fstab.samsungexynos7880
+
     swapon_all /vendor/etc/fstab.samsungexynos7880
     chown radio system /mnt/efs
 
@@ -573,27 +499,6 @@ service charger /system/bin/charger
 service watchdogd /system/bin/watchdogd 10 20
     class core
     seclabel u:r:watchdogd:s0
-
-on property:init.svc.bootanim=stopped
-# set property for touchkey light voltage table
-    chown system system /mnt/efs/FactoryApp/tkey_light_version
-    chown system system /mnt/efs/FactoryApp/tkey_light_crc
-    chown system system /mnt/efs/FactoryApp/tkey_light0
-    chown system system /mnt/efs/FactoryApp/tkey_light1
-    chown system system /mnt/efs/FactoryApp/tkey_light2
-    chown system system /mnt/efs/FactoryApp/tkey_light3
-    chown system system /mnt/efs/FactoryApp/tkey_light4
-    chown system system /mnt/efs/FactoryApp/tkey_light5
-    chown system system /mnt/efs/FactoryApp/tkey_light6
-    chown system system /mnt/efs/FactoryApp/tkey_light7
-    chown system system /mnt/efs/FactoryApp/tkey_light8
-    chown system system /mnt/efs/FactoryApp/tkey_light9
-    chown system system /mnt/efs/FactoryApp/tkey_light10
-    chown system system /mnt/efs/FactoryApp/tkey_light11
-    chown system system /mnt/efs/FactoryApp/tkey_light12
-    chown system system /mnt/efs/FactoryApp/tkey_light13
-    chown system system /mnt/efs/FactoryApp/tkey_light14
-    chown system system /mnt/efs/FactoryApp/tkey_light15
 
 # Configure the governor before starting the hint manager.
 on boot
