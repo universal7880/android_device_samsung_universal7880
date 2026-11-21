@@ -1,1 +1,2 @@
+# Run the privileged vendor FM app in its dedicated SELinux domain.
 user=_app isPrivApp=true name=org.lineageos.fmradio.vendor domain=fmradio_app type=privapp_data_file levelFrom=all
