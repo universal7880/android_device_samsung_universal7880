@@ -41,5 +41,8 @@ allow init sysfs_modem:file r_file_perms;
 # Connect init to the RIL property socket.
 unix_socket_connect(init, property, rild)
 
+# Set the maximum discard request size for the internal eMMC at boot.
+allow init sysfs_universal7880_discard_max_bytes:file { open write };
+
 # Label the physical backing device for retrofit dynamic partitions.
 allow init super_block_device:blk_file relabelto;

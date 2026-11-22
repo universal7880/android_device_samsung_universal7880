@@ -8,6 +8,9 @@ genfscon debugfs /ion/buffers -- u:object_r:debugfs_ion:s0
 # VM reclaim tuning used by the ZRAM init action.
 genfscon proc /sys/vm/swappiness -- u:object_r:proc_universal7880_swappiness:s0
 
+# Maximum discard request size for the internal eMMC.
+genfscon sysfs /devices/13540000.dwmmc0/mmc_host/mmc0/mmc0:0001/block/mmcblk0/queue/discard_max_bytes -- u:object_r:sysfs_universal7880_discard_max_bytes:s0
+
 # Touchscreen double-tap-to-wake control.
 genfscon sysfs /devices/virtual/sec/tsp/dt2w_enable u:object_r:sysfs_touchscreen_writable:s0
 

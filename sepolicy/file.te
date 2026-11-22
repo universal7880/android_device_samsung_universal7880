@@ -84,6 +84,9 @@ type sysfs_modem_board_revision, fs_type, sysfs_type;
 type sysfs_iio_writable, fs_type, sysfs_type, rw_fs_type, mlstrustedobject;
 type sysfs_mmc, fs_type, sysfs_type, mlstrustedobject;
 
+# Maximum discard request size for the internal eMMC.
+type sysfs_universal7880_discard_max_bytes, fs_type, sysfs_type;
+
 # AP and battery temperature inputs and separate GPU, charging and display thermal limits.
 type sysfs_ap_thermal, fs_type, sysfs_type;
 type sysfs_universal7880_battery_temp, fs_type, sysfs_type;
