@@ -19,3 +19,7 @@ allow system_server hal_camera_default:binder call;
 # FIMC-IS stores calibration and hardware error counts in the caller context.
 allow hal_camera_default camera_vendor_data_file:dir rw_dir_perms;
 allow hal_camera_default camera_vendor_data_file:file create_file_perms;
+
+# Read the vendor sizes of both camera metadata queues.
+get_prop(hal_camera_default, vendor_camera_request_fmq_prop)
+get_prop(hal_camera_default, vendor_camera_result_fmq_prop)

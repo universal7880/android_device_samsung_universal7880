@@ -178,6 +178,11 @@ PRODUCT_PACKAGES += \
     libpower.vendor \
     android.hardware.camera.provider@2.5-service
 
+# Keep the platform's 1 MiB camera metadata queue defaults.
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.vendor.camera.req.fmq.size=1048576 \
+    ro.vendor.camera.res.fmq.size=1048576
+
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm-service.clearkey \

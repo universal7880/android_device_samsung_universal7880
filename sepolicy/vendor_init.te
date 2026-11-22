@@ -26,3 +26,7 @@ allow vendor_init factory_touchkey_efs_file:file setattr;
 # Mirror the platform VTS status for Samsung RIL.
 get_prop(vendor_init, vts_status_prop)
 set_prop(vendor_init, vendor_ril_vts_status_prop)
+
+# Load the vendor camera metadata queue sizes from build.prop.
+set_prop(vendor_init, vendor_camera_request_fmq_prop)
+set_prop(vendor_init, vendor_camera_result_fmq_prop)
