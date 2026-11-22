@@ -41,6 +41,11 @@
 /* The proprietary RIL client takes an extra-volume mode in SetCallAudioPath. */
 #define RIL_CALL_AUDIO_PATH_EXTRAVOLUME
 
+/* Modem route IDs and command order used for ordinary A720S voice calls. */
+#define SOUND_MODEM_PATH_EARPIECE 1
+#define SOUND_MODEM_PATH_SPEAKER 6
+#define SOUND_VOICE_DUAL_MIC_BEFORE_PATH
+
 /* Wideband AMR callback */
 #ifndef RIL_UNSOL_SNDMGR_WB_AMR_REPORT
 #ifdef RIL_UNSOL_WB_AMR_STATE
