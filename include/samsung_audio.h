@@ -38,6 +38,8 @@
 /* Voice calls */
 #define SOUND_PLAYBACK_VOICE_DEVICE 2
 #define SOUND_CAPTURE_VOICE_DEVICE 2
+/* The proprietary RIL client takes an extra-volume mode in SetCallAudioPath. */
+#define RIL_CALL_AUDIO_PATH_EXTRAVOLUME
 
 /* Wideband AMR callback */
 #ifndef RIL_UNSOL_SNDMGR_WB_AMR_REPORT
