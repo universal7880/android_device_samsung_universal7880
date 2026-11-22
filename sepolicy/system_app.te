@@ -5,3 +5,6 @@ allow system_app proc_pagetypeinfo:file { read open getattr };
 
 # Allow system apps to use the FM tuner service.
 hal_client_domain(system_app, hal_fmradio)
+
+# AdvancedDisplay applies its selected screen scenario at boot and on change.
+allow system_app sysfs_mdnie_scenario:file { getattr open write };
