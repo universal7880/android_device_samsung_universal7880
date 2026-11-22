@@ -23,6 +23,10 @@ type wifi_mac_efs_file, file_type;
 # Legacy DRM records.
 type drm_efs_file, file_type;
 
+# MobiCore authentication token and named trustlet provisioning records.
+type mobicore_auth_token_efs_file, file_type;
+type mobicore_provisioning_efs_file, file_type;
+
 # Vendor EFS mount alias, IMEI compatibility symlink and factory serial symlink.
 type vendor_efs_link, file_type;
 type ril_imei_link, file_type;

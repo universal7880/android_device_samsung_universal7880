@@ -1,5 +1,6 @@
-# mobicore
+# Traverse EFS to reach the authentication token and named provisioning records.
+allow tee { efs_file prov_efs_file }:dir search;
+allow tee { mobicore_auth_token_efs_file mobicore_provisioning_efs_file }:file r_file_perms;
 
-# /efs
-allow tee { efs_file prov_efs_file }:dir r_dir_perms;
-allow tee { efs_file prov_efs_file }:file r_file_perms;
+# Preserve the access Samsung common already gives these two consumers.
+allow { rild hal_keymint_default } mobicore_provisioning_efs_file:file r_file_perms;
