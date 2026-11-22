@@ -670,7 +670,6 @@ on boot
     chown radio radio /mnt/efs/cpk/h2k.dat
     chmod 0644 /mnt/efs/h2k.dat
     chmod 0644 /mnt/efs/cpk/h2k.dat
-    chown system system /mnt/efs/drm/h2k
 
     # mldap
     mkdir /mnt/efs/prov_data 0770 radio system

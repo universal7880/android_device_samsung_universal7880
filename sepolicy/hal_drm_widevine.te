@@ -1,18 +1,20 @@
+# Allow the legacy DRM components to use the vendor Binder context.
 vndbinder_use(hal_drm_widevine);
 
+# Use descriptors passed by codecs and non-isolated apps for DRM operations.
 allow hal_drm_widevine mediacodec:fd use;
 allow hal_drm_widevine { appdomain -isolated_app }:fd use;
 
+# Use buffer descriptors supplied by the graphics allocator.
 allow hal_drm_widevine hal_allocator_server:fd use;
 
+# Store Widevine state in the dedicated /data/vendor/mediadrm directory.
 allow hal_drm_widevine mediadrm_data_file:dir create_dir_perms;
 allow hal_drm_widevine mediadrm_data_file:file create_file_perms;
-allow hal_drm_widevine vendor_data_file:dir { read write create add_name } ;
-allow hal_drm_widevine vendor_data_file:file { create open read write getattr } ;
 
-allow hal_drm_widevine cpk_efs_file:file { open read getattr };
+# Open the device keybox directly on the mounted EFS filesystem.
+allow hal_drm_widevine widevine_keybox_efs_file:file { open read getattr };
 allow hal_drm_widevine efs_file:dir search;
-allow hal_drm_widevine efs_file:lnk_file read;
-allow hal_drm_widevine mnt_vendor_file:dir search;
 
+# Use the Samsung secure memory device for protected buffers.
 allow hal_drm_widevine secmem_device:chr_file { open read write ioctl };

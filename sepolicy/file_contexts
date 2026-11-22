@@ -169,7 +169,8 @@
 /mnt/efs/drm(/.*)?                          u:object_r:drm_efs_file:s0
 /mnt/efs/h2k\.dat                           u:object_r:cpk_efs_file:s0
 
-/mnt/efs/wv\.keys                              u:object_r:cpk_efs_file:s0
+# Per-device Widevine keybox.
+/mnt/efs/wv\.keys                           -- u:object_r:widevine_keybox_efs_file:s0
 
 # MobiCore authentication token records.
 /mnt/efs/00000000\.authtokcont               -- u:object_r:mobicore_auth_token_efs_file:s0
