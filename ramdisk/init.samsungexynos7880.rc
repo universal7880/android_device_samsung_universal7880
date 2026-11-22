@@ -422,6 +422,26 @@ on fs
     write /sys/class/scsi_disk/0:0:0:0/cache_type "none"
     mount_all /vendor/etc/fstab.samsungexynos7880
 
+    # Prepare touchkey calibration as soon as EFS has been mounted.
+    chown root system /mnt/efs/FactoryApp/tkey_light_version
+    chown root system /mnt/efs/FactoryApp/tkey_light_crc
+    chown root system /mnt/efs/FactoryApp/tkey_light0
+    chown root system /mnt/efs/FactoryApp/tkey_light1
+    chown root system /mnt/efs/FactoryApp/tkey_light2
+    chown root system /mnt/efs/FactoryApp/tkey_light3
+    chown root system /mnt/efs/FactoryApp/tkey_light4
+    chown root system /mnt/efs/FactoryApp/tkey_light5
+    chown root system /mnt/efs/FactoryApp/tkey_light6
+    chown root system /mnt/efs/FactoryApp/tkey_light7
+    chown root system /mnt/efs/FactoryApp/tkey_light8
+    chown root system /mnt/efs/FactoryApp/tkey_light9
+    chown root system /mnt/efs/FactoryApp/tkey_light10
+    chown root system /mnt/efs/FactoryApp/tkey_light11
+    chown root system /mnt/efs/FactoryApp/tkey_light12
+    chown root system /mnt/efs/FactoryApp/tkey_light13
+    chown root system /mnt/efs/FactoryApp/tkey_light14
+    chown root system /mnt/efs/FactoryApp/tkey_light15
+
     swapon_all /vendor/etc/fstab.samsungexynos7880
     chown radio system /mnt/efs
 

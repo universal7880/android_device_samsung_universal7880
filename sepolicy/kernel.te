@@ -10,7 +10,7 @@ allow kernel device:chr_file { create setattr getattr unlink };
 
 # Traverse EFS to access the hardware calibration records used by kernel drivers.
 allow kernel { app_efs_file battery_efs_file efs_file }:dir search;
-allow kernel { factory_battery_efs_file factory_sensor_cal_efs_file sensor_efs_file sensor_factoryapp_efs_file }:file rw_file_perms;
+allow kernel { factory_battery_efs_file factory_sensor_cal_efs_file factory_touchkey_efs_file sensor_efs_file sensor_factoryapp_efs_file }:file rw_file_perms;
 allow kernel baro_delta_factoryapp_efs_file:file r_file_perms;
 
 # The WLAN driver can initialize the persistent MAC file in a kernel worker.

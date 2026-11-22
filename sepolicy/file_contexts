@@ -136,7 +136,10 @@
 /mnt/efs/FactoryApp/cisd_(cable_data|data|data_a5y17lte|data_a7y17lte|fullcaprep_max|power_data|tx_data|wc_data) -- u:object_r:factory_battery_efs_file:s0
 /mnt/efs/FactoryApp/serial_no                -- u:object_r:factory_serial_efs_file:s0
 
+# Factory touchkey backlight calibration.
+/mnt/efs/FactoryApp/tkey_light(_crc|_version|[0-9]|1[0-5]) -- u:object_r:factory_touchkey_efs_file:s0
 
+# Factory mode state and sensor calibration.
 /mnt/efs/FactoryApp/baro_delta              u:object_r:baro_delta_factoryapp_efs_file:s0
 /mnt/efs/FactoryApp/factorymode             u:object_r:factorymode_factoryapp_efs_file:s0
 /mnt/efs/FactoryApp/prox_cal                u:object_r:sensor_factoryapp_efs_file:s0
