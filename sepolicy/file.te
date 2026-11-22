@@ -48,6 +48,7 @@ type vendor_bluetooth_data_file, file_type, data_file_type;
 
 # Panel controls, current backlight and the read-only backlight maximum.
 type sysfs_mdnie, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_mdnie_scenario, fs_type, sysfs_type, mlstrustedobject;
 type sysfs_lcd, fs_type, sysfs_type, mlstrustedobject;
 type sysfs_brightness, fs_type, sysfs_type, mlstrustedobject;
 type sysfs_max_brightness, fs_type, sysfs_type, mlstrustedobject;

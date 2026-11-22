@@ -18,7 +18,7 @@ allow init { sysfs_camera sysfs_camera_control }:file { relabelto setattr };
 
 # Apply init ownership and mode to Bluetooth, display, modem data and GNSS attributes.
 allow init sysfs_bluetooth_writable:file setattr;
-allow init sysfs_mdnie:file setattr;
+allow init { sysfs_mdnie sysfs_mdnie_scenario }:file setattr;
 allow init sysfs_multipdp:file setattr;
 allow init sysfs_gps:file setattr;
 allow init sysfs_brightness:file setattr;
