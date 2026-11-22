@@ -1,35 +1,31 @@
-# Allow rild and netd to connect to gpsd
-unix_socket_connect(gpsd, property, rild)
-unix_socket_connect(gpsd, property, netd)
-
+# Read and configure the Unix stream socket owned by system_server.
 allow gpsd system_server:unix_stream_socket { read write setopt };
 
+# Open raw sockets for the legacy GNSS daemon.
 allow gpsd self:capability net_raw;
 
-binder_call(gpsd, hwservicemanager)
-
-# Sockets
+# Label GNSS sockets created in the vendor GPS data directory.
 type_transition gpsd gps_vendor_data_file:sock_file gps_socket;
-
-allow gpsd dnsproxyd_socket:sock_file write;
 allow gpsd gps_socket:sock_file create_file_perms;
-allow gpsd self:udp_socket { create bind connect read setopt write getopt };
-allow gpsd self:tcp_socket { create bind connect read setopt write getopt };
-allow gpsd port:tcp_socket name_connect;
- 
-# sysfs_gps
-allow gpsd system_file:dir { open read getattr };
+
+# Read the legacy Samsung GPS sysfs controls.
 allow gpsd sysfs_gps:file { open read getattr };
 
-# /dev/ttySAC0
-allow gpsd bt_device:chr_file { getattr setattr rw_file_perms };
+# Open the GNSS transport.
 allow gpsd gps_device:chr_file { getattr setattr rw_file_perms };
-allow gpsd gps_vendor_data_file:dir { search write add_name remove_name rw_dir_perms };
-allow gpsd gps_vendor_data_file:fifo_file { unlink create setattr getattr rw_file_perms };
 
+# Hold a kernel wake lock while GNSS work is pending.
 allow gpsd sysfs_wake_lock:file rw_file_perms;
 
+# Look up the legacy framework sensor service through servicemanager.
+allow gpsd servicemanager:binder call;
 allow gpsd sensorservice_service:service_manager { find };
 
-# /dev/umts_boot0
-allow gpsd vendor_radio_device:chr_file r_file_perms;
+# Find the AIDL SystemSuspend service used by the GNSS daemon.
+allow gpsd hal_system_suspend_service:service_manager find;
+
+# Read the modem boot interface referenced by the GNSS daemon.
+allow gpsd vendor_radio_device:chr_file { getattr open read };
+
+# Check whether the system boot animation has finished.
+get_prop(gpsd, bootanim_system_prop)
