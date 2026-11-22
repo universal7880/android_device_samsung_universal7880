@@ -2067,7 +2067,7 @@
 	<path name="gain-incall_wb-handset">
 		<ctl name="AudioMixer MIX1_LVL" value="0" />
 		<ctl name="AudioMixer MIX2_LVL" value="0" />
-		<ctl name="DAC Gain" value="127 127" />
+		<ctl name="DAC Gain" value="118 118" />
 		<ctl name="Earphone Volume" value="2" />
 	</path>
 
