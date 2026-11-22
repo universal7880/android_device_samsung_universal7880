@@ -17,6 +17,9 @@ type factoryprop_efs_file, file_type, data_file_type;
 type ril_imei_config_efs_file, file_type;
 type ril_telephony_efs_file, file_type;
 
+# Persistent Wi-Fi MAC address initialized by the Qualcomm WLAN driver.
+type wifi_mac_efs_file, file_type;
+
 # Legacy DRM records.
 type drm_efs_file, file_type;
 
