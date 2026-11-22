@@ -6,10 +6,11 @@ type sensor_factoryapp_efs_file, file_type;
 type sensor_efs_file, file_type;
 type baro_delta_factoryapp_efs_file, file_type;
 
-# Battery calibration, device serial number and factory mode records.
+# Battery calibration, device serial number, factory mode and touchkey backlight records.
 type factory_battery_efs_file, file_type;
 type factory_serial_efs_file, file_type;
 type factorymode_factoryapp_efs_file, file_type;
+type factory_touchkey_efs_file, file_type;
 
 # Modem factory records, SIM selection and cached telephony configuration.
 type radio_factoryapp_efs_file, file_type;

@@ -19,3 +19,6 @@ set_prop(vendor_init, vendor_vibrator_config_prop)
 
 # Create the EFS compatibility symlinks during early init.
 allow vendor_init { vendor_efs_link ril_imei_link ril_serial_link }:lnk_file create;
+
+# Assign the touchkey calibration files to the kernel worker.
+allow vendor_init factory_touchkey_efs_file:file setattr;
