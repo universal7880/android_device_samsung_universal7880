@@ -22,3 +22,6 @@ ro.vendor.vibrator_hal.texture_tick_duration u:object_r:vendor_vibrator_config_p
 # Broadcom driver and firmware versions reported by the Wi-Fi HAL.
 vendor.wlan.driver.version   u:object_r:vendor_wlan_version_prop:s0 exact string
 vendor.wlan.firmware.version u:object_r:vendor_wlan_version_prop:s0 exact string
+
+# Samsung RIL test mode.
+vendor.vts.native_server.on    u:object_r:vendor_ril_vts_status_prop:s0 exact bool
