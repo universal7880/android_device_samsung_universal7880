@@ -21,8 +21,9 @@ type ril_telephony_efs_file, file_type;
 # Persistent Wi-Fi MAC address initialized by the Qualcomm WLAN driver.
 type wifi_mac_efs_file, file_type;
 
-# Legacy DRM records.
+# Legacy DRM records and the separate per-device Widevine keybox.
 type drm_efs_file, file_type;
+type widevine_keybox_efs_file, file_type;
 
 # MobiCore authentication token and named trustlet provisioning records.
 type mobicore_auth_token_efs_file, file_type;
