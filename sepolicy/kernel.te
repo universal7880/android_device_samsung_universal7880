@@ -13,9 +13,10 @@ allow kernel { app_efs_file battery_efs_file efs_file }:dir search;
 allow kernel { factory_battery_efs_file factory_sensor_cal_efs_file sensor_efs_file sensor_factoryapp_efs_file }:file rw_file_perms;
 allow kernel baro_delta_factoryapp_efs_file:file r_file_perms;
 
-# Read the Wi-Fi MAC storage using its existing EFS label.
-allow kernel wifi_efs_file:dir r_dir_perms;
-allow kernel wifi_efs_file:file r_file_perms;
+# The WLAN driver can initialize the persistent MAC file in a kernel worker.
+allow kernel wifi_efs_file:dir { search write add_name };
+allow kernel wifi_mac_efs_file:file { create getattr open read write };
+type_transition kernel wifi_efs_file:file wifi_mac_efs_file ".mac.info";
 
 # Read panel attributes used by kernel drivers, including the touchkey window type.
 allow kernel sysfs_lcd:file { open read };

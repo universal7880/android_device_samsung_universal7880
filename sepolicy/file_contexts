@@ -105,7 +105,11 @@
 # Bluetooth, NFC and Wi-Fi factory data.
 /mnt/efs/bluetooth(/.*)?                    u:object_r:bluetooth_efs_file:s0
 /mnt/efs/nfc(/.*)?                          u:object_r:nfc_efs_file:s0
-/mnt/efs/wifi(/.*)?                         u:object_r:wifi_efs_file:s0
+/mnt/efs/wifi                               -d u:object_r:wifi_efs_file:s0
+
+# MAC address initialized by the driver and the legacy COB MAC file owned by Wi-Fi.
+/mnt/efs/wifi/\.mac\.info                   -- u:object_r:wifi_mac_efs_file:s0
+/mnt/efs/wifi/\.mac\.cob                    -- u:object_r:wifi_efs_file:s0
 
 # Device provisioning, firmware and trusted execution data.
 /mnt/efs/DAK(/.*)?                          u:object_r:prov_efs_file:s0

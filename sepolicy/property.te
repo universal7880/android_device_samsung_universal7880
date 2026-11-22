@@ -9,3 +9,6 @@ vendor_internal_prop(vendor_thermal_state_prop)
 
 # Vibrator effect durations configured by the device.
 vendor_internal_prop(vendor_vibrator_config_prop)
+
+# Broadcom firmware version reported by the Wi-Fi HAL.
+vendor_internal_prop(vendor_wlan_version_prop)

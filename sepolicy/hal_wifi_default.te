@@ -1,10 +1,14 @@
-#### hal_wifi_default
-#
-
-# The WLAN driver may initialize the MAC file in the Wi-Fi HAL's context.
+# The WLAN driver can initialize the persistent MAC file in the HAL's context.
 allow hal_wifi_default efs_file:dir search;
 allow hal_wifi_default wifi_efs_file:dir { search write add_name };
-allow hal_wifi_default wifi_efs_file:file { create getattr open read write };
+allow hal_wifi_default wifi_mac_efs_file:file { create getattr open read write };
+type_transition hal_wifi_default wifi_efs_file:file wifi_mac_efs_file ".mac.info";
 
-# load .ko modules
-allow hal_wifi_default self:capability { sys_module sys_resource };
+# The Qualcomm WLAN driver looks up the optional .psm.info override.
+allow hal_wifi_default conn_vendor_data_file:dir search;
+
+# Keep the legacy Wi-Fi HAL resource limit override.
+allow hal_wifi_default self:capability sys_resource;
+
+# Publish the Broadcom driver and firmware versions.
+set_prop(hal_wifi_default, vendor_wlan_version_prop)
