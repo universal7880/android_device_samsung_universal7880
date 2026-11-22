@@ -1,13 +1,8 @@
-# hal_gnss_default.te
-
-# vndbinder
+# Use the vendor Binder device for the legacy GNSS implementation.
 allow hal_gnss_default vndbinder_device:chr_file rw_file_perms;
 
-# Connect to socket
+# Talk to gpsd over its Unix stream socket.
 allow hal_gnss_default gpsd:unix_stream_socket connectto;
-
-# sensor framework
-allow hal_gnss_default fwk_sensor_hwservice:hwservice_manager find;
 
 # The source-built NDK bridge uses the AIDL SensorManager service.
 binder_use(hal_gnss_default)
