@@ -25,10 +25,10 @@ on property:ro.multisim.simslotcount=2
     enable ril-daemon1
 
 # Apply the factory mode after loading persisted settings.
-on property:ro.persistent_properties.ready=true && property:ro.multisim.simslotcount=1
+on load_persist_props_action && property:ro.multisim.simslotcount=1
     setprop persist.radio.multisim.config ss
 
-on property:ro.persistent_properties.ready=true && property:ro.multisim.simslotcount=2
+on load_persist_props_action && property:ro.multisim.simslotcount=2
     setprop persist.radio.multisim.config dsds
 
 on property:vts.native_server.on=*

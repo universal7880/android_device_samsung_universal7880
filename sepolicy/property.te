@@ -12,3 +12,6 @@ vendor_internal_prop(vendor_vibrator_config_prop)
 
 # Broadcom firmware version reported by the Wi-Fi HAL.
 vendor_internal_prop(vendor_wlan_version_prop)
+
+# Vendor copy of the platform VTS status read by Samsung RIL.
+vendor_internal_prop(vendor_ril_vts_status_prop)

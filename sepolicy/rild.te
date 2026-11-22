@@ -37,3 +37,6 @@ allow rild factory_serial_efs_file:file r_file_perms;
 
 # Read and update the modem configuration cached in EFS.
 allow rild ril_telephony_efs_file:file { getattr open read setattr write };
+
+# Read the vendor copy of the platform VTS status.
+get_prop(rild, vendor_ril_vts_status_prop)
