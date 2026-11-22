@@ -999,22 +999,6 @@ on charger
     chown radio system /mnt/efs/Battery/batt_capacity_max
     chmod 0664 /mnt/efs/Battery/batt_capacity_max
 
-on property:sys.sysctl.swappiness=*
-    write /proc/sys/vm/swappiness ${sys.sysctl.swappiness}
-
-on property:sys.sysctl.mmap_readaround_limit=*
-    write /proc/sys/vm/mmap_readaround_limit ${sys.sysctl.mmap_readaround_limit}
-
-on property:sys.sysctl.fault_around_bytes=*
-    write /sys/kernel/debug/fault_around_bytes ${sys.sysctl.fault_around_bytes}
-
 # HWC data
 on property:sys.boot_completed=1
     mkdir /data/vendor/log/hwc 0771 system graphics
-
-# Network packet dropdump
-on property:sys.dropdump.on=On
-   write /proc/sys/net/core/support_dropdump 1
-
-on property:sys.dropdump.on=Off
-   write /proc/sys/net/core/support_dropdump 0
