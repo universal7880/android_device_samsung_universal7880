@@ -3,3 +3,6 @@ allow cameraserver sysfs_camera:file r_file_perms;
 
 # Traverse the camera information directories.
 allow cameraserver sysfs_camera:dir search;
+
+# Match the result metadata queue size configured for the camera HAL.
+get_prop(cameraserver, vendor_camera_result_fmq_prop)

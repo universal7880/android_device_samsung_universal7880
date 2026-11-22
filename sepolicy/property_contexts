@@ -25,3 +25,7 @@ vendor.wlan.firmware.version u:object_r:vendor_wlan_version_prop:s0 exact string
 
 # Samsung RIL test mode.
 vendor.vts.native_server.on    u:object_r:vendor_ril_vts_status_prop:s0 exact bool
+
+# Camera metadata queue sizes in bytes.
+ro.vendor.camera.req.fmq.size u:object_r:vendor_camera_request_fmq_prop:s0 exact int
+ro.vendor.camera.res.fmq.size u:object_r:vendor_camera_result_fmq_prop:s0 exact int

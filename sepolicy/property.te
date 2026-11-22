@@ -15,3 +15,7 @@ vendor_internal_prop(vendor_wlan_version_prop)
 
 # Vendor copy of the platform VTS status read by Samsung RIL.
 vendor_internal_prop(vendor_ril_vts_status_prop)
+
+# The camera HAL sizes the request queue. Cameraservice also reads the result queue size.
+vendor_internal_prop(vendor_camera_request_fmq_prop)
+vendor_restricted_prop(vendor_camera_result_fmq_prop)
