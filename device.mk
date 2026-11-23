@@ -21,6 +21,11 @@ OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Include IMS when the PhhIms source is available.
+ifneq ($(wildcard external/phh-ims/Android.bp),)
+$(call inherit-product, $(LOCAL_PATH)/ims/volte.mk)
+endif
+
 # Hardware settings shared with GSIs.
 PRODUCT_PACKAGES += \
     Universal7880FrameworkOverlay \
