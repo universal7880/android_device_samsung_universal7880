@@ -34,6 +34,9 @@
          config to 7. -->
     <integer name="config_deviceHardwareKeys">83</integer>
 
+    <!-- Allow the Home key (1) and volume rocker (64) to wake the device. -->
+    <integer name="config_deviceHardwareWakeKeys">65</integer>
+
     <!-- Button backlight control. Possible values are:
             0 - Not supported
             1 - Supported, but only on/off mode
