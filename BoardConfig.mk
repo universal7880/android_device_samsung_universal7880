@@ -94,6 +94,12 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 
 TARGET_USERIMAGES_USE_EXT4 := true
 
+# Leave space and let mke2fs allocate inodes for recovery-installed add-ons such as GApps.
+ifeq (,$(filter true,$(WITHOUT_RESERVED_SIZE) $(WITH_GMS)))
+BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE := 2000000000
+BOARD_SYSTEMIMAGE_EXTFS_INODE_COUNT := -1
+endif
+
 # Keep the legacy path for Samsung blobs on the LineageOS system image.
 BOARD_ROOT_EXTRA_SYMLINKS += /mnt/efs:/efs
 TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/config.fs
