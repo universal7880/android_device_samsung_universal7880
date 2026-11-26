@@ -20,6 +20,7 @@ LOCAL_PATH := device/samsung/universal7880
 OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += $(LOCAL_PATH)/overlay/packages/apps/Updater
 
 # Include IMS when the PhhIms source is available.
 ifneq ($(wildcard external/phh-ims/Android.bp),)
