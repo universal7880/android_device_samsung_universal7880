@@ -128,8 +128,6 @@ TARGET_AUDIOHAL_VARIANT := samsung
 
 # FM radio
 PRODUCT_SOONG_NAMESPACES += $(DEVICE_PATH)/fm
-$(call soong_config_set_string_list,libfmjni,external_srcs,//$(DEVICE_PATH)/fm:libfmjni-universal7880-srcs)
-$(call soong_config_set_string_list,libfmjni,external_shared_libs,libbinder_ndk liblog //$(DEVICE_PATH)/fm:vendor.lineage.hardware.fmradio-V1-ndk)
 
 # Wifi
 BOARD_WLAN_DEVICE := qcwcn
